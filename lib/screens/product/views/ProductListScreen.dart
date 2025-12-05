@@ -75,8 +75,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
               size: 20,
             ),
             // 4. UPDATED onPressed to use the new helper
-            onPressed: () => _navigateToEntryPoint(context),
-          ),
+            onPressed: () => Navigator.pop(context),          ),
           title: Text(
             widget.title, // Use the title from the widget
             style: TextStyle(

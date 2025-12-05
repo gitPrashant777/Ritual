@@ -2,11 +2,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:collection/collection.dart'; // For 'firstWhereOrNull'
-import 'package:shop/constants.dart'; // Make sure you import this if _buildTimelineNode uses primaryColor
+import 'package:shop/constants.dart';
 
 // Import your app's models and services
 import '../../../models/assessment_report.dart';
-// import '../../../models/onboarding_data.dart'; // Unused
 import '../../../services/firebase_kit_service.dart';
 import '../../../services/products_api_service.dart';
 import '../../../models/product_model.dart';
@@ -43,43 +42,39 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
   late Future<List<ProductModel>> _productsFuture;
 
   // State
-  List<ProductModel> _allProducts = []; // Master list for price calculation
-  Map<String, int> _selectedProductQuantities = {}; // Correct state
+  List<ProductModel> _allProducts = [];
+  Map<String, int> _selectedProductQuantities = {};
   double _totalPrice = 0.0;
   double _mrpPrice = 0.0;
-  bool _isSaving = false; // For button loading state
-// Add these constants after your state variables
+  bool _isSaving = false;
+
+  // Colors
   static const brandSecondary = Color(0xFF04076B);
   static const brandAccent = Color(0xFF1A1A2E);
+  static const brandPrimary = Color(0xFF020953);
 
-  // --- 1. URL UPDATED ---
+  // URL
   final String _imageBaseUrl = "https://mern-backend-t3h8.onrender.com/api/v1";
 
-  static const brandPrimary = Color(0xFF020953);
   @override
   void initState() {
     super.initState();
-    // Initialize services
     _productsApiService = Provider.of<ProductsApiService>(context, listen: false);
     _firebaseKitService = Provider.of<FirebaseKitService>(context, listen: false);
 
-    // --- REFACTORED DATA LOADING ---
-    // Define ONE future to get ALL products
     _productsFuture = _productsApiService.getAllProducts();
 
-    // Create a new combined future that loads all products,
-    // then initializes quantities and calculates the price.
-    _loadAndInitialize();
+    // Only load products if the report was actually successful
+    if (widget.assessmentReport.isSuccess) {
+      _loadAndInitialize();
+    }
   }
 
   // --- LOGIC METHODS ---
 
-  // NEW: Combined loading and initialization method
   Future<void> _loadAndInitialize() async {
-    // 1. Wait for ALL products to be fetched
     final allApiProducts = await _productsFuture;
 
-    // 2. Populate the master list (_allProducts)
     final allProductsMap = <String, ProductModel>{};
     for (var p in allApiProducts) {
       if (p.productId != null) {
@@ -92,101 +87,17 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
       _allProducts = allProductsMap.values.toList();
     });
 
-    // --- THIS IS THE FIX ---
-    // We create the lists *after* _allProducts is set
-    // and use the new, more flexible filtering logic.
-    const hairCategories = ['hair', 'scalp'];
-    const skinCategories = ['skin', 'toner', 'face'];
-
-    final hairProducts = _allProducts
-        .where((p) {
-      final categoryLower = p.category.toLowerCase();
-      return hairCategories.any((cat) => categoryLower.contains(cat));
-    })
-        .toList();
-
-    final skinProducts = _allProducts
-        .where((p) {
-      final categoryLower = p.category.toLowerCase();
-      return skinCategories.any((cat) => categoryLower.contains(cat));
-    })
-        .toList();
-
-    // 4. Initialize the selected quantities (This still runs)
-    _initializeSelectedProducts(hairProducts, skinProducts);
+    _calculateTotalPrice();
   }
 
-  // MODIFIED: Now takes arguments, doesn't fetch
-  void _initializeSelectedProducts(
-      List<ProductModel> hairProducts, List<ProductModel> skinProducts) {
-    final Map<String, int> initialQuantities = {};
-
-    for (var geminiProduct in widget.assessmentReport.recommendedHairKit) {
-      final matchingProduct = hairProducts.firstWhereOrNull(
-            (apiProd) =>
-        apiProd.title.toLowerCase() == geminiProduct.name.toLowerCase(),
-      );
-      if (matchingProduct != null && matchingProduct.productId != null) {
-        int suggestedQty = _getSuggestedQuantity(matchingProduct);
-        initialQuantities[matchingProduct.productId!] = suggestedQty;
-      }
-    }
-
-    for (var geminiProduct in widget.assessmentReport.recommendedSkinKit) {
-      final matchingProduct = skinProducts.firstWhereOrNull(
-            (apiProd) =>
-        apiProd.title.toLowerCase() == geminiProduct.name.toLowerCase(),
-      );
-      if (matchingProduct != null && matchingProduct.productId != null) {
-        int suggestedQty = _getSuggestedQuantity(matchingProduct);
-        initialQuantities[matchingProduct.productId!] = suggestedQty;
-      }
-    }
-
-    // 4. Set state for quantities and calculate price
-    setState(() {
-      _selectedProductQuantities = initialQuantities;
-      _calculateTotalPrice(); // This will now work
-    });
-  }
-
-  // Gets the suggested quantity based on diagnosis
   int _getSuggestedQuantity(ProductModel product) {
-    int minQty = 2;
-    int maxQty = product.maxOrderQuantity;
-    int suggestedQty = minQty;
-
-    // Use a list-based check here too for safety
-    const hairCategories = ['hair', 'scalp'];
-    final categoryLower = product.category.toLowerCase();
-
-    if (hairCategories.any((cat) => categoryLower.contains(cat))) {
-      int possibility =
-          widget.assessmentReport.regrowthPossibility; // Use int directly
-      if (possibility <= 30)
-        suggestedQty = 4; // Intensive
-      else if (possibility <= 70)
-        suggestedQty = 3; // Standard
-      else
-        suggestedQty = 2; // Maintenance
-    } else {
-      // Assume skin if not hair
-      String diagnosis = widget.assessmentReport.skinDiagnosis.toLowerCase();
-      if (diagnosis.contains('severe'))
-        suggestedQty = 4;
-      else if (diagnosis.contains('moderate'))
-        suggestedQty = 3;
-      else
-        suggestedQty = 2; // Mild or unknown
-    }
-    return suggestedQty.clamp(minQty, maxQty);
+    return 2;
   }
 
-  // Updates the quantity for a product
   void _updateProductQuantity(ProductModel product, int newQuantity) {
     if (product.productId == null) return;
     setState(() {
-      int minQty = 0; // 0 to allow removal
+      int minQty = 0;
       int maxQty = product.maxOrderQuantity;
       int clampedQty = newQuantity.clamp(minQty, maxQty);
 
@@ -195,11 +106,10 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
       } else {
         _selectedProductQuantities[product.productId!] = clampedQty;
       }
-      _calculateTotalPrice(); // Recalculate on every change
+      _calculateTotalPrice();
     });
   }
 
-  // Calculates total price based on the quantity map
   void _calculateTotalPrice() {
     double total = 0.0;
     double mrp = 0.0;
@@ -223,7 +133,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     });
   }
 
-  // Handles saving the kit to Firebase
   Future<void> _saveKitForLater() async {
     if (_isSaving) return;
     setState(() {
@@ -253,16 +162,7 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
       }
 
       String kitName = "Custom Kit";
-      if (widget.assessmentReport.hairDiagnosis.isNotEmpty &&
-          widget.assessmentReport.skinDiagnosis.isNotEmpty) {
-        kitName = "Hair & Skin Kit";
-      } else if (widget.assessmentReport.hairDiagnosis.isNotEmpty) {
-        kitName = widget.assessmentReport.hairDiagnosis;
-      } else if (widget.assessmentReport.skinDiagnosis.isNotEmpty) {
-        kitName = widget.assessmentReport.skinDiagnosis;
-      }
-      String diagnosis =
-          "${widget.assessmentReport.hairDiagnosis}. ${widget.assessmentReport.skinDiagnosis}";
+      String diagnosis = "${widget.assessmentReport.hairDiagnosis}. ${widget.assessmentReport.skinDiagnosis}";
 
       await _firebaseKitService.saveKit(
         kitProducts: productsToSave,
@@ -293,14 +193,11 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     }
   }
 
-  // --- IMAGE URL HELPER ---
   String _buildProductImageUrl(ProductModel product) {
     String imageUrl = product.image;
     if (imageUrl.isEmpty && product.images.isNotEmpty) {
       imageUrl = product.images.first;
     } else if (imageUrl.isEmpty) {
-      // Your device can't reach via.placeholder.com.
-      // We'll return an empty string to let the errorBuilder handle it gracefully.
       return '';
     }
     if (imageUrl.startsWith('http')) return imageUrl;
@@ -308,15 +205,112 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     return '$_imageBaseUrl/$imageUrl';
   }
 
+  // --- NEW: DYNAMIC TEXT HELPER ---
+  String _getRegrowthDescription(int percentage) {
+    if (percentage >= 85) {
+      return "Stage 1: Excellent Potential. Your hair follicles are highly active. Minimal intervention is required to maintain density and health.";
+    } else if (percentage >= 70) {
+      return "Stage 2: High Potential. Male pattern hair fall is in early stages. Hormonal factors are affecting follicles, but most are still active and recoverable.";
+    } else if (percentage >= 50) {
+      return "Stage 3: Moderate Potential. Visible thinning detected. Some follicles are shrinking due to hormonal effects. Immediate action is recommended to stop further loss.";
+    } else if (percentage >= 30) {
+      return "Stage 4: Lower Potential. Advanced thinning detected. Follicles are significantly miniaturized. Intensive treatment is needed to support existing hair.";
+    } else {
+      return "Stage 5: Low Potential. Significant hair loss detected. Focus should be on maintenance and scalp health to prevent further recession.";
+    }
+  }
+
   // --- MAIN BUILD METHOD ---
   @override
   Widget build(BuildContext context) {
+    // ---------------------------------------------------------
+    // 1. CHECK IF ANALYSIS FAILED (Invalid Images)
+    // ---------------------------------------------------------
+    if (widget.assessmentReport.isSuccess == false) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.close, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          title: const Text(
+            "Analysis Failed",
+            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.broken_image_outlined,
+                      size: 60, color: Colors.red),
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  "Could Not Analyze Images",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2D2D2D),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  widget.assessmentReport.failureReason.isNotEmpty
+                      ? widget.assessmentReport.failureReason
+                      : "We could not detect clear skin or scalp details. Please retake the photos ensuring good lighting and focus.",
+                  style: const TextStyle(fontSize: 15, color: Colors.black54),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2D2D2D),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      "Try Again",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    // ---------------------------------------------------------
+    // 2. SHOW REPORT IF SUCCESSFUL
+    // ---------------------------------------------------------
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        // --- MODIFIED: "X" (Close) Button ---
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
           onPressed: () =>
@@ -330,7 +324,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
           ),
         ),
       ),
-      // --- MODIFIED: Removed bottomNavigationBar ---
       body: SingleChildScrollView(
         controller: _scrollController,
         child: Padding(
@@ -346,23 +339,16 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
               const SizedBox(height: 24),
               _buildSkinRootCausesSection(),
               const SizedBox(height: 24),
-              if (widget.assessmentReport.recommendedSkinKit.isNotEmpty)
-                Column(
-                  children: [
-                    _buildSkinKitSection(),
-                    const SizedBox(height: 24),
-                  ],
-                ),
+              _buildSkinKitSection(),
+              const SizedBox(height: 24),
               _buildRecommendedProductsSection(),
               const SizedBox(height: 24),
               _buildAddOnsSection(),
               const SizedBox(height: 24),
               _buildResultsTimelineSection(),
               const SizedBox(height: 24),
-
-              // --- NEW: Added bottom actions here ---
               _buildBottomActions(),
-              const SizedBox(height: 20), // Padding at the very bottom
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -370,7 +356,7 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     );
   }
 
-  // --- WIDGET 1 (Unchanged) ---
+  // --- WIDGET 1: Diagnosis Section (Dynamic Text Added) ---
   Widget _buildDiagnosisSection() {
     return Container(
       width: double.infinity,
@@ -479,6 +465,7 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
             ),
           ),
           const SizedBox(height: 16),
+          // --- UPDATED DYNAMIC CONTAINER ---
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -487,7 +474,8 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              "Stage 2 male pattern hair fall is caused by internal hormone attacking your hair follicles. At your Stage, most hair follicles are still active.",
+              // Call the helper function here
+              _getRegrowthDescription(widget.assessmentReport.regrowthPossibility),
               style: TextStyle(
                 color: brandPrimary,
                 height: 1.4,
@@ -571,11 +559,10 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                           size: 28,
                         ),
                         const SizedBox(height: 12),
-                        // --- START FIX ---
                         SizedBox(
-                          height: 40.0, // Forces a fixed height for 2 lines
+                          height: 40.0,
                           child: Align(
-                            alignment: Alignment.center, // Vertically centers 1-line text
+                            alignment: Alignment.center,
                             child: Text(
                               cause.name,
                               style: TextStyle(
@@ -590,7 +577,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                             ),
                           ),
                         ),
-                        // --- END FIX ---
                       ],
                     ),
                   ),
@@ -620,7 +606,7 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     );
   }
 
-  // --- WIDGET 3: *** MODIFIED AS REQUESTED *** ---
+  // --- WIDGET 3: Hair Kit Section (Unchanged) ---
   Widget _buildHairKitSection() {
     return Container(
       width: double.infinity,
@@ -650,7 +636,7 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
           ),
           const SizedBox(height: 16),
           FutureBuilder<List<ProductModel>>(
-            future: _productsFuture, // Use the single, correct future
+            future: _productsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -662,56 +648,20 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                 return const Center(child: Text("No products found."));
               }
 
-              // **************************************************
-              // ** START: MODIFIED LOGIC (Category Filter Fix) **
-              // **************************************************
-              const hairCategories = ['hair', 'scalp'];
-
-              // Filter for 'Hair' products
-              final allApiHairProducts = snapshot.data!
-                  .where((p) {
-                final categoryLower = p.category.toLowerCase();
-                return hairCategories.any((cat) => categoryLower.contains(cat));
-              })
+              final hairProducts = snapshot.data!
+                  .where((p) => p.title.toLowerCase().contains("hair"))
+                  .take(4)
                   .toList();
-              // **************************************************
-              // ** END: MODIFIED LOGIC (Category Filter Fix) **
-              // **************************************************
 
-
-              if (allApiHairProducts.isEmpty) {
+              if (hairProducts.isEmpty) {
                 return const Center(child: Text("No hair products found."));
               }
 
-              // 1. Determine product count based on regrowth possibility
-              int numProductsToShow;
-              int possibility = widget.assessmentReport.regrowthPossibility;
-
-              if (possibility <= 25) {
-                numProductsToShow = 5; // Intensive (max)
-              } else if (possibility <= 50) {
-                numProductsToShow = 4;
-              } else if (possibility <= 75) {
-                numProductsToShow = 3;
-              } else {
-                numProductsToShow = 2; // Maintenance (min)
-              }
-
-              // 2. Apply clamps
-              // Clamp to the user's required range (2-5)
-              numProductsToShow = numProductsToShow.clamp(2, 5);
-              // Clamp to the number of products we actually have
-              numProductsToShow =
-                  numProductsToShow.clamp(0, allApiHairProducts.length);
-
-              final List<ProductModel> productsToShow =
-              allApiHairProducts.take(numProductsToShow).toList();
-
               return Column(
-                children: productsToShow.map((product) {
+                children: hairProducts.map((product) {
                   final currentQty =
                       _selectedProductQuantities[product.productId] ?? 0;
-                  int suggestedQty = _getSuggestedQuantity(product);
+                  final suggestedQty = _getSuggestedQuantity(product);
 
                   return _buildProductRowCard(
                     product,
@@ -799,11 +749,10 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                         ),
 
                         const SizedBox(height: 12),
-                        // --- START FIX ---
                         SizedBox(
-                          height: 40.0, // Forces a fixed height for 2 lines
+                          height: 40.0,
                           child: Align(
-                            alignment: Alignment.center, // Vertically centers 1-line text
+                            alignment: Alignment.center,
                             child: Text(
                               cause.name,
                               style: TextStyle(
@@ -846,7 +795,7 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     );
   }
 
-  // --- WIDGET 5: *** MODIFIED (Proactively) *** ---
+  // --- WIDGET 5: Skin Kit Section (Unchanged) ---
   Widget _buildSkinKitSection() {
     return Container(
       width: double.infinity,
@@ -876,7 +825,7 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
           ),
           const SizedBox(height: 16),
           FutureBuilder<List<ProductModel>>(
-            future: _productsFuture, // Use the single, correct future
+            future: _productsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
@@ -888,55 +837,23 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                 return const Center(child: Text("No products found."));
               }
 
-              // **************************************************
-              // ** START: MODIFIED LOGIC (Category Filter Fix) **
-              // **************************************************
-              const skinCategories = ['skin', 'toner', 'face'];
-
-              // Filter for 'Skin' products
-              final allApiSkinProducts = snapshot.data!
+              final skinProducts = snapshot.data!
                   .where((p) {
-                final categoryLower = p.category.toLowerCase();
-                return skinCategories.any((cat) => categoryLower.contains(cat));
+                final t = p.title.toLowerCase();
+                return t.contains("face") || t.contains("skin");
               })
+                  .take(5)
                   .toList();
 
-
-
-              if (allApiSkinProducts.isEmpty) {
+              if (skinProducts.isEmpty) {
                 return const Center(child: Text("No skin products found."));
               }
 
-              // 1. Determine product count based on skin diagnosis
-              int numProductsToShow;
-              String diagnosis =
-              widget.assessmentReport.skinDiagnosis.toLowerCase();
-
-              if (diagnosis.contains('severe')) {
-                numProductsToShow = 5; // Max
-              } else if (diagnosis.contains('moderate')) {
-                numProductsToShow = 4;
-              } else if (diagnosis.contains('mild')) {
-                numProductsToShow = 3;
-              } else {
-                numProductsToShow = 2; // Default (min)
-              }
-
-              // 2. Apply clamps
-              // Clamp to the user's required range (2-5)
-              numProductsToShow = numProductsToShow.clamp(2, 5);
-              // Clamp to the number of products we actually have
-              numProductsToShow =
-                  numProductsToShow.clamp(0, allApiSkinProducts.length);
-
-              final List<ProductModel> productsToShow =
-              allApiSkinProducts.take(numProductsToShow).toList();
-
               return Column(
-                children: productsToShow.map((product) {
+                children: skinProducts.map((product) {
                   final currentQty =
                       _selectedProductQuantities[product.productId] ?? 0;
-                  int suggestedQty = _getSuggestedQuantity(product);
+                  final suggestedQty = _getSuggestedQuantity(product);
 
                   return _buildProductRowCard(
                     product,
@@ -954,13 +871,13 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     );
   }
 
-  // --- WIDGET 6 (Unchanged) ---
+  // --- WIDGET 6: Recommended Products (Unchanged) ---
   Widget _buildRecommendedProductsSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Most Popular", // <-- TITLE CHANGED
+          "Recommended For You",
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
@@ -969,13 +886,14 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
         ),
         const SizedBox(height: 16),
         FutureBuilder<List<ProductModel>>(
-          future: _productsFuture, // This already fetches ALL products
+          future: _productsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Container(
-                height: 220,
-                child: const Center(child: CircularProgressIndicator()),
-              );
+                  height: 220,
+                  child: const Center(child: CircularProgressIndicator()
+
+              ));
             }
             if (snapshot.hasError) {
               return Center(
@@ -985,47 +903,27 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
               return const Center(child: Text("No products found."));
             }
 
-            // --- START: Logic from MostPopular widget ---
             final allProducts = snapshot.data!;
 
-            // Filter products that are marked as popular
-            final popularProducts = allProducts
-                .where((product) => product.isPopular == true)
-                .toList();
-
-            final List<ProductModel> productsToShow;
-
-            // If no products are marked as popular, show middle 6 products
-            if (popularProducts.isEmpty && allProducts.isNotEmpty) {
-              final startIndex =
-              allProducts.length > 6 ? (allProducts.length ~/ 2) - 3 : 0;
-              final endIndex = startIndex + 6;
-              productsToShow = allProducts
-                  .skip(startIndex)
-                  .take(endIndex - startIndex)
-                  .toList();
-            } else {
-              // Show popular products, up to 6
-              productsToShow = popularProducts.take(6).toList();
-            }
+            final productsToShow = allProducts.where((p) {
+              final t = p.title.toLowerCase();
+              return t.contains('hair') || t.contains('face');
+            }).take(5).toList();
 
             if (productsToShow.isEmpty) {
               return Container(
                 height: 220,
-                child:
-                const Center(child: Text("No popular products available.")),
+                child: const Center(child: Text("No matching products found.")),
               );
             }
-            // --- END: Logic from MostPopular widget ---
 
             return Container(
               height: 220,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
-                itemCount: productsToShow.length, // <-- Use new filtered list
+                itemCount: productsToShow.length,
                 itemBuilder: (context, index) {
-                  final product =
-                  productsToShow[index]; // <-- Use new filtered list
+                  final product = productsToShow[index];
                   final imageUrl = _buildProductImageUrl(product);
 
                   return Container(
@@ -1048,7 +946,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                             width: double.infinity,
                             fit: BoxFit.cover,
                             errorBuilder: (c, e, s) {
-                              // Removed the print statement to reduce log noise
                               return Container(
                                 height: 120,
                                 width: 160,
@@ -1146,7 +1043,7 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                     width: 600,
                     child: Container(
                       height: 2,
-                      color: brandPrimary, // <-- Fixed color
+                      color: brandPrimary,
                     ),
                   ),
                   Row(
@@ -1187,11 +1084,10 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     );
   }
 
-  // --- NEW: Bottom Actions Widget (Unchanged) ---
+  // --- Bottom Actions Widget (Unchanged) ---
   Widget _buildBottomActions() {
     return Column(
       children: [
-        // 1. Price Section
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(20),
@@ -1246,10 +1142,8 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
         ),
         const SizedBox(height: 24),
 
-        // 2. Button Row
         Row(
           children: [
-            // Save for Later Button
             Expanded(
               child: OutlinedButton(
                 onPressed: _isSaving ? null : _saveKitForLater,
@@ -1281,7 +1175,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
               ),
             ),
             const SizedBox(width: 12),
-            // Buy Now Button
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
@@ -1321,7 +1214,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
 
   // --- HELPER WIDGETS ---
 
-  // --- HELPER: UPDATED for Quantity (Unchanged) ---
   Widget _buildProductRowCard(
       ProductModel product,
       int quantity,
@@ -1355,14 +1247,12 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
       ),
       child: Row(
         children: [
-          // Product Image
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.network(imageUrl,
                 width: 60,
                 height: 60,
                 fit: BoxFit.cover, errorBuilder: (c, e, s) {
-                  // I also removed the print from here
                   return Container(
                     width: 60,
                     height: 60,
@@ -1374,7 +1264,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
           ),
           const SizedBox(width: 12),
 
-          // Product Details
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1391,7 +1280,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                 if (product.category.isNotEmpty)
                   _buildTagChip(product.category),
                 const SizedBox(height: 4),
-                // Suggested Quantity
                 Text(
                   "Recommended: $suggestedQty units",
                   style: TextStyle(
@@ -1405,7 +1293,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
           ),
           const SizedBox(width: 12),
 
-          // Price & Button Column
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1430,10 +1317,9 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                 ),
               const SizedBox(height: 8),
 
-              // Quantity Selector
               if (quantity == 0)
                 TextButton(
-                  onPressed: onIncrement, // Adds 1
+                  onPressed: onIncrement,
                   style: TextButton.styleFrom(
                     backgroundColor: brandPrimary,
                     shape: RoundedRectangleBorder(
@@ -1497,9 +1383,7 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     );
   }
 
-  // --- HELPER (Unchanged) ---
   Widget _buildTagChip(String category) {
-    // Use the same list-based logic for consistency
     const hairCategories = ['hair', 'scalp'];
     bool isHair = hairCategories.any((cat) => category.toLowerCase().contains(cat));
 
@@ -1520,7 +1404,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     );
   }
 
-  // --- HELPER (Unchanged) ---
   Widget _buildAddOnCard(RecommendedProduct addon) {
     return Container(
       width: double.infinity,
@@ -1625,7 +1508,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     );
   }
 
-  // --- HELPER (Unchanged) ---
   Widget _buildTimelineNode(IconData icon, String month, String description) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -1673,7 +1555,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     );
   }
 
-  // --- HELPER (Unchanged) ---
   IconData _getAddOnIcon(String addonName) {
     if (addonName.toLowerCase().contains('coach')) return Icons.support_agent;
     if (addonName.toLowerCase().contains('diet')) return Icons.restaurant_menu;
@@ -1682,7 +1563,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     return Icons.card_giftcard;
   }
 
-  // --- HELPER: UPDATED Checkout Dialog (Simpler) ---
   void _showCheckoutDialog(String finalPrice, String mrpPrice, int itemCount) {
     showDialog(
       context: context,
@@ -1753,13 +1633,11 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // 1. Pay Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).pop();
-                      // Navigate to address screen
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2D2D2D),
@@ -1777,7 +1655,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                     ),
                   ),
                 ),
-                // 2. Cancel Button
                 Center(
                   child: TextButton(
                     onPressed: () {

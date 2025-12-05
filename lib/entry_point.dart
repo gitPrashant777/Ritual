@@ -37,6 +37,9 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _loadUserProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<CartService>(context, listen: false).fetchCart();
+    });
   }
 
   Future<void> _loadUserProfile() async {
@@ -84,10 +87,23 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
   }
 
   // Enhanced cart icon
+  // Enhanced cart icon
   Widget _buildCartIcon(bool isActive) {
     return Consumer<CartService>(
       builder: (context, cartService, child) {
-        int cartCount = cartService.itemCount;
+
+        // --- FIX START: Filter Ghost Items for Badge Count ---
+        // We filter the items list to count ONLY valid products
+        final validItems = cartService.items.where((item) {
+          final hasId = item.product.productId != null && item.product.productId!.isNotEmpty;
+          // Check if title is not the default placeholder
+          final isNotDefault = item.product.title != 'Product';
+          return hasId && isNotDefault;
+        });
+
+        int cartCount = validItems.length;
+        // --- FIX END ---
+
         Color iconColor = isActive
             ? const Color(0xFF020953)
             : Theme.of(context).brightness == Brightness.dark
@@ -148,7 +164,6 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
       },
     );
   }
-
   Widget _buildNavIcon(String src, {bool isActive = false}) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     Color iconColor = isActive

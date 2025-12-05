@@ -228,7 +228,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ProfileMenuListTile(
             text: "Wishlist",
             svgSrc: "assets/icons/Wishlist.svg",
-            press: () {},
+           press: () async {
+      // Fetch and navigate to orders screen
+      try {
+      final ordersResponse = await _userApiService.getUserOrders();
+      if (ordersResponse.success) {
+      Navigator.pushNamed(context, wishlistScreenRoute);
+      } else {
+      // Still navigate but show error in orders screen
+      Navigator.pushNamed(context, wishlistScreenRoute);
+      }
+      } catch (e) {
+      Navigator.pushNamed(context, wishlistScreenRoute);
+      }
+      },
           ),
           ProfileMenuListTile(
             text: "Addresses",

@@ -38,7 +38,7 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   void dispose() {
-  //  PaymentService.dispose();
+    //  PaymentService.dispose();
     super.dispose();
   }
 
@@ -50,7 +50,8 @@ class _CartScreenState extends State<CartScreen> {
           content: const Text('Your cart is empty!'),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
         ),
       );
       return;
@@ -66,7 +67,9 @@ class _CartScreenState extends State<CartScreen> {
     };
 
     final totalAmount = cartService.totalPrice;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
 
     showDialog(
       context: context,
@@ -74,7 +77,8 @@ class _CartScreenState extends State<CartScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: isDark ? const Color(0xFF1A1A1A) : Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
           content: Row(
             children: [
               CircularProgressIndicator(
@@ -103,7 +107,8 @@ class _CartScreenState extends State<CartScreen> {
       }
 
       final String razorpayOrderId = orderData['id'];
-      final double serverAmount = (orderData['amount'] as num).toDouble() / 100.0;
+      final double serverAmount = (orderData['amount'] as num).toDouble() /
+          100.0;
       Navigator.of(context).pop();
 
       // PaymentService.startPayment(
@@ -123,94 +128,117 @@ class _CartScreenState extends State<CartScreen> {
           content: Text('Error: ${e.toString()}'),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12)),
         ),
       );
     }
   }
 
   void _showClearCartDialog(BuildContext context, CartService cartService) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: isDark ? const Color(0xFF1A1A1A) : Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        title: Row(
-          children: [
-            const Icon(Icons.warning_amber_rounded, color: Colors.red),
-            const SizedBox(width: 12),
-            Text(
-              'Clear Cart',
+      builder: (dialogContext) =>
+          AlertDialog(
+            backgroundColor: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12)),
+            title: Row(
+              children: [
+                const Icon(Icons.warning_amber_rounded, color: Colors.red),
+                const SizedBox(width: 12),
+                Text(
+                  'Clear Cart',
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black87,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            content: Text(
+              'Are you sure you want to remove all items from cart?',
               style: TextStyle(
-                color: isDark ? Colors.white : Colors.black87,
-                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white70 : Colors.black87,
               ),
             ),
-          ],
-        ),
-        content: Text(
-          'Are you sure you want to remove all items from cart?',
-          style: TextStyle(
-            color: isDark ? Colors.white70 : Colors.black87,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: isDark ? Colors.white70 : Colors.black54,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: isDark ? Colors.white70 : Colors.black54,
+                  ),
+                ),
               ),
-            ),
-          ),
-          TextButton(
-            onPressed: () async {
-              final bool success = await cartService.clearCart();
-              Navigator.pop(dialogContext);
+              TextButton(
+                onPressed: () async {
+                  final bool success = await cartService.clearCart();
+                  Navigator.pop(dialogContext);
 
-              if (success && mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Cart cleared successfully'),
-                    backgroundColor: const Color(0xFF1A1A2E),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                );
-              } else if (!success && mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Failed to clear cart'),
-                    backgroundColor: Colors.red,
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                );
-              }
-            },
-            child: const Text('Clear', style: TextStyle(color: Colors.red)),
+                  if (success && mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Cart cleared successfully'),
+                        backgroundColor: const Color(0xFF1A1A2E),
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                    );
+                  } else if (!success && mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Failed to clear cart'),
+                        backgroundColor: Colors.red,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                    );
+                  }
+                },
+                child: const Text('Clear', style: TextStyle(color: Colors.red)),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = Theme
+        .of(context)
+        .brightness == Brightness.dark;
 
     return Consumer<CartService>(
       builder: (context, cartService, child) {
-        final cartItems = cartService.items;
+        final allItems = cartService.items;
         final isLoading = cartService.isLoading;
 
+        // --- FIX START: Filter out "Ghost" Items ---
+        // We only keep items that have a valid ID and a price/title
+        final validCartItems = allItems.where((item) {
+          final hasId = item.product.productId != null &&
+              item.product.productId!.isNotEmpty;
+          // You can also check if title is not the default "Product" if your model defaults to that
+          final isNotDefault = item.product.title != 'Product';
+          return hasId && isNotDefault;
+        }).toList();
+        // --- FIX END ---
+
         return Scaffold(
-          backgroundColor: isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAF9F6),
+          backgroundColor: isDark ? const Color(0xFF0F0F0F) : const Color(
+              0xFFFAF9F6),
           appBar: AppBar(
-            backgroundColor: isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAF9F6),
+            backgroundColor: isDark ? const Color(0xFF0F0F0F) : const Color(
+                0xFFFAF9F6),
             elevation: 0,
             leading: IconButton(
               icon: Icon(
@@ -220,8 +248,9 @@ class _CartScreenState extends State<CartScreen> {
               ),
               onPressed: () => Navigator.pop(context),
             ),
+            // Use validCartItems.length instead of cartItems.length
             title: Text(
-              'Cart (${cartItems.length})',
+              'Cart (${validCartItems.length})',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.w300,
@@ -231,7 +260,7 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ),
             actions: [
-              if (cartItems.isNotEmpty)
+              if (validCartItems.isNotEmpty)
                 IconButton(
                   onPressed: () => _showClearCartDialog(context, cartService),
                   icon: Icon(
@@ -242,9 +271,9 @@ class _CartScreenState extends State<CartScreen> {
               const SizedBox(width: 8),
             ],
           ),
-          body: isLoading && cartItems.isEmpty
+          body: isLoading && validCartItems.isEmpty
               ? const Center(child: CircularProgressIndicator())
-              : cartItems.isEmpty
+              : validCartItems.isEmpty
               ? Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -279,11 +308,15 @@ class _CartScreenState extends State<CartScreen> {
             children: [
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 24),
-                  itemCount: cartItems.length,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 24),
+                  // Use validCartItems count
+                  itemCount: validCartItems.length,
                   itemBuilder: (context, index) {
-                    final cartItem = cartItems[index];
+                    // Get item from valid list
+                    final cartItem = validCartItems[index];
                     final String? productId = cartItem.product.productId;
+
                     return Container(
                       margin: const EdgeInsets.only(bottom: 16),
                       padding: const EdgeInsets.all(16),
@@ -297,12 +330,15 @@ class _CartScreenState extends State<CartScreen> {
                       child: Row(
                         children: [
                           // Product Image
-                          if (cartItem.product.images.isNotEmpty && cartItem.product.images.first.isNotEmpty)
+                          if (cartItem.product.images.isNotEmpty &&
+                              cartItem.product.images.first.isNotEmpty)
                             Container(
                               width: 80,
                               height: 80,
                               decoration: BoxDecoration(
-                                color: isDark ? const Color(0xFF0F0F0F) : const Color(0xFFE8E6E3),
+                                color: isDark
+                                    ? const Color(0xFF0F0F0F)
+                                    : const Color(0xFFE8E6E3),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: ClipRRect(
@@ -321,12 +357,14 @@ class _CartScreenState extends State<CartScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  (cartItem.product.brandName ?? "BAETOWN").toUpperCase(),
+                                  (cartItem.product.brandName ?? "BAETOWN")
+                                      .toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 10,
                                     fontWeight: FontWeight.w600,
                                     letterSpacing: 1.5,
-                                    color: isDark ? Colors.white60 : Colors.black54,
+                                    color: isDark ? Colors.white60 : Colors
+                                        .black54,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -335,7 +373,8 @@ class _CartScreenState extends State<CartScreen> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w500,
-                                    color: isDark ? Colors.white : Colors.black87,
+                                    color: isDark ? Colors.white : Colors
+                                        .black87,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -345,7 +384,8 @@ class _CartScreenState extends State<CartScreen> {
                                   cartItem.product.description,
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: isDark ? Colors.white54 : Colors.black54,
+                                    color: isDark ? Colors.white54 : Colors
+                                        .black54,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -355,18 +395,22 @@ class _CartScreenState extends State<CartScreen> {
                                   'Category: ${cartItem.product.category}',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: isDark ? Colors.white38 : Colors.black38,
+                                    color: isDark ? Colors.white38 : Colors
+                                        .black38,
                                   ),
                                 ),
                                 const SizedBox(height: 12),
                                 Row(
                                   children: [
                                     Text(
-                                      '₹${cartItem.product.priceAfetDiscount ?? cartItem.product.price}',
+                                      '₹${cartItem.product.priceAfetDiscount ??
+                                          cartItem.product.price}',
                                       style: TextStyle(
                                         fontSize: 18,
                                         fontWeight: FontWeight.w600,
-                                        color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                                        color: isDark
+                                            ? Colors.white
+                                            : const Color(0xFF1A1A2E),
                                       ),
                                     ),
                                     const Spacer(),
@@ -375,75 +419,87 @@ class _CartScreenState extends State<CartScreen> {
                                     Container(
                                       decoration: BoxDecoration(
                                         border: Border.all(
-                                          color: isDark ? Colors.white12 : Colors.black12,
+                                          color: isDark
+                                              ? Colors.white12
+                                              : Colors.black12,
                                         ),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          // --- 2. FIX DECREMENT BUTTON ---
                                           IconButton(
-                                            // Disable if loading or quantity is 1
-                                            onPressed: (isLoading || cartItem.quantity <= 1)
+                                            onPressed: (isLoading ||
+                                                cartItem.quantity <= 1)
                                                 ? null
                                                 : () async {
                                               if (productId != null) {
-                                                await cartService.updateQuantity(
+                                                await cartService
+                                                    .updateQuantity(
                                                   productId: productId,
-                                                  newQuantity: cartItem.quantity - 1,
+                                                  newQuantity: cartItem
+                                                      .quantity - 1,
                                                 );
                                               }
                                             },
-                                            icon: const Icon(Icons.remove, size: 20),
+                                            icon: const Icon(
+                                                Icons.remove, size: 20),
                                             constraints: const BoxConstraints(
                                               minWidth: 32,
                                               minHeight: 32,
                                             ),
                                           ),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12),
                                             child: Text(
                                               '${cartItem.quantity}',
                                               style: TextStyle(
                                                 fontSize: 15,
                                                 fontWeight: FontWeight.w600,
-                                                color: isDark ? Colors.white : Colors.black87,
+                                                color: isDark
+                                                    ? Colors.white
+                                                    : Colors.black87,
                                               ),
                                             ),
                                           ),
-                                          // --- 3. FIX INCREMENT BUTTON ---
                                           IconButton(
-                                            // Disable if loading or at max quantity
-                                            onPressed: (isLoading || cartItem.quantity >= cartItem.product.getMaxAllowedQuantity())
+                                            onPressed: (isLoading ||
+                                                cartItem.quantity >=
+                                                    cartItem.product
+                                                        .getMaxAllowedQuantity())
                                                 ? null
                                                 : () async {
                                               if (productId != null) {
-                                                await cartService.updateQuantity(
+                                                await cartService
+                                                    .updateQuantity(
                                                   productId: productId,
-                                                  newQuantity: cartItem.quantity + 1,
+                                                  newQuantity: cartItem
+                                                      .quantity + 1,
                                                 );
                                               }
                                             },
-                                            icon: const Icon(Icons.add, size: 20),
+                                            icon: const Icon(
+                                                Icons.add, size: 20),
                                             constraints: const BoxConstraints(
                                               minWidth: 32,
                                               minHeight: 32,
                                             ),
                                           ),
-                                          // --- 4. FIX REMOVE BUTTON ---
                                           IconButton(
-                                            // Disable if loading
                                             onPressed: isLoading
                                                 ? null
                                                 : () async {
                                               if (productId != null) {
-                                                await cartService.removeFromCart(
+                                                await cartService
+                                                    .removeFromCart(
                                                   productId: productId,
                                                 );
                                               }
                                             },
-                                            icon: const Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                                            icon: const Icon(
+                                                Icons.delete_outline, size: 20,
+                                                color: Colors.red),
                                             constraints: const BoxConstraints(
                                               minWidth: 32,
                                               minHeight: 32,
@@ -484,7 +540,7 @@ class _CartScreenState extends State<CartScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Total (${cartItems.length} items)',
+                            'Total (${validCartItems.length} items)',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -496,7 +552,8 @@ class _CartScreenState extends State<CartScreen> {
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.w600,
-                              color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                              color: isDark ? Colors.white : const Color(
+                                  0xFF1A1A2E),
                             ),
                           ),
                         ],
@@ -508,8 +565,12 @@ class _CartScreenState extends State<CartScreen> {
                         child: ElevatedButton(
                           onPressed: isLoading ? null : _processPayment,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isDark ? Colors.white : const Color(0xFF1A1A2E),
-                            foregroundColor: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                            backgroundColor: isDark
+                                ? Colors.white
+                                : const Color(0xFF1A1A2E),
+                            foregroundColor: isDark
+                                ? const Color(0xFF1A1A2E)
+                                : Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4),
                             ),
@@ -520,7 +581,8 @@ class _CartScreenState extends State<CartScreen> {
                             height: 20,
                             width: 20,
                             child: CircularProgressIndicator(
-                              color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                              color: isDark ? const Color(0xFF1A1A2E) : Colors
+                                  .white,
                               strokeWidth: 2,
                             ),
                           )

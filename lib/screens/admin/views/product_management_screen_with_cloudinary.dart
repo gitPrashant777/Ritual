@@ -224,6 +224,17 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
         print('🚀 Step 1: Uploading images to Cloudinary...');
         final cloudinaryUrls = await _uploadImagesToCloudinary();
 
+        // Replace local file paths with Cloudinary URLs for UI display
+        for (int i = 0; i < _selectedImages.length; i++) {
+          if (!_selectedImages[i].startsWith('http')) {
+            if (cloudinaryUrls.isNotEmpty) {
+              _selectedImages[i] = cloudinaryUrls.removeAt(0);
+            }
+          }
+        }
+        setState(() {});
+
+
         // 2. Combine existing images with newly uploaded ones
         List<String> allImageUrls = [];
 
@@ -245,10 +256,8 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
         // --- FIX: Convert Image URLs to Objects for Backend Schema ---
         // Most MERN backends fail with 500 if 'images' is just an array of strings.
         // We map them to { public_id, url } objects.
-        final formattedImages = allImageUrls.map((url) => {
-          'public_id': 'manual_${DateTime.now().millisecondsSinceEpoch}',
-          'url': url
-        }).toList();
+        final formattedImages = allImageUrls;
+
 
         print('📷 Formatted images for backend: $formattedImages');
 
@@ -271,7 +280,7 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
           'price': double.parse(_priceController.text),
           'stock': int.parse(_stockController.text),
           'maxOrderQuantity': int.parse(_maxOrderController.text),
-          'images': formattedImages, // Using the Object structure
+          'images': allImageUrls, // Using the Object structure
           'isOutOfStock': _isOutOfStock,
 
           // New product flags
@@ -479,17 +488,17 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
         actions: [
 
 
-            TextButton(
-              onPressed: _saveProduct,
-              child: const Text(
-                'Save',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+          TextButton(
+            onPressed: _saveProduct,
+            child: const Text(
+              'Save',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
               ),
             ),
+          ),
         ],
       ),
       body: Form(

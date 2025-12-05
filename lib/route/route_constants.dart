@@ -8,6 +8,8 @@ const String signUpVerificationScreenRoute = "signup_verification";
 const String passwordRecoveryScreenRoute = "password_recovery";
 const String verificationMethodScreenRoute = "verification_method";
 const String otpScreenRoute = "otp";
+const String wishlistScreenRoute = "wishlist_screen";
+// In your routes map:
 const String newPasswordScreenRoute = "new_password";
 const String doneResetPasswordScreenRoute = "done_reset_password";
 const String termsOfServicesScreenRoute = "terms_of_services";

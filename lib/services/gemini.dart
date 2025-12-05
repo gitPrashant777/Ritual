@@ -15,9 +15,6 @@ class GeminiService {
   // !! WARNING !! You must delete this key and use dotenv
   // This key is visible to everyone.
   final apiKey = "AIzaSyAjz3riodS3YMgUNYPyrWZdx1TNNyNxAXw";
-  //
-  // --- This is how you SHOULD load the key ---
-  // final apiKey = dotenv.env['GEMINI_API_KEY'];
 
   // --- THIS IS THE CORE FUNCTION ---
   Future<AssessmentReport> getAssessmentFromGemini(OnboardingData data) async {
@@ -32,7 +29,6 @@ class GeminiService {
     final scalpBase64 = base64Encode(scalpImageBytes);
 
     // 3. Build the HTTP Request Body
-    // This matches your 'gemini-vision' structure
     final requestBody = {
       'contents': [
         {
@@ -48,13 +44,13 @@ class GeminiService {
         },
       ],
       'generationConfig': {
-        'temperature': 0.1,
+        'temperature': 0.4, // Increased to 0.4 for more dynamic/specific output
         'topK': 40,
         'topP': 0.95,
         'maxOutputTokens': 8192,
         'responseMimeType': "application/json", // Force JSON output
       },
-      // Safety Settings from your example
+      // Safety Settings
       'safetySettings': [
         {'category': 'HARM_CATEGORY_HARASSMENT', 'threshold': 'BLOCK_MEDIUM_AND_ABOVE'},
         {'category': 'HARM_CATEGORY_HATE_SPEECH', 'threshold': 'BLOCK_MEDIUM_AND_ABOVE'},
@@ -65,8 +61,10 @@ class GeminiService {
 
     // 4. Call the API
     try {
+      // KEEPING YOUR EXACT MODEL: gemini-2.0-flash
       final url = Uri.parse(
           baseUrl + "gemini-2.0-flash:generateContent?key=$apiKey");
+
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
@@ -90,6 +88,7 @@ class GeminiService {
           final jsonMap = json.decode(jsonString) as Map<String, dynamic>;
 
           // 7. Use the 'fromJson' constructor to create your object
+          // The AssessmentReport.fromJson (if updated) will handle isValidImage check
           return AssessmentReport.fromJson(jsonMap);
 
         } else {
@@ -116,7 +115,6 @@ class GeminiService {
   }
 
   // --- HELPER: Builds the text prompt for the AI ---
-  // (This function is unchanged)
   String _buildPrompt(OnboardingData data) {
     // Convert the answers Map into a readable string
     final answersString = data.answers.entries.map((entry) {
@@ -125,12 +123,10 @@ class GeminiService {
       return "Q: $question\nA: $answer";
     }).join("\n\n");
 
-    // This is the "System Prompt" that tells the AI what to do
+    // Updated Prompt with IMAGE VALIDATION LOGIC
     return """
     You are an expert AI dermatologist and trichologist for a health brand.
     A user has provided their personal details, images, and answers to a health questionnaire.
-
-    Your task is to analyze all this data and generate a complete JSON response for their "Assessment Report".
     
     The user's images (skin and scalp) are provided as image inputs.
     
@@ -144,11 +140,33 @@ class GeminiService {
     
     ---
     
-    INSTRUCTIONS:
-    Based on *all* the data, generate a JSON object that strictly follows the structure of the 'AssessmentReport' model.
-    The JSON structure *must* be:
+    **STEP 1: IMAGE VALIDATION (CRITICAL)**
+    Analyze the two images provided:
+    1. **Image 1 (Skin):** Must be a human face or skin close-up. If it is an object, animal, blurry, or black screen -> INVALID.
+    2. **Image 2 (Scalp):** Must be a human scalp, hair parting, or hair close-up. If it is an object, animal, blurry, or black screen -> INVALID.
     
+    **IF IMAGES ARE INVALID:**
+    Return ONLY this JSON:
     {
+      "isValidImage": false,
+      "validationError": "We could not detect a clear skin or scalp image. Please upload correct close-up photos and try again."
+    }
+    
+    **IF IMAGES ARE VALID:**
+    Proceed to Step 2.
+    
+    ---
+    
+    **STEP 2: GENERATE REPORT**
+    Analyze the specific visual symptoms in the images combined with the questionnaire.
+    - **Diagnosis:** Be specific based on the visual evidence (e.g., "Androgenic Alopecia", "Cystic Acne").
+    - **Products:** Recommend 2-3 realistic products for each kit. Do not use placeholders.
+    - **Root Causes:** Deduce causes from the answers + visuals.
+    
+    Return this JSON structure for a SUCCESSFUL analysis:
+    {
+      "isValidImage": true,
+      "validationError": null,
       "hairDiagnosis": "string",
       "hairTimeline": "string",
       "regrowthPossibility": 100,
@@ -202,14 +220,9 @@ class GeminiService {
       ]
     }
     
-    ---
-    
     RULES:
-    1.  **Analyze Deeply:** Use the images and answers to generate *accurate* diagnoses and root causes.
-    2.  **Product Recommendation:** Recommend 2-3 products for *each* kit (hair and skin).
-    3.  **Root Causes:** Provide 2-3 root causes for *each* category (hair and skin).
-    4.  **Icon Names:** For "iconName", provide a valid Flutter `Icons` name (e.g., "health_and_safety", "waves", "local_fire_department").
-    5.  **JSON ONLY:** Your entire response must be *only* the JSON object. Do not include "```json" or any other text.
+    1. Output ONLY JSON. No markdown formatting.
+    2. For "iconName", use valid Flutter Icons names (e.g., "local_fire_department", "opacity").
     """;
   }
 }

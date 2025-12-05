@@ -41,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // ----------------------------------------------------
         // ✅ HARD-CODED ADMIN LOGIN CHECK (NO API CALL)
         // ----------------------------------------------------
-        if (email == "adminsaksham@gmail.com" && password == "Saksham599@") {
+        if (email == "admin77saksham@gmail.com" && password == "Saksham7599@") {
           Map<String, dynamic> adminUser = {
             "email": email,
             "role": "admin",

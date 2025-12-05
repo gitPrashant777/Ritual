@@ -93,7 +93,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'BAETOWN Jewelry - Premium Jewelry Collection',
+      title: 'Ritual',
 
       themeMode: ThemeMode.light,
       theme: AppTheme.lightTheme(context),

@@ -120,52 +120,64 @@ class CartApiService {
 }
 
 class WishlistApiService {
-  // ... (This class is unchanged) ...
   final ApiService _apiService;
   WishlistApiService(this._apiService);
-
-  // Get user's wishlist
+// --- FIX START: Robust Get Wishlist (Added 'bookmarks' check) ---
   Future<List<Map<String, dynamic>>> getWishlist() async {
     try {
-      final response = await _apiService.get<Map<String, dynamic>>(
+      final response = await _apiService.get<dynamic>(
         ApiConfig.wishlistEndpoint,
         requiresAuth: true,
       );
 
       if (response.success && response.data != null) {
-        if (response.data!['items'] is List) {
-          return List<Map<String, dynamic>>.from(response.data!['items']);
+        final data = response.data;
+        print("📦 Wishlist API Data: $data");
+
+        // Case A: The response IS the list
+        if (data is List) {
+          return List<Map<String, dynamic>>.from(data);
         }
-        if (response.data!['wishlist'] is List) {
-          return List<Map<String, dynamic>>.from(response.data!['wishlist']);
+
+        // Case B: The response is a Map
+        if (data is Map<String, dynamic>) {
+          // --- THIS WAS MISSING ---
+          if (data['bookmarks'] is List) {
+            return List<Map<String, dynamic>>.from(data['bookmarks']);
+          }
+          // ------------------------
+
+          if (data['wishlist'] is List) {
+            return List<Map<String, dynamic>>.from(data['wishlist']);
+          }
+          if (data['items'] is List) {
+            return List<Map<String, dynamic>>.from(data['items']);
+          }
+          if (data['products'] is List) {
+            return List<Map<String, dynamic>>.from(data['products']);
+          }
         }
+
         return [];
       }
-      print('Failed to get wishlist: ${response.error}');
       return [];
     } catch (e) {
       print('Error getting wishlist: $e');
       return [];
     }
   }
-
   // Add item to wishlist
   Future<Map<String, dynamic>?> addToWishlist(String productId) async {
     try {
-      final wishlistData = {
-        'productId': productId,
-      };
-
+      final wishlistData = {'productId': productId};
       final response = await _apiService.post<Map<String, dynamic>>(
         ApiConfig.addProductToWishlistEndpoint,
         body: wishlistData,
         requiresAuth: true,
       );
-
       if (response.success && response.data != null) {
         return response.data!;
       }
-      print('Failed to add to wishlist: ${response.error}');
       return null;
     } catch (e) {
       print('Error adding to wishlist: $e');
@@ -177,7 +189,6 @@ class WishlistApiService {
   Future<bool> removeFromWishlist(String productId) async {
     try {
       final endpoint = ApiConfig.deleteWishlistProductEndpoint.replaceFirst('{productId}', productId);
-
       final response = await _apiService.delete<Map<String, dynamic>>(
         endpoint,
         requiresAuth: true,
@@ -189,28 +200,26 @@ class WishlistApiService {
     }
   }
 
-  // Check if item is in wishlist
+  // --- FIX START: Update isInWishlist to match robustness ---
   Future<bool> isInWishlist(String productId) async {
     try {
-      final response = await _apiService.get<Map<String, dynamic>>(
-        ApiConfig.wishlistEndpoint,
-        requiresAuth: true,
-      );
-      if (response.success && response.data != null) {
-        final List<dynamic> wishlist = response.data!['wishlist'] ?? response.data!['items'] ?? [];
-        return wishlist.any((item) {
-          if (item is Map<String, dynamic>) {
-            return item['productId'] == productId || item['_id'] == productId || (item['product'] is Map && item['product']['_id'] == productId);
-          }
-          return false;
-        });
-      }
-      return false;
+      final items = await getWishlist(); // Reuse the robust logic above
+
+      return items.any((item) {
+        // Check standard ID locations
+        final String? id = item['productId'] ?? item['_id'];
+
+        // Check nested product object
+        final String? nestedId = (item['product'] is Map) ? item['product']['_id'] : null;
+
+        return id == productId || nestedId == productId;
+      });
     } catch (e) {
       print('Error checking wishlist: $e');
       return false;
     }
   }
+  // --- FIX END ---
 
   // Move item from wishlist to cart
   Future<Map<String, dynamic>?> moveToCart({
@@ -232,7 +241,6 @@ class WishlistApiService {
       if (response.success && response.data != null) {
         return response.data!;
       }
-      print('Failed to move to cart: ${response.error}');
       return null;
     } catch (e) {
       print('Error moving to cart: $e');

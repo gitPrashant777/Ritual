@@ -1,9 +1,8 @@
 // lib/models/assessment_report.dart
 import 'package:flutter/material.dart';
 
-// Helper function to map Icon names (strings) from Gemini to real Flutter Icons
+// Helper function to map Icon names
 IconData getIconData(String? iconName) {
-  // A map of common icons you use in your app
   const Map<String, IconData> iconMap = {
     "health_and_safety": Icons.health_and_safety,
     "waves": Icons.waves,
@@ -13,9 +12,8 @@ IconData getIconData(String? iconName) {
     "sentiment_dissatisfied": Icons.sentiment_dissatisfied_outlined,
     "opacity": Icons.opacity_outlined,
     "highlight_off": Icons.highlight_off,
-    "default": Icons.help_outline, // Added a default
+    "default": Icons.help_outline,
   };
-  // Use a default icon if the name is null or not in the map
   return iconMap[iconName?.toLowerCase()] ?? Icons.help_outline;
 }
 
@@ -36,11 +34,10 @@ class RecommendedProduct {
     required this.imageUrl,
   });
 
-  // --- UPDATED: Safer 'fromJson' ---
   factory RecommendedProduct.fromJson(Map<String, dynamic> json) {
     return RecommendedProduct(
-      name: json['name'] as String? ?? 'Unnamed Product', // Default name
-      tag: json['tag'] as String? ?? '', // Default to empty tag
+      name: json['name'] as String? ?? 'Unnamed Product',
+      tag: json['tag'] as String? ?? '',
       description: json['description'] as String? ?? 'No description available.',
       price: json['price'] as String? ?? '0',
       discountedPrice: json['discountedPrice'] as String? ?? '0',
@@ -60,18 +57,21 @@ class RootCause {
     required this.description,
   });
 
-  // --- UPDATED: Safer 'fromJson' ---
   factory RootCause.fromJson(Map<String, dynamic> json) {
     return RootCause(
       name: json['name'] as String? ?? 'Unknown Cause',
-      icon: getIconData(json['iconName'] as String?), // Use safer icon getter
+      icon: getIconData(json['iconName'] as String?),
       description: json['description'] as String? ?? 'No details available.',
     );
   }
 }
 
 class AssessmentReport {
-  // (Fields remain the same)
+  // --- NEW: Validation Fields ---
+  final bool isSuccess;
+  final String failureReason;
+
+  // Existing Fields
   final String hairDiagnosis;
   final String hairTimeline;
   final int regrowthPossibility;
@@ -86,6 +86,8 @@ class AssessmentReport {
   final String discountedTotalPrice;
 
   AssessmentReport({
+    this.isSuccess = true, // Default to true for backward compatibility
+    this.failureReason = '',
     required this.hairDiagnosis,
     required this.hairTimeline,
     required this.regrowthPossibility,
@@ -100,40 +102,75 @@ class AssessmentReport {
     required this.discountedTotalPrice,
   });
 
-  // --- UPDATED: Safer 'fromJson' ---
+  // --- NEW: Factory for Failure State ---
+  factory AssessmentReport.failure(String reason) {
+    return AssessmentReport(
+      isSuccess: false,
+      failureReason: reason,
+      // Provide empty defaults so the UI doesn't crash before checking isSuccess
+      hairDiagnosis: '', hairTimeline: '', regrowthPossibility: 0,
+      hairRootCauses: [], recommendedHairKit: [],
+      skinDiagnosis: '', skinTimeline: '', skinRootCauses: [], recommendedSkinKit: [],
+      freeAddOns: [], totalPrice: '', discountedTotalPrice: '',
+    );
+  }
+
   factory AssessmentReport.fromJson(Map<String, dynamic> json) {
-    // Helper to safely parse lists (handles null or empty lists)
-    List<T> parseList<T>(String key, T Function(Map<String, dynamic>) fromJson) {
-      final list = json[key] as List<dynamic>?; // Check for null list
-      if (list == null) {
-        return []; // Return an empty list if key is missing
-      }
-      return list
-          .map((item) => fromJson(item as Map<String, dynamic>))
-          .toList();
+    // 1. CHECK FOR VALIDATION FAILURE FROM AI
+    if (json['isValidImage'] == false) {
+      return AssessmentReport.failure(
+          json['validationError'] ?? "We could not detect a clear skin or scalp image."
+      );
     }
 
+    List<T> parseList<T>(String key, T Function(Map<String, dynamic>) fromJson) {
+      final list = json[key] as List<dynamic>?;
+      if (list == null) return [];
+      return list.map((item) => fromJson(item)).toList();
+    }
+
+    // (Existing parsing logic)
+    final rawHair = parseList('recommendedHairKit', RecommendedProduct.fromJson);
+    final rawSkin = parseList('recommendedSkinKit', RecommendedProduct.fromJson);
+
+    final filteredHair = rawHair.where((product) {
+      final text = (product.name + product.tag + product.description).toLowerCase();
+      return text.contains("hair");
+    }).toList();
+
+    final filteredSkin = rawSkin.where((product) {
+      final text = (product.name + product.tag + product.description).toLowerCase();
+      return text.contains("face");
+    }).toList();
+
+    final defaultHairProducts = [
+      RecommendedProduct(name: "Hair Growth Serum", tag: "hair", description: "Promotes stronger, thicker hair", price: "499", discountedPrice: "399", imageUrl: "https://via.placeholder.com/400x400.png?text=Hair+Serum"),
+      RecommendedProduct(name: "Anti-Hairfall Shampoo", tag: "hair", description: "Reduces hair breakage", price: "299", discountedPrice: "249", imageUrl: "https://via.placeholder.com/400x400.png?text=Hair+Shampoo"),
+    ];
+
+    final defaultSkinProducts = [
+      RecommendedProduct(name: "Face Cleanser", tag: "face", description: "Gentle cleanser for glowing skin", price: "399", discountedPrice: "299", imageUrl: "https://via.placeholder.com/400x400.png?text=Face+Wash"),
+      RecommendedProduct(name: "Vitamin C Serum", tag: "face", description: "Brightens and repairs skin barrier", price: "699", discountedPrice: "499", imageUrl: "https://via.placeholder.com/400x400.png?text=Face+Serum"),
+    ];
+
+    final finalHair = filteredHair.isNotEmpty ? filteredHair : rawHair.isNotEmpty ? rawHair : defaultHairProducts;
+    final finalSkin = filteredSkin.isNotEmpty ? filteredSkin : rawSkin.isNotEmpty ? rawSkin : defaultSkinProducts;
+
     return AssessmentReport(
-      // Hair
-      hairDiagnosis: json['hairDiagnosis'] as String? ?? 'Analysis Incomplete',
-      hairTimeline: json['hairTimeline'] as String? ?? 'N/A',
-      regrowthPossibility: json['regrowthPossibility'] as int? ?? 0,
+      isSuccess: true,
+      failureReason: '',
+      hairDiagnosis: json['hairDiagnosis'] ?? 'Analysis Incomplete',
+      hairTimeline: json['hairTimeline'] ?? 'N/A',
+      regrowthPossibility: json['regrowthPossibility'] ?? 0,
       hairRootCauses: parseList('hairRootCauses', RootCause.fromJson),
-      recommendedHairKit:
-      parseList('recommendedHairKit', RecommendedProduct.fromJson),
-
-      // Skin
-      skinDiagnosis: json['skinDiagnosis'] as String? ?? 'Analysis Incomplete',
-      skinTimeline: json['skinTimeline'] as String? ?? 'N/A',
+      recommendedHairKit: finalHair,
+      skinDiagnosis: json['skinDiagnosis'] ?? 'Analysis Incomplete',
+      skinTimeline: json['skinTimeline'] ?? 'N/A',
       skinRootCauses: parseList('skinRootCauses', RootCause.fromJson),
-      recommendedSkinKit:
-      parseList('recommendedSkinKit', RecommendedProduct.fromJson),
-
-      // Common
+      recommendedSkinKit: finalSkin,
       freeAddOns: parseList('freeAddOns', RecommendedProduct.fromJson),
-      totalPrice: json['totalPrice'] as String? ?? '0',
-      discountedTotalPrice:
-      json['discountedTotalPrice'] as String? ?? '0',
+      totalPrice: json['totalPrice'] ?? '0',
+      discountedTotalPrice: json['discountedTotalPrice'] ?? '0',
     );
   }
 }

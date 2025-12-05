@@ -5,6 +5,7 @@ import 'package:shop/screens/auth/views/ConsultantLoginScreen.dart';
 import 'package:shop/screens/auth/views/ConsultantSignupScreen.dart';
 import 'package:shop/screens/auth/views/terms_of_services_screen.dart';
 import 'package:shop/models/product_model.dart';
+import 'package:shop/screens/product/wishlist_screen.dart';
 
 import 'screen_export.dart';
 
@@ -146,10 +147,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       return MaterialPageRoute(
         builder: (context) => const OnSaleScreen(),
       );
-    case kidsScreenRoute:
-      // return MaterialPageRoute(
-      //   builder: (context) => const KidsScreen(),
-      // );
+    case wishlistScreenRoute:
+      return MaterialPageRoute(
+        builder: (context) => const WishlistScreen(),
+      );
     case searchScreenRoute:
       return MaterialPageRoute(
         builder: (context) => const SearchScreen(),

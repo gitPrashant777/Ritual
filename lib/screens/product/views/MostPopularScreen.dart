@@ -17,7 +17,6 @@ class MostPopularScreen extends StatefulWidget {
 class _MostPopularScreenState extends State<MostPopularScreen> {
   final ProductsApiService _apiService = ProductsApiService();
 
-  // Removed pagination logic, using a simple Future instead
   late Future<List<ProductModel>> _productsFuture;
 
   @override
@@ -26,107 +25,86 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
     _fetchProducts();
   }
 
-  // Simplified fetch logic for a non-paginated API
   Future<void> _fetchProducts() async {
     setState(() {
       _productsFuture = _apiService.getPopularProducts();
     });
   }
 
-  // Added retry function for the error state button
   void _retry() {
     _fetchProducts();
-  }
-
-  // This function is kept from your AllProductsScreen
-  void _navigateToEntryPoint() {
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      entryPointScreenRoute, // Your dashboard route
-          (route) => false, // Remove all previous routes
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Kept the PopScope as requested
-    return PopScope(
-      canPop: false,
-      onPopInvoked: (didPop) {
-        if (didPop) return;
-        _navigateToEntryPoint();
-      },
-      child: Scaffold(
+    // FIX 1: Removed PopScope wrapper.
+    // Now the system back button (Android) or swipe back (iOS) works automatically.
+    return Scaffold(
+      backgroundColor:
+      isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAF9F6),
+      appBar: AppBar(
         backgroundColor:
         isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAF9F6),
-        appBar: AppBar(
-          backgroundColor:
-          isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAF9F6),
-          elevation: 0,
-          leading: IconButton(
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: isDark ? Colors.white : Colors.black87,
+            size: 20,
+          ),
+          // FIX 2: Changed to pop() to go back to the previous screen
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          "Most Popular",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w300,
+            letterSpacing: 0.5,
+            color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+            fontFamily: 'Serif',
+          ),
+        ),
+        centerTitle: false,
+        actions: [
+          IconButton(
             icon: Icon(
-              Icons.arrow_back_ios,
+              Icons.tune_outlined,
               color: isDark ? Colors.white : Colors.black87,
-              size: 20,
             ),
-            onPressed: _navigateToEntryPoint, // Kept same back navigation
+            onPressed: () {
+              // TODO: Add filter/sort functionality
+            },
           ),
-          title: Text(
-            "Most Popular", // CHANGED: Title
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w300,
-              letterSpacing: 0.5,
-              color: isDark ? Colors.white : const Color(0xFF1A1A2E),
-              fontFamily: 'Serif',
-            ),
-          ),
-          centerTitle: false,
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.tune_outlined,
-                color: isDark ? Colors.white : Colors.black87,
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: FutureBuilder<List<ProductModel>>(
+        future: _productsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: isDark ? Colors.white : const Color(0xFF1A1A2E),
               ),
-              onPressed: () {
-                // TODO: Add filter/sort functionality
-              },
-            ),
-            const SizedBox(width: 8),
-          ],
-        ),
-        // CHANGED: Body now uses a FutureBuilder
-        body: FutureBuilder<List<ProductModel>>(
-          future: _productsFuture,
-          builder: (context, snapshot) {
-            // Initial loading state
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: isDark ? Colors.white : const Color(0xFF1A1A2E),
-                ),
-              );
-            }
+            );
+          }
 
-            // Error state
-            if (snapshot.hasError || !snapshot.hasData) {
-              return _buildErrorState(isDark, snapshot.error.toString());
-            }
+          if (snapshot.hasError || !snapshot.hasData) {
+            return _buildErrorState(isDark, snapshot.error.toString());
+          }
 
-            final products = snapshot.data!;
+          final products = snapshot.data!;
 
-            // Empty state
-            if (products.isEmpty) {
-              return _buildEmptyState(isDark);
-            }
+          if (products.isEmpty) {
+            return _buildEmptyState(isDark);
+          }
 
-            // Success state
-            return _buildProductGrid(isDark, products);
-          },
-        ),
+          return _buildProductGrid(isDark, products);
+        },
       ),
     );
   }
@@ -135,7 +113,6 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Product count header
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
           child: Text(
@@ -148,11 +125,8 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
             ),
           ),
         ),
-
-        // Product Grid
         Expanded(
           child: GridView.builder(
-            // Removed ScrollController
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
@@ -160,7 +134,7 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
               crossAxisSpacing: 16,
               mainAxisSpacing: 24,
             ),
-            itemCount: products.length, // Simplified item count
+            itemCount: products.length,
             itemBuilder: (context, index) {
               final product = products[index];
               return _buildEnhancedProductCard(product, isDark);
@@ -171,7 +145,6 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
     );
   }
 
-  // This widget is identical to the one in AllProductsScreen
   Widget _buildEnhancedProductCard(ProductModel product, bool isDark) {
     return GestureDetector(
       onTap: () {
@@ -192,7 +165,6 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product Image
             Stack(
               children: [
                 Container(
@@ -224,8 +196,7 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                             child: Icon(
                               Icons.image_outlined,
                               size: 40,
-                              color:
-                              isDark ? Colors.white24 : Colors.black12,
+                              color: isDark ? Colors.white24 : Colors.black12,
                             ),
                           ),
                         );
@@ -233,8 +204,6 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                     ),
                   ),
                 ),
-
-                // Discount badge
                 if (product.priceAfetDiscount != null &&
                     product.dicountpercent != null)
                   Positioned(
@@ -260,8 +229,6 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                       ),
                     ),
                   ),
-
-                // Out of stock overlay
                 if (product.isOutOfStock)
                   Positioned.fill(
                     child: Container(
@@ -287,15 +254,12 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                   ),
               ],
             ),
-
-            // Product Details
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Brand name
                     Text(
                       (product.brandName ?? "BAETOWN").toUpperCase(),
                       style: TextStyle(
@@ -306,8 +270,6 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                       ),
                     ),
                     const SizedBox(height: 6),
-
-                    // Product title
                     Expanded(
                       child: Text(
                         product.title,
@@ -322,8 +284,6 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-
-                    // Price
                     Row(
                       children: [
                         Text(
@@ -344,8 +304,7 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                               style: TextStyle(
                                 fontSize: 12,
                                 decoration: TextDecoration.lineThrough,
-                                color:
-                                isDark ? Colors.white38 : Colors.black38,
+                                color: isDark ? Colors.white38 : Colors.black38,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -353,10 +312,7 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                         ],
                       ],
                     ),
-
                     const SizedBox(height: 8),
-
-                    // Rating or Stock indicator
                     if (!product.isOutOfStock)
                       Row(
                         children: [
@@ -373,8 +329,7 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color:
-                              isDark ? Colors.white70 : Colors.black87,
+                              color: isDark ? Colors.white70 : Colors.black87,
                             ),
                           ),
                           const Spacer(),
@@ -400,7 +355,6 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
     );
   }
 
-  // Adapted error state
   Widget _buildErrorState(bool isDark, String error) {
     return Center(
       child: Padding(
@@ -437,7 +391,7 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                   elevation: 0,
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                 ),
-                onPressed: _retry, // Use the new retry function
+                onPressed: _retry,
                 child: const Text(
                   "RETRY",
                   style: TextStyle(
@@ -454,7 +408,6 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
     );
   }
 
-  // Adapted empty state
   Widget _buildEmptyState(bool isDark) {
     return Center(
       child: Column(

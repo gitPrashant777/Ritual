@@ -104,7 +104,7 @@ class _PopularProductsState extends State<PopularProducts> {
                 ),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (builder) => AllProductsScreen()),
                     );

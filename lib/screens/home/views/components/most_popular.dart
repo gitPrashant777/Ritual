@@ -105,7 +105,7 @@ class _MostPopularState extends State<MostPopular> {
                 Text("Most Popular Products", style: titleStyle),
                 TextButton(
                   onPressed: () {
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(builder: (builder) => const MostPopularScreen()),
                     );
