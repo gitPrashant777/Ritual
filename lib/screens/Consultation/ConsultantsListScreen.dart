@@ -1,4 +1,5 @@
-// screens/consultants/consultants_list_screen.dart
+// lib/screens/consultants/consultants_list_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -15,7 +16,12 @@ class ConsultantsListScreen extends StatefulWidget {
 
 class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static const brandPrimary = Color(0xFF020953);
+
+  // --- COLOR RITUAL ---
+  static const brandPrimary = Color(0xFF0b3323); // Deep Green
+  static const creamColor = Color(0xFFf6efe3);   // Cream BG
+  static const lightGreen = Color(0xFF81C784);   // Light Green Accent
+  // --------------------
 
   String _selectedFilter = 'All';
   final List<String> _specialties = [
@@ -28,7 +34,8 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
 
   Stream<List<ConsultantModel>> _getConsultants() {
     Query query = _firestore
-        .collection('consultants').where('isVerified', isEqualTo: true);
+        .collection('consultants')
+        .where('isVerified', isEqualTo: true);
 
     if (_selectedFilter != 'All') {
       query = query.where('specialty', isEqualTo: _selectedFilter);
@@ -36,7 +43,8 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
 
     return query.snapshots().map((snapshot) {
       return snapshot.docs
-          .map((doc) => ConsultantModel.fromMap(doc.data() as Map<String, dynamic>))
+          .map((doc) =>
+          ConsultantModel.fromMap(doc.data() as Map<String, dynamic>))
           .toList();
     });
   }
@@ -45,23 +53,28 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    // Background and text colors based on theme
+    final backgroundColor = isDark ? const Color(0xFF0A0A0A) : creamColor;
+    final textColor = isDark ? Colors.white : brandPrimary;
+    final subTextColor = isDark ? Colors.white70 : brandPrimary.withOpacity(0.7);
+
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8F9FB),
+      backgroundColor: backgroundColor,
       appBar: AppBar(
-        backgroundColor: isDark ? const Color(0xFF0A0A0A) : Colors.white,
+        backgroundColor: backgroundColor,
         elevation: 0,
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: isDark
                 ? Colors.white.withOpacity(0.1)
-                : brandPrimary.withOpacity(0.08),
+                : Colors.white.withOpacity(0.6),
             borderRadius: BorderRadius.circular(10),
           ),
           child: IconButton(
             icon: Icon(
               Icons.arrow_back_rounded,
-              color: isDark ? Colors.white : brandPrimary,
+              color: textColor,
             ),
             onPressed: () => Navigator.pop(context),
           ),
@@ -74,32 +87,31 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : brandPrimary,
+                color: textColor,
               ),
             ),
             Text(
               'Book your consultation',
               style: TextStyle(
                 fontSize: 12,
-                color: isDark ? Colors.white60 : Colors.black54,
+                color: subTextColor,
               ),
             ),
           ],
         ),
-        // ADD THIS ACTIONS PROPERTY
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 8, top: 8, bottom: 8),
             decoration: BoxDecoration(
               color: isDark
                   ? Colors.white.withOpacity(0.1)
-                  : brandPrimary.withOpacity(0.08),
+                  : Colors.white.withOpacity(0.6),
               borderRadius: BorderRadius.circular(10),
             ),
             child: IconButton(
               icon: Icon(
                 Icons.calendar_today_rounded,
-                color: isDark ? Colors.white : brandPrimary,
+                color: textColor,
               ),
               tooltip: 'My Bookings',
               onPressed: () {
@@ -114,7 +126,6 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
           ),
         ],
       ),
-
       body: Column(
         children: [
           // Filter Section
@@ -122,10 +133,10 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
             height: 60,
             padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+              color: backgroundColor, // Match scaffold BG
               border: Border(
                 bottom: BorderSide(
-                  color: isDark ? Colors.white12 : Colors.grey[200]!,
+                  color: isDark ? Colors.white12 : brandPrimary.withOpacity(0.1),
                 ),
               ),
             ),
@@ -141,22 +152,33 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                   onTap: () => setState(() => _selectedFilter = specialty),
                   child: Container(
                     margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
                       gradient: isSelected
                           ? const LinearGradient(
-                        colors: [brandPrimary, Color(0xFF04076B)],
+                        colors: [brandPrimary, Color(0xFF1B5E20)], // Dark Green Gradient
                       )
                           : null,
-                      color: isSelected ? null : (isDark ? Colors.white.withOpacity(0.1) : Colors.grey[200]),
+                      color: isSelected
+                          ? null
+                          : (isDark
+                          ? Colors.white.withOpacity(0.1)
+                          : Colors.white), // White chips on cream BG
                       borderRadius: BorderRadius.circular(20),
+                      border: isSelected
+                          ? null
+                          : Border.all(color: brandPrimary.withOpacity(0.1), width: 1),
                     ),
                     child: Center(
                       child: Text(
                         specialty,
                         style: TextStyle(
-                          color: isSelected ? Colors.white : (isDark ? Colors.white : Colors.black87),
-                          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                          color: isSelected
+                              ? creamColor
+                              : (isDark ? Colors.white : brandPrimary),
+                          fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w500,
                           fontSize: 14,
                         ),
                       ),
@@ -173,7 +195,7 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
               stream: _getConsultants(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(color: brandPrimary),
                   );
                 }
@@ -183,12 +205,13 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.error_outline, size: 60, color: Colors.red[300]),
+                        Icon(Icons.error_outline,
+                            size: 60, color: Colors.red[300]),
                         const SizedBox(height: 16),
                         Text(
                           'Error loading consultants',
                           style: TextStyle(
-                            color: isDark ? Colors.white : Colors.black87,
+                            color: textColor,
                           ),
                         ),
                       ],
@@ -206,7 +229,7 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                         Icon(
                           Icons.medical_services_outlined,
                           size: 80,
-                          color: isDark ? Colors.white24 : Colors.grey[300],
+                          color: isDark ? Colors.white24 : brandPrimary.withOpacity(0.2),
                         ),
                         const SizedBox(height: 16),
                         Text(
@@ -214,14 +237,14 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.white : Colors.black87,
+                            color: textColor,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Please check back later',
                           style: TextStyle(
-                            color: isDark ? Colors.white60 : Colors.black54,
+                            color: subTextColor,
                           ),
                         ),
                       ],
@@ -251,13 +274,13 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
         color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? Colors.white12 : Colors.grey[200]!,
+          color: isDark ? Colors.white12 : Colors.grey.withOpacity(0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.04),
+            color: brandPrimary.withOpacity(isDark ? 0.0 : 0.05),
             blurRadius: 10,
-            offset: const Offset(0, 2),
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -268,7 +291,8 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => ConsultantDetailScreen(consultant: consultant),
+                builder: (context) =>
+                    ConsultantDetailScreen(consultant: consultant),
               ),
             );
           },
@@ -286,7 +310,7 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                     gradient: LinearGradient(
                       colors: [
                         brandPrimary.withOpacity(0.2),
-                        const Color(0xFF04076B).withOpacity(0.1),
+                        lightGreen.withOpacity(0.3),
                       ],
                     ),
                   ),
@@ -296,7 +320,7 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                       consultant.profileImageUrl!,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
-                        return Icon(
+                        return const Icon(
                           Icons.person,
                           size: 40,
                           color: brandPrimary,
@@ -304,7 +328,7 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                       },
                     ),
                   )
-                      : Icon(
+                      : const Icon(
                     Icons.person,
                     size: 40,
                     color: brandPrimary,
@@ -337,24 +361,25 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.1),
+                                color: lightGreen.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(4),
+                                border: Border.all(color: brandPrimary.withOpacity(0.2)),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.verified,
                                     size: 14,
-                                    color: Colors.green[700],
+                                    color: brandPrimary,
                                   ),
                                   const SizedBox(width: 4),
-                                  Text(
+                                  const Text(
                                     'Verified',
                                     style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.green[700],
+                                      color: brandPrimary,
                                     ),
                                   ),
                                 ],
@@ -367,7 +392,8 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                         consultant.specialty,
                         style: TextStyle(
                           fontSize: 14,
-                          color: isDark ? Colors.white70 : Colors.black87,
+                          color: isDark ? Colors.white70 : brandPrimary.withOpacity(0.8),
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -375,7 +401,7 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                         consultant.qualification,
                         style: TextStyle(
                           fontSize: 12,
-                          color: isDark ? Colors.white54 : Colors.black54,
+                          color: isDark ? Colors.white54 : brandPrimary.withOpacity(0.6),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -384,21 +410,21 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
                           Icon(
                             Icons.work_outline,
                             size: 14,
-                            color: isDark ? Colors.white54 : Colors.black54,
+                            color: isDark ? Colors.white54 : brandPrimary.withOpacity(0.5),
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '${consultant.experienceYears} years experience',
+                            '${consultant.experienceYears} years',
                             style: TextStyle(
                               fontSize: 12,
-                              color: isDark ? Colors.white54 : Colors.black54,
+                              color: isDark ? Colors.white54 : brandPrimary.withOpacity(0.5),
                             ),
                           ),
                           const SizedBox(width: 16),
                           Icon(
                             Icons.currency_rupee,
                             size: 14,
-                            color: isDark ? Colors.white54 : Colors.black54,
+                            color: isDark ? Colors.white54 : brandPrimary.withOpacity(0.5),
                           ),
                           Text(
                             '${consultant.consultationFee.toInt()}',
@@ -416,11 +442,11 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
 
                 const SizedBox(width: 8),
 
-                // Book Button
+                // Arrow
                 Icon(
                   Icons.arrow_forward_ios_rounded,
                   size: 16,
-                  color: isDark ? Colors.white38 : brandPrimary.withOpacity(0.5),
+                  color: isDark ? Colors.white38 : brandPrimary.withOpacity(0.3),
                 ),
               ],
             ),

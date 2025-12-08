@@ -3,15 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:shop/models/user_session.dart';
-import 'package:url_launcher/url_launcher.dart'; // <-- 1. ADD THIS IMPORT
+import 'package:url_launcher/url_launcher.dart';
 
-// --- 2. REMOVED UNUSED IMPORTS ---
-// import 'dart:async';
-// import 'package:shop/services/call_service.dart';
-// import 'Ui/call_screen.dart';
-// ----------------------------------
-
-import 'Ui/chat_screen.dart'; // Still needed for Chat
+import 'Ui/chat_screen.dart';
 import 'Ui/MyBookingsScreen.dart';
 import 'Ui/ConsultantModel.dart';
 
@@ -26,56 +20,40 @@ class ConsultantDetailScreen extends StatefulWidget {
 
 class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  static const brandPrimary = Color(0xFF020953);
+
+  // --- COLOR RITUAL ---
+  static const brandPrimary = Color(0xFF0b3323); // Deep Green
+  static const creamColor = Color(0xFFf6efe3);   // Cream BG
+  static const lightGreen = Color(0xFF81C784);   // Light Green Accent
+  // --------------------
 
   String _selectedConsultationType = 'Video Call';
   final List<String> _consultationTypes = ['Video Call', 'Voice Call', 'Chat'];
 
-  // --- 3. REMOVED STATE FROM MyBookingsScreen ---
-  // final CallService _callService = CallService();
-  // StreamSubscription? _callSubscription;
   bool _isCalling = false;
-  // -------------------------------------------
 
-  // --- 4. REMOVED dispose() METHOD ---
-  // @override
-  // void dispose() {
-  //   _callSubscription?.cancel();
-  //   super.dispose();
-  // }
-  // ---------------------------------
-
-  // --- 5. UPDATED _startConsultation ---
   Future<void> _startConsultation() async {
     // Check your static UserSession class instead of Firebase
     if (UserSession.authToken == null || UserSession.userData == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('You must be logged in to start.'),
+        const SnackBar(
+          content: Text('You must be logged in to start.'),
           backgroundColor: Colors.red,
         ),
       );
       return;
     }
 
-    // Get user details from the session
     final apiUser = UserSession.userData!;
     final String userId =
         apiUser['id'] ?? apiUser['_id'] ?? apiUser['uid'] ?? 'unknown_user';
     final String userName = apiUser['name'] ?? 'Patient';
 
-    // Set loading state
     setState(() => _isCalling = true);
 
-    // ⚠️ CHAT CREDENTIAL REMOVED (No longer needed for Firebase Chat)
-    // final String chatCredential = "123456";
-    // --------------------------------------------------------------------------
-
     try {
-      // --- Create the consultation document immediately ---
-      // This logs that an attempt was made, regardless of type
       final docRef = _firestore.collection('consultations').doc();
-      final String consultationId = docRef.id; // Renamed channelName to consultationId
+      final String consultationId = docRef.id;
       final DateTime now = DateTime.now();
 
       final consultationData = {
@@ -83,36 +61,30 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
         'consultantName': widget.consultant.name,
         'userId': userId,
         'userName': userName,
-        'date': now, // Use current date
-        'time':
-        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}', // Use current time
+        'date': now,
+        'time': '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}',
         'consultationType': _selectedConsultationType,
-        'status': 'pending', // 'pending' so it appears in doctor's list
+        'status': 'pending',
         'createdAt': FieldValue.serverTimestamp(),
-        'channelName': consultationId, // Keep original key name for consistency with calls
+        'channelName': consultationId,
       };
 
-      // Save to Firestore for history/logging
       await docRef.set(consultationData);
 
-      // --- Navigate based on type ---
       if (_selectedConsultationType == 'Chat') {
-        // Stop loading spinner
         setState(() => _isCalling = false);
 
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ChatScreen(
-              consultationId: consultationId, // 🎯 FIX: Renamed parameter to consultationId
-              uid: userId, // Pass the patient's ID
-              // chatCredential REMOVED
+              consultationId: consultationId,
+              uid: userId,
             ),
           ),
         );
       } else {
-        // --- 6. THIS IS THE NEW LOGIC for 'Video Call' or 'Voice Call' ---
-        // We will launch the phone's dialer instead of an in-app call.
+        // --- Phone/Video Dialer Logic ---
         final phoneNumber = widget.consultant.phone;
 
         if (phoneNumber.isEmpty) {
@@ -124,16 +96,13 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
           path: phoneNumber,
         );
 
-        // Check if the device can handle the 'tel' scheme
         if (await canLaunchUrl(launchUri)) {
           await launchUrl(launchUri);
         } else {
           throw Exception('Could not launch phone dialer.');
         }
 
-        // Stop loading spinner
         setState(() => _isCalling = false);
-        // --- END OF NEW LOGIC ---
       }
     } catch (e) {
       setState(() => _isCalling = false);
@@ -146,29 +115,31 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
     }
   }
 
-  // --- 7. REMOVED _startCall method ---
-  // The _startCall (Agora) method is no longer needed.
-  // -------------------------------------------------------------
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    // Use creamColor for light mode, dark grey for dark mode
+    final backgroundColor = isDark ? const Color(0xFF0A0A0A) : creamColor;
+
+    // Text colors need to adapt to the Cream background
+    final textColor = isDark ? Colors.white : brandPrimary;
+    final subTextColor = isDark ? Colors.white70 : brandPrimary.withOpacity(0.7);
+
     return Scaffold(
-      backgroundColor:
-      isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8F9FB),
+      backgroundColor: backgroundColor,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 250,
             pinned: true,
-            backgroundColor: isDark ? const Color(0xFF0A0A0A) : Colors.white,
+            backgroundColor: backgroundColor,
             leading: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
                 color: isDark
-                    ? Colors.white.withAlpha(26) // 0.1
-                    : brandPrimary.withAlpha(20), // 0.08
+                    ? Colors.white.withOpacity(0.1)
+                    : Colors.white.withOpacity(0.6),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: IconButton(
@@ -181,9 +152,11 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
               background: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
                     colors: [
-                      brandPrimary.withAlpha(51), // 0.2
-                      const Color(0xFF04076B).withAlpha(26), // 0.1
+                      brandPrimary.withOpacity(0.8), // Dark Green top
+                      lightGreen.withOpacity(0.3),   // Fades to light green
                     ],
                   ),
                 ),
@@ -193,12 +166,12 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                       return Center(
                           child: Icon(Icons.person,
                               size: 100,
-                              color: brandPrimary.withAlpha(77))); // 0.3
+                              color: creamColor));
                     })
-                    : Center(
+                    : const Center(
                     child: Icon(Icons.person,
                         size: 100,
-                        color: brandPrimary.withAlpha(77))), // 0.3
+                        color: creamColor)),
               ),
             ),
           ),
@@ -217,7 +190,7 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : brandPrimary,
+                            color: textColor,
                           ),
                         ),
                       ),
@@ -226,20 +199,20 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Colors.green.withAlpha(26), // 0.1
+                            color: lightGreen.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: Colors.green),
+                            border: Border.all(color: brandPrimary),
                           ),
                           child: Row(
                             children: [
-                              Icon(Icons.verified,
-                                  size: 16, color: Colors.green[700]),
+                              const Icon(Icons.verified,
+                                  size: 16, color: brandPrimary),
                               const SizedBox(width: 4),
-                              Text('Verified',
+                              const Text('Verified',
                                   style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.green[700])),
+                                      color: brandPrimary)),
                             ],
                           ),
                         ),
@@ -251,7 +224,8 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                   Text(widget.consultant.specialty,
                       style: TextStyle(
                         fontSize: 16,
-                        color: isDark ? Colors.white70 : Colors.black87,
+                        color: textColor.withOpacity(0.9),
+                        fontWeight: FontWeight.w500,
                       )),
 
                   const SizedBox(height: 4),
@@ -259,12 +233,12 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                   Text(widget.consultant.qualification,
                       style: TextStyle(
                         fontSize: 14,
-                        color: isDark ? Colors.white54 : Colors.black54,
+                        color: subTextColor,
                       )),
 
                   const SizedBox(height: 24),
 
-                  // Stats
+                  // Stats Cards
                   Row(
                     children: [
                       Expanded(
@@ -289,11 +263,11 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+                      // White container on Cream BG looks elegant
+                      color: isDark ? const Color(0xFF1A1A1A) : Colors.white.withOpacity(0.6),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color:
-                          isDark ? Colors.white12 : Colors.grey.shade200),
+                          color: isDark ? Colors.white12 : brandPrimary.withOpacity(0.1)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -303,10 +277,10 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                             Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: brandPrimary.withAlpha(26), // 0.1
+                                color: lightGreen.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
-                              child: Icon(Icons.info_outline,
+                              child: const Icon(Icons.info_outline,
                                   color: brandPrimary, size: 20),
                             ),
                             const SizedBox(width: 12),
@@ -314,8 +288,7 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color:
-                                    isDark ? Colors.white : brandPrimary)),
+                                    color: textColor)),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -323,8 +296,7 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                             style: TextStyle(
                                 fontSize: 14,
                                 height: 1.6,
-                                color:
-                                isDark ? Colors.white70 : Colors.black87)),
+                                color: subTextColor)),
                       ],
                     ),
                   ),
@@ -336,7 +308,7 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : brandPrimary,
+                        color: textColor,
                       )),
 
                   const SizedBox(height: 12),
@@ -358,24 +330,25 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                             decoration: BoxDecoration(
                               gradient: selected
                                   ? const LinearGradient(
-                                colors: [brandPrimary, Color(0xFF04076B)],
+                                colors: [brandPrimary, Color(0xFF1B5E20)], // Dark Green Gradient
                               )
                                   : null,
                               color: selected
                                   ? null
                                   : (isDark
-                                  ? Colors.white.withAlpha(26) // 0.1
-                                  : Colors.grey.shade200),
+                                  ? Colors.white.withOpacity(0.1)
+                                  : Colors.white),
                               borderRadius: BorderRadius.circular(12),
+                              border: selected
+                                  ? null
+                                  : Border.all(color: brandPrimary.withOpacity(0.1)),
                             ),
                             child: Column(
                               children: [
                                 Icon(icon,
                                     color: selected
-                                        ? Colors.white
-                                        : (isDark
-                                        ? Colors.white70
-                                        : Colors.black87),
+                                        ? creamColor
+                                        : brandPrimary,
                                     size: 24),
                                 const SizedBox(height: 8),
                                 Text(
@@ -386,10 +359,8 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                                         ? FontWeight.w600
                                         : FontWeight.w500,
                                     color: selected
-                                        ? Colors.white
-                                        : (isDark
-                                        ? Colors.white70
-                                        : Colors.black87),
+                                        ? creamColor
+                                        : brandPrimary,
                                   ),
                                 ),
                               ],
@@ -400,34 +371,34 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                     }).toList(),
                   ),
 
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 18),
 
-                  // --- 8. UPDATED BUTTON (No code change, just context) ---
+                  // Start Button
                   SizedBox(
                     width: double.infinity,
-                    height: 56,
+                    height: 60,
                     child: ElevatedButton(
                       onPressed: _isCalling
                           ? null
-                          : _startConsultation, // <-- Uses updated function
+                          : _startConsultation,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: brandPrimary,
+                        foregroundColor: creamColor, // Text color
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         elevation: 0,
                       ),
                       child: _isCalling
-                          ? const SizedBox(
+                          ? SizedBox(
                         height: 24,
                         width: 24,
                         child: CircularProgressIndicator(
-                          color: Colors.white,
+                          color: creamColor,
                           strokeWidth: 3,
                         ),
                       )
                           : Text(
-                        // Text will update based on selection
                         'START ${_selectedConsultationType.toUpperCase()}',
                         style: const TextStyle(
                           fontSize: 15,
@@ -437,9 +408,8 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
                       ),
                     ),
                   ),
-                  // ---------------------------
 
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 48),
                 ],
               ),
             ),
@@ -454,14 +424,10 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            brandPrimary.withAlpha(26), // 0.1
-            const Color(0xFF04076B).withAlpha(13), // 0.05
-          ],
-        ),
+        // Using light green tint for stats background
+        color: isDark ? Colors.white.withOpacity(0.05) : lightGreen.withOpacity(0.15),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: brandPrimary.withAlpha(51)), // 0.2
+        border: Border.all(color: brandPrimary.withOpacity(0.2)),
       ),
       child: Column(
         children: [
@@ -477,7 +443,7 @@ class _ConsultantDetailScreenState extends State<ConsultantDetailScreen> {
           Text(label,
               style: TextStyle(
                 fontSize: 12,
-                color: isDark ? Colors.white60 : Colors.black54,
+                color: isDark ? Colors.white60 : brandPrimary.withOpacity(0.7),
               )),
         ],
       ),

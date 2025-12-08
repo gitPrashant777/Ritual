@@ -79,16 +79,19 @@ class ApiService {
       print('🌐 POST ${uri.toString()}');
       print('📋 Headers: ${finalHeaders.entries.map((e) => '${e.key}: ${e.value}').join(', ')}');
       print('📦 Body: ${body != null ? jsonEncode(body) : 'null'}');
-
+      print('📦 SENDING BODY: ${jsonEncode(body)}'); // <--- Add this
       final response = await http.post(
         uri,
         headers: finalHeaders,
         body: body != null ? jsonEncode(body) : null,
       );
+      print('RESPONSE CODE: ${response.statusCode}'); // <--- Add this
+      print('RESPONSE BODY: ${response.body}');
       return _handleResponse<T>(response);
     } catch (e) {
       return ApiResponse.error('Network error: ${e.toString()}');
     }
+
   }
 
   // Generic PUT request

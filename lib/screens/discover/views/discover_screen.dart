@@ -38,18 +38,7 @@ class DiscoverScreen extends StatelessWidget {
         "icon": Icons.star_rounded,
         "color": const Color(0xFF2962FF), // Blue
       },
-      {
-        "title": "New Arrivals",
-        "subtitle": "Just Landed",
-        "icon": Icons.new_releases_rounded,
-        "color": const Color(0xFF00C853), // Green
-      },
-      {
-        "title": "Clearance",
-        "subtitle": "Final Call",
-        "icon": Icons.shopping_basket_rounded,
-        "color": const Color(0xFFAA00FF), // Purple
-      },
+
     ];
 
     return Scaffold(

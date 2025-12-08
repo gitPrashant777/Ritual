@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:shop/models/user_session.dart'; // <--- Add this
+import 'package:shop/models/user_session.dart';
+import '../../../constants.dart'; // Ensure constants.dart is imported
 import '../../../entry_point.dart';
 import '../../../models/onboarding_data.dart';
-import '../Components/gender_selection_card.dart';
+// import '../Components/gender_selection_card.dart'; // Integrated directly below
 
 class PersonalDetailsScreen extends StatefulWidget {
   const PersonalDetailsScreen({super.key});
@@ -36,8 +37,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.2),
       end: Offset.zero,
-    ).animate(
-        CurvedAnimation(parent: _animationController, curve: Curves.easeOutCubic));
+    ).animate(CurvedAnimation(
+        parent: _animationController, curve: Curves.easeOutCubic));
 
     _animationController.forward();
   }
@@ -47,29 +48,24 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
     _animationController.dispose();
     super.dispose();
   }
+
   Future<void> _loadInitialData() async {
-    if (!mounted) return; // Check if the widget is still in the tree
+    if (!mounted) return;
 
     try {
-      // Get provider (listen: false is crucial here)
       final data = Provider.of<OnboardingData>(context, listen: false);
-
-      // Get session data
       final session = await UserSession.getUserSession();
 
-      // Check if session and user data exist
       if (session != null && session['userData'] != null) {
-
         final userName = session['userData']['name'] as String?;
 
         if (userName != null && userName.isNotEmpty) {
           data.nameController.text = userName;
-          data.notifyListeners(); // This updates the "Continue" button state
+          data.notifyListeners();
         }
       }
     } catch (e) {
       print("Error loading user data for onboarding: $e");
-      // If it fails, the user can just type their name manually
     }
   }
 
@@ -83,11 +79,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
   @override
   Widget build(BuildContext context) {
     final data = Provider.of<OnboardingData>(context);
+    // Validation logic
     final bool isContinueEnabled = data.nameController.text.isNotEmpty &&
         data.ageController.text.isNotEmpty &&
         data.selectedGender != null;
-
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return PopScope(
       canPop: false,
@@ -96,7 +91,8 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
         _navigateToDashboard(context);
       },
       child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8F9FB),
+        // RITUAL THEME: Beige Background
+        backgroundColor: kRitualBeige,
         body: SafeArea(
           child: FadeTransition(
             opacity: _fadeAnimation,
@@ -111,41 +107,39 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                     children: [
                       const SizedBox(height: 20),
 
-                      // Header with gradient accent
+                      // Header
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // RITUAL THEME: Accent Line (Dark Green)
                           Container(
                             width: 60,
                             height: 4,
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF020953), Color(0xFF04076B)],
-                              ),
+                              color: kPrimaryColor, // Dark Green
                               borderRadius: BorderRadius.circular(2),
                             ),
                           ),
                           const SizedBox(height: 15),
-                          ShaderMask(
-                            shaderCallback: (bounds) => const LinearGradient(
-                              colors: [Color(0xFF020953), Color(0xFF04076B)],
-                            ).createShader(bounds),
-                            child: const Text(
-                              "Let's get started",
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                letterSpacing: 0.5,
-                              ),
+                          // RITUAL THEME: Serif Heading
+                          const Text(
+                            "Let's get started",
+                            style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: kSerifFont, // Playfair Display
+                              color: kPrimaryColor, // Dark Green
+                              letterSpacing: 0.5,
                             ),
                           ),
                           const SizedBox(height: 12),
-                          Text(
+                          // RITUAL THEME: Sans Serif Body
+                          const Text(
                             "We need a few details to kickstart your personalized beauty journey",
                             style: TextStyle(
                               fontSize: 16,
-                              color: isDark ? Colors.white60 : Colors.black54,
+                              fontFamily: kSansSerifFont, // Montserrat
+                              color: blackColor60, // Muted Green-Grey
                               height: 1.5,
                               letterSpacing: 0.3,
                             ),
@@ -153,15 +147,14 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                         ],
                       ),
 
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 30),
 
                       // Full Name Field
-                      _buildFieldLabel("Full Name", isDark),
+                      _buildFieldLabel("Full Name"),
                       const SizedBox(height: 10),
                       _buildTextField(
                         controller: data.nameController,
                         hint: "Enter your full name",
-                        isDark: isDark,
                         icon: Icons.person_outline_rounded,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -172,15 +165,14 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                         onChanged: (_) => data.notifyListeners(),
                       ),
 
-                      const SizedBox(height: 18),
+                      const SizedBox(height: 24),
 
                       // Age Field
-                      _buildFieldLabel("Age", isDark),
+                      _buildFieldLabel("Age"),
                       const SizedBox(height: 10),
                       _buildTextField(
                         controller: data.ageController,
                         hint: "Enter your age",
-                        isDark: isDark,
                         icon: Icons.cake_outlined,
                         keyboardType: TextInputType.number,
                         helperText: "Age must be between 18 to 80 years",
@@ -196,11 +188,11 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                         onChanged: (_) => data.notifyListeners(),
                       ),
 
-                      const SizedBox(height: 28),
+                      const SizedBox(height: 32),
 
                       // Gender Selection
-                      _buildFieldLabel("Select your gender", isDark),
-                      const SizedBox(height: 10),
+                      _buildFieldLabel("Select your gender"),
+                      const SizedBox(height: 15),
 
                       Row(
                         children: [
@@ -210,7 +202,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                               icon: Icons.male_rounded,
                               isSelected: data.selectedGender == "Male",
                               onTap: () => data.setGender("Male"),
-                              isDark: isDark,
                             ),
                           ),
                           const SizedBox(width: 16),
@@ -220,7 +211,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                               icon: Icons.female_rounded,
                               isSelected: data.selectedGender == "Female",
                               onTap: () => data.setGender("Female"),
-                              isDark: isDark,
                             ),
                           ),
                         ],
@@ -234,18 +224,15 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                         width: double.infinity,
                         height: 56,
                         decoration: BoxDecoration(
-                          gradient: isContinueEnabled
-                              ? const LinearGradient(
-                            colors: [Color(0xFF020953), Color(0xFF04076B)],
-                          )
-                              : null,
-                          color: isContinueEnabled ? null : Colors.grey[300],
+                          // RITUAL THEME: Solid Dark Green for primary action
+                          color: isContinueEnabled
+                              ? kPrimaryColor
+                              : kLightGreen, // Disabled state is Light Green
                           borderRadius: BorderRadius.circular(16),
                           boxShadow: isContinueEnabled
                               ? [
                             BoxShadow(
-                              color:
-                              const Color(0xFF020953).withOpacity(0.4),
+                              color: kPrimaryColor.withOpacity(0.3),
                               blurRadius: 20,
                               offset: const Offset(0, 8),
                             ),
@@ -267,9 +254,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                                     "CONTINUE",
                                     style: TextStyle(
                                       color: isContinueEnabled
-                                          ? Colors.white
-                                          : Colors.grey[500],
+                                          ? kRitualBeige
+                                          : kPrimaryColor.withOpacity(0.5),
                                       fontWeight: FontWeight.bold,
+                                      fontFamily: kSansSerifFont,
                                       fontSize: 16,
                                       letterSpacing: 1.2,
                                     ),
@@ -278,7 +266,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                                     const SizedBox(width: 8),
                                     const Icon(
                                       Icons.arrow_forward_rounded,
-                                      color: Colors.white,
+                                      color: kRitualBeige,
                                       size: 20,
                                     ),
                                   ],
@@ -292,12 +280,13 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                       const SizedBox(height: 24),
 
                       // Privacy note
-                      Center(
+                      const Center(
                         child: Text(
                           "Your data is secure and private",
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? Colors.white38 : Colors.black38,
+                            fontFamily: kSansSerifFont,
+                            color: blackColor40,
                             letterSpacing: 0.3,
                           ),
                         ),
@@ -313,13 +302,14 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
     );
   }
 
-  Widget _buildFieldLabel(String text, bool isDark) {
+  Widget _buildFieldLabel(String text) {
     return Text(
       text,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 14,
         fontWeight: FontWeight.w600,
-        color: isDark ? Colors.white70 : const Color(0xFF020953),
+        fontFamily: kSansSerifFont,
+        color: kPrimaryColor, // Dark Green
         letterSpacing: 0.3,
       ),
     );
@@ -328,7 +318,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
   Widget _buildTextField({
     required TextEditingController controller,
     required String hint,
-    required bool isDark,
     required IconData icon,
     TextInputType? keyboardType,
     String? helperText,
@@ -338,65 +327,67 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 16,
-        color: isDark ? Colors.white : Colors.black87,
+        color: kPrimaryColor, // Dark Green Text
+        fontFamily: kSansSerifFont,
         fontWeight: FontWeight.w500,
       ),
+      cursorColor: kPrimaryColor,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(
-          color: isDark ? Colors.white38 : Colors.grey[400],
+        hintStyle: const TextStyle(
+          color: blackColor40,
+          fontFamily: kSansSerifFont,
           fontSize: 15,
         ),
         helperText: helperText,
-        helperStyle: TextStyle(
-          color: isDark ? Colors.white38 : Colors.black45,
+        helperStyle: const TextStyle(
+          color: blackColor60,
           fontSize: 12,
         ),
+        // RITUAL THEME: Light Green Icon Background
         prefixIcon: Container(
           margin: const EdgeInsets.all(12),
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: const Color(0xFF020953).withOpacity(0.1),
+            color: kLightGreen, // Soft Sage
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
             icon,
-            color: const Color(0xFF020953),
+            color: kPrimaryColor, // Dark Green Icon
             size: 20,
           ),
         ),
         contentPadding:
         const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         filled: true,
-        fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.white,
+        fillColor: Colors.white, // White cards on Beige BG look clean
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: isDark ? Colors.white12 : Colors.grey[300]!,
-          ),
+          borderSide: BorderSide.none, // Clean look
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(
-            color: isDark ? Colors.white12 : Colors.grey[300]!,
+          borderSide: const BorderSide(
+            color: Colors.transparent, // Cleaner on beige
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(
-            color: Color(0xFF020953),
-            width: 2,
+            color: kPrimaryColor, // Dark Green Highlight
+            width: 1.5,
           ),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.red, width: 1.5),
+          borderSide: const BorderSide(color: errorColor, width: 1),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
+          borderSide: const BorderSide(color: errorColor, width: 2),
         ),
       ),
       validator: validator,
@@ -409,7 +400,6 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
     required IconData icon,
     required bool isSelected,
     required VoidCallback onTap,
-    required bool isDark,
   }) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
@@ -426,38 +416,26 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
             duration: const Duration(milliseconds: 300),
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
             decoration: BoxDecoration(
-              gradient: isSelected
-                  ? const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF020953), Color(0xFF04076B)],
-              )
-                  : null,
-              color: isSelected
-                  ? null
-                  : isDark
-                  ? Colors.white.withOpacity(0.05)
-                  : Colors.white,
+              // RITUAL THEME: Dark Green for Selected, White for unselected
+              color: isSelected ? kPrimaryColor : Colors.white,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isSelected
                     ? Colors.transparent
-                    : isDark
-                    ? Colors.white12
-                    : Colors.grey[300]!,
+                    : Colors.transparent, // Removed grey borders for cleaner look
                 width: 2,
               ),
               boxShadow: isSelected
                   ? [
                 BoxShadow(
-                  color: const Color(0xFF020953).withOpacity(0.3),
+                  color: kPrimaryColor.withOpacity(0.3),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                 ),
               ]
                   : [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.03),
+                  color: kPrimaryColor.withOpacity(0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
@@ -469,15 +447,17 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                   duration: const Duration(milliseconds: 300),
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
+                    // RITUAL THEME: Icon BG logic
                     color: isSelected
-                        ? Colors.white.withOpacity(0.2)
-                        : const Color(0xFF020953).withOpacity(0.1),
+                        ? Colors.white.withOpacity(0.1) // Subtle on dark
+                        : kLightGreen, // Sage on light
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     icon,
                     size: 30,
-                    color: isSelected ? Colors.white : const Color(0xFF020953),
+                    // RITUAL THEME: Icon Color
+                    color: isSelected ? kRitualBeige : kPrimaryColor,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -486,11 +466,10 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
+                    fontFamily: kSansSerifFont,
                     color: isSelected
-                        ? Colors.white
-                        : isDark
-                        ? Colors.white70
-                        : const Color(0xFF020953),
+                        ? kRitualBeige
+                        : kPrimaryColor,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -500,7 +479,7 @@ class _PersonalDetailsScreenState extends State<PersonalDetailsScreen>
                   width: isSelected ? 24 : 0,
                   height: 3,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: kRitualBeige,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),

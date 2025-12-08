@@ -645,7 +645,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                 child: Center(
                                                   child: Icon(
                                                     Icons.image_outlined,
-                                                    size: 40,
+                                                    size: 38,
                                                     color: isDark ? Colors.white24 : Colors.black12,
                                                   ),
                                                 ),
@@ -685,7 +685,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
 
                                   // Product Details
                                   Padding(
-                                    padding: const EdgeInsets.all(12),
+                                    padding: const EdgeInsets.all(8),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [

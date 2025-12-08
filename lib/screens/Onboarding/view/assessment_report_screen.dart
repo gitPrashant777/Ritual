@@ -49,9 +49,9 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
   bool _isSaving = false;
 
   // Colors
-  static const brandSecondary = Color(0xFF04076B);
-  static const brandAccent = Color(0xFF1A1A2E);
-  static const brandPrimary = Color(0xFF020953);
+  static const brandSecondary = Color(0xff267a0b);
+  static const brandAccent = Color(0xff2a8107);
+  static const brandPrimary = Color(0xFF0b3323);
 
   // URL
   final String _imageBaseUrl = "https://mern-backend-t3h8.onrender.com/api/v1";

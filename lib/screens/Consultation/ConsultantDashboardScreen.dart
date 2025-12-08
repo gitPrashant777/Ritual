@@ -2,9 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'dart:async';
-import 'package:flutter_callkit_incoming/entities/call_event.dart'; // <-- 1. IMPORT THIS
 import 'package:shop/screens/Consultation/Ui/AllConsultationsScreen.dart';
 
 // (Your other imports)
@@ -64,54 +62,54 @@ class _ConsultantDashboardScreenState extends State<ConsultantDashboardScreen> {
 
   // 8. NEW METHOD: Listen for "Accept" or "Decline"
   void _listenToCallKitEvents() {
-    FlutterCallkitIncoming.onEvent.listen((event) {
-      if (event == null) return;
-
-      final callData = event.body['extra'] as Map<String, dynamic>;
-      final callId = callData['callId'];
-      final channelName = callData['channelName'];
-      final isVideoCall = callData['isVideoCall'] as bool;
-
-      if (_auth.currentUser == null) return;
-      final doctorUid = _auth.currentUser!.uid;
-
-      // --- 2. THIS IS THE FIX ---
-      // Compare the event.event (which is an enum) to the
-      // enum values from CallEvent, NOT to Strings.
-      switch (event.event) {
-        case Event.actionCallAccept: // <-- Correct enum
-          CallService.hideIncomingCallUI(callId);
-          _callService.endCall(doctorUid);
-
-          Future.delayed(Duration.zero, () {
-            if (mounted) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => CallScreen(
-                    channelName: channelName,
-                    uid: 0, // Doctor is host
-                    isVideoCall: isVideoCall,
-                  ),
-                ),
-              );
-            }
-          });
-          break;
-
-        case Event.actionCallDecline: // <-- Correct enum
-          _callService.endCall(doctorUid);
-          break;
-
-        case Event.actionCallEnded: // <-- Correct enum
-          _callService.endCall(doctorUid);
-          break;
-
-        default:
-          break;
-      }
-      // --- END OF FIX ---
-    });
+    // FlutterCallkitIncoming.onEvent.listen((event) {
+    //   if (event == null) return;
+    //
+    //   final callData = event.body['extra'] as Map<String, dynamic>;
+    //   final callId = callData['callId'];
+    //   final channelName = callData['channelName'];
+    //   final isVideoCall = callData['isVideoCall'] as bool;
+    //
+    //   if (_auth.currentUser == null) return;
+    //   final doctorUid = _auth.currentUser!.uid;
+    //
+    //   // --- 2. THIS IS THE FIX ---
+    //   // Compare the event.event (which is an enum) to the
+    //   // enum values from CallEvent, NOT to Strings.
+    //   switch (event.event) {
+    //     // case Event.actionCallAccept: // <-- Correct enum
+    //     //   CallService.hideIncomingCallUI(callId);
+    //     //   _callService.endCall(doctorUid);
+    //     //
+    //     //   Future.delayed(Duration.zero, () {
+    //     //     if (mounted) {
+    //     //       Navigator.push(
+    //     //         context,
+    //     //         MaterialPageRoute(
+    //     //           builder: (context) => CallScreen(
+    //     //             channelName: channelName,
+    //     //             uid: 0, // Doctor is host
+    //     //             isVideoCall: isVideoCall,
+    //     //           ),
+    //     //         ),
+    //     //       );
+    //     //     }
+    //     //   });
+    //     //   break;
+    //     //
+    //     // case Event.actionCallDecline: // <-- Correct enum
+    //     //   _callService.endCall(doctorUid);
+    //     //   break;
+    //     //
+    //     // case Event.actionCallEnded: // <-- Correct enum
+    //     //   _callService.endCall(doctorUid);
+    //     //   break;
+    //
+    //     default:
+    //       break;
+    //   }
+    //   // --- END OF FIX ---
+    // });
   }
 
   Future<void> _loadConsultantData() async {

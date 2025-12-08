@@ -14,10 +14,16 @@ import 'components/popular_products.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  // --- COLOR RITUAL ---
+  static const brandPrimary = Color(0xFF0b3323); // Deep Green
+  static const creamColor = Color(0xFFf6efe3);   // Cream BG
+  static const lightGreen = Color(0xFF81C784);   // Light Green Accent
+  // --------------------
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: creamColor, // RITUAL CREAM BG
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -44,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                 'Home Middle Banner', // Type to fetch from Firebase
                 // Fallback Widget (Static)
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0), // Consistent Padding
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: BannerSStyle5(
@@ -66,15 +72,15 @@ class HomeScreen extends StatelessWidget {
               child: Padding(
                 padding: EdgeInsets.symmetric(
                   horizontal: MediaQuery.of(context).size.width < 600
-                      ? defaultPadding / 2
-                      : defaultPadding,
+                      ? defaultPadding
+                      : defaultPadding, // Removed / 2 for consistency
                 ),
                 child: _buildDynamicBanner(
                   context,
                   'Home Bottom Banner', // Type to fetch from Firebase
                   // Fallback Widget (Static)
                   Container(
-                    margin: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: BannerSStyle1(
@@ -120,12 +126,17 @@ class HomeScreen extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Container(
             height: 160,
-            margin: const EdgeInsets.all(8),
+            margin: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: brandPrimary.withOpacity(0.05), // Light tint placeholder
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(child: CircularProgressIndicator(strokeWidth: 2, color: primaryColor)),
+            child: const Center(
+                child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: brandPrimary
+                )
+            ),
           );
         }
 
@@ -140,20 +151,23 @@ class HomeScreen extends StatelessWidget {
             onTap: () => Navigator.pushNamed(context, onSaleScreenRoute),
             child: Container(
               height: 160,
-              margin: const EdgeInsets.all(8),
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: brandPrimary.withOpacity(0.15),
                     blurRadius: 15,
-                    offset: const Offset(0, 3),
+                    offset: const Offset(0, 4),
                   ),
                 ],
                 image: DecorationImage(
                   image: NetworkImage(imageUrl),
                   fit: BoxFit.cover,
-                  onError: (exception, stackTrace) => const Icon(Icons.broken_image),
+                  onError: (exception, stackTrace) => Icon(
+                      Icons.broken_image,
+                      color: brandPrimary.withOpacity(0.3)
+                  ),
                 ),
               ),
               child: Container(
@@ -163,7 +177,7 @@ class HomeScreen extends StatelessWidget {
                     begin: Alignment.centerLeft,
                     end: Alignment.centerRight,
                     colors: [
-                      Colors.black.withOpacity(0.5), // Darker for text readability
+                      brandPrimary.withOpacity(0.85), // Deep Green overlay
                       Colors.transparent
                     ],
                   ),
@@ -178,7 +192,7 @@ class HomeScreen extends StatelessWidget {
                       Text(
                         title,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: creamColor, // Cream text on dark bg
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.0,
@@ -188,8 +202,8 @@ class HomeScreen extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         subtitle,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: creamColor.withOpacity(0.9),
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),

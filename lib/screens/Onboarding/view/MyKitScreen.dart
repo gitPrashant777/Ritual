@@ -22,10 +22,12 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
-  // Brand colors
-  static const brandPrimary = Color(0xFF020953);
-  static const brandSecondary = Color(0xFF04076B);
-  static const brandAccent = Color(0xFF1A1A2E);
+  // --- RITUAL THEME COLORS ---
+  final Color _bgCream = const Color(0xFFf6efe3);
+  final Color _darkGreen = const Color(0xFF0b3323);
+  final Color _lightGreen = const Color(0xFFCFE8D6); // Soft sage
+  final Color _cardWhite = const Color(0xFFFFFFFF);
+  // ---------------------------
 
   @override
   void initState() {
@@ -60,21 +62,23 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // We override dark mode for now to enforce the Ritual theme consistency
+    const isDark = false;
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8F9FB),
+      backgroundColor: _bgCream, // RITUAL CREAM BG
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: RefreshIndicator(
           onRefresh: () async {
             _loadKits();
           },
-          color: brandPrimary,
+          color: _darkGreen,
+          backgroundColor: _bgCream,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -86,8 +90,9 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : brandPrimary,
+                      color: _darkGreen,
                       letterSpacing: 0.5,
+                      fontFamily: "Serif", // Optional: if you have a serif font
                     ),
                   ),
                   const SizedBox(height: 6),
@@ -95,7 +100,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                     "Your AI-powered skincare & haircare solutions",
                     style: TextStyle(
                       fontSize: 15,
-                      color: isDark ? Colors.white60 : Colors.black54,
+                      color: _darkGreen.withOpacity(0.7),
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -103,12 +108,12 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                   const SizedBox(height: 24),
 
                   // Re-assessment Button
-                  _buildReAssessmentButton(context, isDark),
+                  _buildReAssessmentButton(context),
 
                   const SizedBox(height: 20),
 
                   // Consultation Banner
-                  _buildConsultationBanner(context, isDark),
+                  _buildConsultationBanner(context),
 
                   const SizedBox(height: 28),
 
@@ -119,9 +124,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                         width: 4,
                         height: 24,
                         decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [brandPrimary, brandSecondary],
-                          ),
+                          color: _darkGreen,
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -131,7 +134,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : brandPrimary,
+                          color: _darkGreen,
                           letterSpacing: 0.3,
                         ),
                       ),
@@ -151,7 +154,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                             child: Column(
                               children: [
                                 CircularProgressIndicator(
-                                  color: brandPrimary,
+                                  color: _darkGreen,
                                   strokeWidth: 3,
                                 ),
                                 const SizedBox(height: 16),
@@ -159,7 +162,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                                   "Loading your kits...",
                                   style: TextStyle(
                                     fontSize: 14,
-                                    color: isDark ? Colors.white60 : Colors.black54,
+                                    color: _darkGreen.withOpacity(0.6),
                                   ),
                                 ),
                               ],
@@ -169,11 +172,11 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                       }
 
                       if (snapshot.hasError) {
-                        return _buildErrorState(isDark);
+                        return _buildErrorState();
                       }
 
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return _buildEmptyState(isDark);
+                        return _buildEmptyState();
                       }
 
                       final kits = snapshot.data!;
@@ -185,13 +188,15 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                           return _buildSavedKitCard(
                             context: context,
                             kit: kits[index],
-                            isDark: isDark,
                             index: index,
                           );
                         },
                       );
                     },
                   ),
+
+                  // Add bottom padding for scrolling
+                  const SizedBox(height: 80),
                 ],
               ),
             ),
@@ -201,7 +206,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildReAssessmentButton(BuildContext context, bool isDark) {
+  Widget _buildReAssessmentButton(BuildContext context) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -211,20 +216,13 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
         },
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16,horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                brandPrimary.withOpacity(0.08),
-                brandSecondary.withOpacity(0.05),
-              ],
-            ),
+            color: _cardWhite.withOpacity(0.6), // Semi-transparent white
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: brandPrimary.withOpacity(0.2),
-              width: 1.5,
+              color: _darkGreen.withOpacity(0.1),
+              width: 1.0,
             ),
           ),
           child: Row(
@@ -232,22 +230,20 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [brandPrimary, brandSecondary],
-                  ),
+                  color: _darkGreen,
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: brandPrimary.withOpacity(0.3),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
+                      color: _darkGreen.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
                 child: const Icon(
                   Icons.refresh_rounded,
                   color: Colors.white,
-                  size: 26,
+                  size: 24,
                 ),
               ),
               const SizedBox(width: 16),
@@ -258,19 +254,19 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                     Text(
                       "Take a Re-assessment",
                       style: TextStyle(
-                        fontSize: 17,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : brandPrimary,
+                        color: _darkGreen,
                         letterSpacing: 0.3,
                       ),
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 4),
                     Text(
-                      "Your concerns might have changed. Get a new personalized plan.",
+                      "Update your profile for a new plan.",
                       style: TextStyle(
-                        fontSize: 14,
-                        color: isDark ? Colors.white60 : Colors.black54,
-                        height: 1.4,
+                        fontSize: 13,
+                        color: _darkGreen.withOpacity(0.6),
+                        height: 1.3,
                       ),
                     ),
                   ],
@@ -279,8 +275,8 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
               const SizedBox(width: 8),
               Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: isDark ? Colors.white38 : brandPrimary.withOpacity(0.5),
-                size: 18,
+                color: _darkGreen.withOpacity(0.4),
+                size: 16,
               ),
             ],
           ),
@@ -289,7 +285,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildConsultationBanner(BuildContext context, bool isDark) {
+  Widget _buildConsultationBanner(BuildContext context) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -298,31 +294,31 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            brandPrimary.withOpacity(0.95),
-            brandSecondary.withOpacity(0.95),
+            _darkGreen,
+            const Color(0xFF144532), // Slightly lighter green gradient
           ],
         ),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: brandPrimary.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: _darkGreen.withOpacity(0.25),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withOpacity(0.15),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
               Icons.video_call_rounded,
               color: Colors.white,
-              size: 32,
+              size: 28,
             ),
           ),
           const SizedBox(width: 16),
@@ -331,7 +327,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "Want Expert Advice?",
+                  "Expert Advice",
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
@@ -339,47 +335,46 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                     letterSpacing: 0.3,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 Text(
-                  "Book an in-app consultation with our practitioners",
+                  "Book an in-app consultation.",
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     color: Colors.white.withOpacity(0.9),
-                    height: 1.4,
+                    height: 1.3,
                   ),
                 ),
-                const SizedBox(height: 14),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    HapticFeedback.lightImpact();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ConsultantsListScreen(
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 36,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ConsultantsListScreen(),
                         ),
+                      );
+                    },
+                    icon: Icon(Icons.calendar_today, size: 14, color: _darkGreen),
+                    label: Text(
+                      "Book Now",
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: _darkGreen,
                       ),
-                    );
-
-                  },
-                  icon: const Icon(Icons.calendar_today, size: 16),
-                  label: const Text(
-                    "Book Now",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
                     ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: brandPrimary,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _bgCream,
+                      foregroundColor: _darkGreen,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 0,
                     ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 0,
                   ),
                 ),
               ],
@@ -393,18 +388,14 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
   Widget _buildSavedKitCard({
     required BuildContext context,
     required SavedKitModel kit,
-    required bool isDark,
     required int index,
   }) {
     IconData icon = Icons.medical_services_rounded;
-    Color iconColor = brandPrimary;
 
     if (kit.kitName.toLowerCase().contains('hair')) {
       icon = Icons.health_and_safety_rounded;
-      iconColor = brandPrimary;
     } else if (kit.kitName.toLowerCase().contains('skin')) {
       icon = Icons.face_retouching_natural_rounded;
-      iconColor = brandSecondary;
     }
 
     return TweenAnimationBuilder<double>(
@@ -422,16 +413,16 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1A1A1A) : Colors.white,
+          color: _cardWhite,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isDark ? Colors.white12 : Colors.grey[200]!,
+            color: Colors.transparent,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isDark ? 0.3 : 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 2),
+              color: _darkGreen.withOpacity(0.06),
+              blurRadius: 15,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
@@ -449,22 +440,17 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
             },
             borderRadius: BorderRadius.circular(16),
             child: Padding(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
                   Container(
-                    width: 60,
-                    height: 60,
+                    width: 56,
+                    height: 56,
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          iconColor.withOpacity(0.15),
-                          iconColor.withOpacity(0.08),
-                        ],
-                      ),
+                      color: _lightGreen, // Soft Sage background
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Icon(icon, color: iconColor, size: 30),
+                    child: Icon(icon, color: _darkGreen, size: 28),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -476,7 +462,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : brandPrimary,
+                            color: _darkGreen,
                             letterSpacing: 0.3,
                           ),
                         ),
@@ -485,15 +471,15 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                           children: [
                             Icon(
                               Icons.calendar_today_rounded,
-                              size: 14,
-                              color: isDark ? Colors.white38 : Colors.grey[600],
+                              size: 13,
+                              color: _darkGreen.withOpacity(0.5),
                             ),
                             const SizedBox(width: 6),
                             Text(
                               "Assessed on ${kit.assessmentDate}",
                               style: TextStyle(
                                 fontSize: 13,
-                                color: isDark ? Colors.white60 : Colors.black54,
+                                color: _darkGreen.withOpacity(0.6),
                                 letterSpacing: 0.2,
                               ),
                             ),
@@ -503,35 +489,15 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [brandPrimary, brandSecondary],
-                      ),
+                      color: _bgCream,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          "View",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ],
+                    child: Icon(
+                      Icons.arrow_forward_rounded,
+                      color: _darkGreen,
+                      size: 20,
                     ),
                   ),
                 ],
@@ -543,7 +509,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildEmptyState(bool isDark) {
+  Widget _buildEmptyState() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(48.0),
@@ -552,35 +518,30 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    brandPrimary.withOpacity(0.1),
-                    brandSecondary.withOpacity(0.05),
-                  ],
-                ),
+                color: _lightGreen.withOpacity(0.5),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.medical_services_outlined,
-                size: 64,
-                color: brandPrimary.withOpacity(0.5),
+                size: 50,
+                color: _darkGreen.withOpacity(0.6),
               ),
             ),
             const SizedBox(height: 24),
             Text(
               "No Kits Yet",
               style: TextStyle(
-                fontSize: 22,
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : brandPrimary,
+                color: _darkGreen,
               ),
             ),
             const SizedBox(height: 12),
             Text(
               "Take your first assessment to get a personalized kit recommendation",
               style: TextStyle(
-                fontSize: 15,
-                color: isDark ? Colors.white60 : Colors.black54,
+                fontSize: 14,
+                color: _darkGreen.withOpacity(0.6),
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -593,8 +554,8 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
               icon: const Icon(Icons.add_rounded),
               label: const Text("Start Assessment"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: brandPrimary,
-                foregroundColor: Colors.white,
+                backgroundColor: _darkGreen,
+                foregroundColor: _bgCream,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
                   vertical: 14,
@@ -610,7 +571,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildErrorState(bool isDark) {
+  Widget _buildErrorState() {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(48.0),
@@ -618,7 +579,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
           children: [
             Icon(
               Icons.error_outline_rounded,
-              size: 64,
+              size: 50,
               color: Colors.red.withOpacity(0.5),
             ),
             const SizedBox(height: 16),
@@ -627,7 +588,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: isDark ? Colors.white : Colors.black87,
+                color: _darkGreen,
               ),
             ),
             const SizedBox(height: 8),
@@ -635,7 +596,7 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
               "Unable to load your kits",
               style: TextStyle(
                 fontSize: 14,
-                color: isDark ? Colors.white60 : Colors.black54,
+                color: _darkGreen.withOpacity(0.6),
               ),
             ),
             const SizedBox(height: 24),
@@ -644,8 +605,8 @@ class _MyKitScreenState extends State<MyKitScreen> with SingleTickerProviderStat
               icon: const Icon(Icons.refresh),
               label: const Text("Retry"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: brandPrimary,
-                foregroundColor: Colors.white,
+                backgroundColor: _darkGreen,
+                foregroundColor: _bgCream,
               ),
             ),
           ],

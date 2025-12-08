@@ -531,12 +531,12 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
               // Product Flags Section
               _buildProductFlagsSection(),
 
-              const SizedBox(height: defaultPadding * 3),
+              const SizedBox(height: defaultPadding),
 
               // Save Button
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 60,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _saveProduct,
                   style: ElevatedButton.styleFrom(
@@ -562,8 +562,12 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
                       fontWeight: FontWeight.bold,
                     ),
                   ),
+
                 ),
+
               ),
+              const SizedBox(height: defaultPadding * 2),
+
             ],
           ),
         ),

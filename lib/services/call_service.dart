@@ -1,9 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_callkit_incoming/entities/android_params.dart';
-import 'package:flutter_callkit_incoming/entities/call_kit_params.dart';
-import 'package:flutter_callkit_incoming/entities/ios_params.dart';
-import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+
 import 'package:uuid/uuid.dart';
 
 class CallService {
@@ -57,39 +54,42 @@ class CallService {
   // --- Functions to show the native INCOMING CALL UI ---
 
   // Show the native "Incoming Call" screen
-  static Future<void> showIncomingCallUI(
-      Map<String, dynamic> callData,
-      ) async {
-    final params = CallKitParams(
-      id: callData['callId'],
-      nameCaller: callData['callerName'],
-      appName: 'Ritual', // Your app name
-      avatar: null, // Optional: patient's avatar URL
-      handle: callData['isVideoCall'] ? 'Video Call' : 'Audio Call',
-      type: callData['isVideoCall'] ? 1 : 0, // 0 = audio, 1 = video
-      duration: 30000, // 30 seconds
-      textAccept: 'Accept',
-      textDecline: 'Decline',
-      extra: callData, // Pass all call data
-      android: const AndroidParams(
-        isCustomNotification: true,
-        isShowLogo: false,
-        ringtonePath: 'system_ringtone_default',
-        backgroundColor: '#020953',
-        actionColor: '#4CAF50',
-      ),
-      ios: const IOSParams(
-        iconName: 'AppIcon', // Make sure you have AppIcon in your Runner/Assets.xcassets
-        handleType: 'generic',
-        supportsVideo: true,
-      ),
-    );
+  static Future<void> showIncomingCallUI(Map<String, dynamic> callData,) async {
+    // final params = CallKitParams(
+    //   id: callData['callId'],
+    //   nameCaller: callData['callerName'],
+    //   appName: 'Ritual',
+    //   // Your app name
+    //   avatar: null,
+    //   // Optional: patient's avatar URL
+    //   handle: callData['isVideoCall'] ? 'Video Call' : 'Audio Call',
+    //   type: callData['isVideoCall'] ? 1 : 0,
+    //   // 0 = audio, 1 = video
+    //   duration: 30000,
+    //   // 30 seconds
+    //   textAccept: 'Accept',
+    //   textDecline: 'Decline',
+    //   extra: callData,
+    //   // Pass all call data
+    //   android: const AndroidParams(
+    //     isCustomNotification: true,
+    //     isShowLogo: false,
+    //     ringtonePath: 'system_ringtone_default',
+    //     backgroundColor: '#020953',
+    //     actionColor: '#4CAF50',
+    //   ),
+      // ios: const IOSParams(
+      //   iconName: 'AppIcon', // Make sure you have AppIcon in your Runner/Assets.xcassets
+      //   handleType: 'generic',
+      //   supportsVideo: true,
+      // ),
 
-    await FlutterCallkitIncoming.showCallkitIncoming(params);
-  }
+    // await FlutterCallkitIncoming.showCallkitIncoming(params);
+    // }
 
-  // Ends the native "Incoming Call" screen
-  static Future<void> hideIncomingCallUI(String callId) async {
-    await FlutterCallkitIncoming.endCall(callId);
+    // Ends the native "Incoming Call" screen
+    // static Future<void> hideIncomingCallUI(String callId) async {
+    //   await FlutterCallkitIncoming.endCall(callId);
+    // }
   }
 }

@@ -7,6 +7,7 @@ import 'package:shop/route/route_constants.dart';
 import 'package:shop/screens/admin/views/inventory_management_screen.dart';
 import 'package:shop/screens/admin/views/components/admin_dashboard_card.dart';
 import 'package:shop/screens/admin/views/product_list_management_screen.dart';
+import 'package:shop/screens/admin/views/send_notification_screen.dart';
 import 'package:shop/services/products_api_service.dart';
 import 'package:shop/services/auth_api_service.dart';
 import 'package:shop/services/api_service.dart';
@@ -396,7 +397,21 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                 );
               },
             ),
-
+// Add this inside the Column, along with other _buildManagementOption widgets
+            _buildManagementOption(
+              context,
+              title: "Send Notification",
+              subtitle: "Post alerts and updates to users",
+              iconData: Icons.notifications_active_outlined,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SendNotificationScreen(),
+                  ),
+                );
+              },
+            ),
             _buildManagementOption(
               context,
               title: "Product Analytics",

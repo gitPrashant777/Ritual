@@ -166,7 +166,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAF9F6),
       body: SafeArea(
-        child: SingleChildScrollView(
           child: Column(
             children: [
               // Premium header image with gradient overlay
@@ -213,10 +212,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
+    Expanded(
+    child: SingleChildScrollView(
 
-              // Form content
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+    // Form content
+            child:  Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -236,7 +237,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Text(
                       'Sign In',
                       style: TextStyle(
-                        fontSize: 36,
+                        fontSize: 32,
                         fontWeight: FontWeight.w300,
                         letterSpacing: 1.2,
                         height: 1.1,
@@ -255,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 20),
 
                     // Form Section
                     Form(
@@ -290,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               fillColor: isDark ? const Color(0xFF1A1A1A) : Colors.white,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20,
-                                vertical: 20,
+                                vertical: 16,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(4),
@@ -323,7 +324,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
 
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 20),
 
                           // Password Field
                           TextFormField(
@@ -353,7 +354,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               fillColor: isDark ? const Color(0xFF1A1A1A) : Colors.white,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 20,
-                                vertical: 20,
+                                vertical: 16,
                               ),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -398,7 +399,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
 
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 14),
 
                           // Forgot Password
                           Align(
@@ -428,7 +429,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 25),
+                    const SizedBox(height: 16),
 
                     // Sign In Button
                     SizedBox(
@@ -466,7 +467,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
 
                     // Sign Up Link
                     Center(
@@ -505,7 +506,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 18),
+                    const SizedBox(height: 16),
 
                     // Divider
                     Row(
@@ -537,7 +538,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
 
                     // Consultant Login Button
                     SizedBox(
@@ -572,14 +573,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 60),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+    ],
+    ),
+    ),
+    ),
+    )
+    ],
+
+    ),
+      )
     );
   }
 }

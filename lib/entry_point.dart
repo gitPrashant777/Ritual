@@ -21,6 +21,13 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final UserApiService _userApiService = UserApiService();
 
+  // --- RITUAL THEME COLORS ---
+  final Color _bgCream = const Color(0xFFf6efe3);
+  final Color _darkGreen = const Color(0xFF0b3323);
+  final Color _lightGreen = const Color(0xFFCFE8D6); // Soft sage for active backgrounds
+  final Color _notificationRed = const Color(0xFFFF6B6B);
+  // ---------------------------
+
   final List _pages = const [
     HomeScreen(),
     MyKitScreen(),
@@ -62,12 +69,12 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
   }
 
   Future<void> _handleLogout() async {
-    Navigator.pop(context); // Close drawer first
+    Navigator.pop(context);
 
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => Center(child: CircularProgressIndicator()),
+      builder: (context) => Center(child: CircularProgressIndicator(color: _darkGreen)),
     );
 
     try {
@@ -77,7 +84,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
     }
 
     await UserSession.clearSession();
-    Navigator.pop(context); // Close loading dialog
+    Navigator.pop(context);
 
     Navigator.pushNamedAndRemoveUntil(
       context,
@@ -87,28 +94,21 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
   }
 
   // Enhanced cart icon
-  // Enhanced cart icon
   Widget _buildCartIcon(bool isActive) {
     return Consumer<CartService>(
       builder: (context, cartService, child) {
 
-        // --- FIX START: Filter Ghost Items for Badge Count ---
-        // We filter the items list to count ONLY valid products
         final validItems = cartService.items.where((item) {
           final hasId = item.product.productId != null && item.product.productId!.isNotEmpty;
-          // Check if title is not the default placeholder
           final isNotDefault = item.product.title != 'Product';
           return hasId && isNotDefault;
         });
 
         int cartCount = validItems.length;
-        // --- FIX END ---
 
         Color iconColor = isActive
-            ? const Color(0xFF020953)
-            : Theme.of(context).brightness == Brightness.dark
-            ? Colors.white70
-            : const Color(0xFF020953).withOpacity(0.6);
+            ? _darkGreen
+            : _darkGreen.withOpacity(0.7);
 
         return Stack(
           clipBehavior: Clip.none,
@@ -116,9 +116,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isActive
-                    ? const Color(0xFF020953).withOpacity(0.1)
-                    : Colors.transparent,
+                color: isActive ? _lightGreen : Colors.transparent, // Light green bg when active
                 borderRadius: BorderRadius.circular(8),
               ),
               child: SvgPicture.asset(
@@ -134,13 +132,11 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFFF6B6B), Color(0xFFFF4757)],
-                    ),
+                    color: _notificationRed,
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFFFF4757).withOpacity(0.4),
+                        color: _notificationRed.withOpacity(0.4),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -164,17 +160,15 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
       },
     );
   }
+
   Widget _buildNavIcon(String src, {bool isActive = false}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    Color iconColor = isActive
-        ? const Color(0xFF020953)
-        : isDark ? Colors.white60 : const Color(0xFF020953).withOpacity(0.5);
+    Color iconColor = isActive ? _darkGreen : _darkGreen.withOpacity(0.5);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF020953).withOpacity(0.1) : Colors.transparent,
+        color: isActive ? _lightGreen : Colors.transparent, // Light green accent
         borderRadius: BorderRadius.circular(10),
       ),
       child: SvgPicture.asset(
@@ -186,16 +180,13 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
   }
 
   Widget _buildIconNavIcon(IconData icon, {bool isActive = false}) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    Color iconColor = isActive
-        ? const Color(0xFF020953)
-        : isDark ? Colors.white60 : const Color(0xFF020953).withOpacity(0.5);
+    Color iconColor = isActive ? _darkGreen : _darkGreen.withOpacity(0.5);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF020953).withOpacity(0.1) : Colors.transparent,
+        color: isActive ? _lightGreen : Colors.transparent, // Light green accent
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(icon, size: 20, color: iconColor),
@@ -204,14 +195,16 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    // We override dark mode check to enforce the Ritual Theme
+    // If you want to support dark mode with these colors, you can adjust logic here.
+    // For now, we apply the Cream/Dark Green theme consistently.
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-        systemNavigationBarColor: isDark ? const Color(0xFF0A0A0A) : Colors.white,
-        systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+        statusBarIconBrightness: Brightness.dark, // Dark icons on Cream BG
+        systemNavigationBarColor: _bgCream,
+        systemNavigationBarIconBrightness: Brightness.dark,
       ),
       child: PopScope(
         canPop: false,
@@ -220,9 +213,10 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
           final shouldExit = await showDialog<bool>(
             context: context,
             builder: (context) => AlertDialog(
+              backgroundColor: _bgCream,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: Text('Exit App', style: TextStyle(color: const Color(0xFF020953), fontWeight: FontWeight.w600)),
-              content: Text('Are you sure you want to exit the app?', style: TextStyle(color: isDark ? Colors.white70 : Colors.black87)),
+              title: Text('Exit App', style: TextStyle(color: _darkGreen, fontWeight: FontWeight.w600)),
+              content: Text('Are you sure you want to exit the app?', style: TextStyle(color: _darkGreen.withOpacity(0.8))),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
@@ -231,7 +225,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                 ),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(true),
-                  style: TextButton.styleFrom(foregroundColor: const Color(0xFF020953)),
+                  style: TextButton.styleFrom(foregroundColor: _darkGreen),
                   child: const Text('Exit', style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ],
@@ -241,18 +235,18 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
         },
         child: Scaffold(
           key: _scaffoldKey,
-          backgroundColor: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFFAFAFA),
-          drawer: _buildModernDrawer(isDark),
+          backgroundColor: _bgCream, // RITUAL CREAM BG
+          drawer: _buildModernDrawer(),
           appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(64),
+            preferredSize: const Size.fromHeight(66),
             child: Container(
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0A0A0A) : Colors.white,
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 2))],
+                color: _bgCream, // RITUAL CREAM BG
+                boxShadow: [BoxShadow(color: _darkGreen.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 2))],
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -267,26 +261,20 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                                 padding: const EdgeInsets.all(8),
                                 child: Icon(
                                   Icons.menu_rounded,
-                                  color: isDark ? Colors.white70 : const Color(0xFF020953).withOpacity(0.8),
+                                  color: _darkGreen, // RITUAL DARK GREEN
                                   size: 26,
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          ShaderMask(
-                            shaderCallback: (bounds) => const LinearGradient(
-                              colors: [Color(0xFF020953), Color(0xFF04076B)],
-                            ).createShader(bounds),
-                            child: const Text(
-                              "RITUAL",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 2.0,
-                                color: Colors.white,
-                                fontFamily: 'Serif',
-                              ),
+                          const SizedBox(width: 4),
+
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxHeight: 30),
+                            child: Image.asset(
+                              "assets/images/title.png",
+                              fit: BoxFit.fitHeight,
+                              color: null, // Ensure original logo colors (or apply _darkGreen if it's a mask)
                             ),
                           ),
                         ],
@@ -304,7 +292,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                                   "assets/icons/Search.svg",
                                   height: 22,
                                   colorFilter: ColorFilter.mode(
-                                    isDark ? Colors.white70 : const Color(0xFF020953).withOpacity(0.7),
+                                    _darkGreen, // RITUAL DARK GREEN
                                     BlendMode.srcIn,
                                   ),
                                 ),
@@ -346,10 +334,10 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
           bottomNavigationBar: SafeArea(
             child: Container(
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF0A0A0A) : Colors.white,
+                color: _bgCream, // RITUAL CREAM BG
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: _darkGreen.withOpacity(0.08),
                     blurRadius: 15,
                     offset: const Offset(0, -5),
                   ),
@@ -359,7 +347,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
                 child: Container(
-                  height: 62, // REDUCED from 60 to fix 1px overflow
+                  height: 62,
                   padding: const EdgeInsets.symmetric(horizontal: defaultPadding / 2, vertical: 4),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -381,13 +369,13 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
   }
 
   // Modern Material 3 Drawer with ProfileScreen data
-  Widget _buildModernDrawer(bool isDark) {
+  Widget _buildModernDrawer() {
     final userName = _userProfile?['name'] ?? 'Guest User';
     final userEmail = _userProfile?['email'] ?? 'guest@baetown.com';
     final userAvatar = _userProfile?['avatar'];
 
     return NavigationDrawer(
-      backgroundColor: isDark ? const Color(0xFF0A0A0A) : Colors.white,
+      backgroundColor: _bgCream, // RITUAL CREAM BG
       elevation: 0,
       children: [
         // Modern Header with user info
@@ -395,15 +383,15 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
           margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF020953), Color(0xFF04076B)],
+              colors: [_darkGreen, const Color(0xFF144532)], // Dark Green Gradient
             ),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF020953).withOpacity(0.3),
+                color: _darkGreen.withOpacity(0.3),
                 blurRadius: 15,
                 offset: const Offset(0, 5),
               ),
@@ -417,7 +405,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                   Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 3),
+                      border: Border.all(color: _bgCream, width: 3),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.2),
@@ -428,10 +416,10 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                     ),
                     child: CircleAvatar(
                       radius: 32,
-                      backgroundColor: Colors.white,
+                      backgroundColor: _bgCream,
                       backgroundImage: userAvatar != null ? NetworkImage(userAvatar) : null,
                       child: userAvatar == null
-                          ? const Icon(Icons.person, size: 36, color: Color(0xFF020953))
+                          ? Icon(Icons.person, size: 36, color: _darkGreen)
                           : null,
                     ),
                   ),
@@ -442,8 +430,8 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                       children: [
                         Text(
                           userName,
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: _bgCream,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 0.5,
@@ -455,7 +443,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                         Text(
                           userEmail,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
+                            color: _bgCream.withOpacity(0.9),
                             fontSize: 13,
                             letterSpacing: 0.3,
                           ),
@@ -477,23 +465,23 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
+                    color: Colors.white.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Text(
+                      Text(
                         'View Profile',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: _bgCream,
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.5,
                         ),
                       ),
                       const SizedBox(width: 4),
-                      const Icon(Icons.arrow_forward_ios, color: Colors.white, size: 12),
+                      Icon(Icons.arrow_forward_ios, color: _bgCream, size: 12),
                     ],
                   ),
                 ),
@@ -513,7 +501,6 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
             Navigator.pop(context);
             setState(() => _currentIndex = 0);
           },
-          isDark: isDark,
         ),
 
         _buildDrawerTile(
@@ -528,7 +515,6 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
               Navigator.pushNamed(context, ordersScreenRoute);
             }
           },
-          isDark: isDark,
         ),
 
         _buildDrawerTile(
@@ -536,24 +522,14 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
           label: 'Wishlist',
           onTap: () {
             Navigator.pop(context);
-            // Navigate to wishlist
+            Navigator.pushNamed(context, wishlistScreenRoute);
           },
-          isDark: isDark,
         ),
 
-        _buildDrawerTile(
-          icon: Icons.wallet_rounded,
-          label: 'Wallet',
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.pushNamed(context, walletScreenRoute);
-          },
-          isDark: isDark,
-        ),
 
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 28, vertical: 8),
-          child: Divider(height: 1),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 8),
+          child: Divider(height: 1, color: _darkGreen.withOpacity(0.1)),
         ),
 
         _buildDrawerTile(
@@ -563,17 +539,6 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
             Navigator.pop(context);
             Navigator.pushNamed(context, addressesScreenRoute);
           },
-          isDark: isDark,
-        ),
-
-        _buildDrawerTile(
-          icon: Icons.credit_card_rounded,
-          label: 'Payment Methods',
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.pushNamed(context, emptyPaymentScreenRoute);
-          },
-          isDark: isDark,
         ),
 
         _buildDrawerTile(
@@ -583,13 +548,12 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
             Navigator.pop(context);
             Navigator.pushNamed(context, preferencesScreenRoute);
           },
-          isDark: isDark,
         ),
 
         if (UserSession.isAdmin) ...[
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 28, vertical: 8),
-            child: Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 8),
+            child: Divider(height: 1, color: _darkGreen.withOpacity(0.1)),
           ),
           _buildDrawerTile(
             icon: Icons.admin_panel_settings_rounded,
@@ -598,31 +562,21 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
               Navigator.pop(context);
               Navigator.pushNamed(context, adminPanelScreenRoute);
             },
-            isDark: isDark,
-            iconColor: const Color(0xFF020953),
+            iconColor: _darkGreen,
           ),
         ],
 
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 28, vertical: 8),
-          child: Divider(height: 1),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 8),
+          child: Divider(height: 1, color: _darkGreen.withOpacity(0.1)),
         ),
 
-        _buildDrawerTile(
-          icon: Icons.help_rounded,
-          label: 'Help & Support',
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.pushNamed(context, getHelpScreenRoute);
-          },
-          isDark: isDark,
-        ),
+
 
         _buildDrawerTile(
           icon: Icons.logout_rounded,
           label: 'Logout',
           onTap: _handleLogout,
-          isDark: isDark,
           iconColor: Colors.red,
           textColor: Colors.red,
         ),
@@ -636,7 +590,6 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
     required IconData icon,
     required String label,
     required VoidCallback onTap,
-    required bool isDark,
     bool isSelected = false,
     Color? iconColor,
     Color? textColor,
@@ -652,7 +605,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: isSelected
-                  ? const Color(0xFF020953).withOpacity(0.1)
+                  ? _lightGreen // USE LIGHT GREEN BG
                   : Colors.transparent,
               borderRadius: BorderRadius.circular(12),
             ),
@@ -663,10 +616,8 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                   size: 24,
                   color: iconColor ??
                       (isSelected
-                          ? const Color(0xFF020953)
-                          : isDark
-                          ? Colors.white70
-                          : Colors.black54),
+                          ? _darkGreen
+                          : _darkGreen.withOpacity(0.6)),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -677,10 +628,8 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                       color: textColor ??
                           (isSelected
-                              ? const Color(0xFF020953)
-                              : isDark
-                              ? Colors.white
-                              : Colors.black87),
+                              ? _darkGreen
+                              : _darkGreen.withOpacity(0.8)),
                       letterSpacing: 0.3,
                     ),
                   ),
@@ -690,7 +639,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                     width: 4,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF020953),
+                      color: _darkGreen,
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
@@ -711,7 +660,6 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
     required bool useSvg,
   }) {
     final isActive = _currentIndex == index;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Expanded(
       child: Material(
@@ -744,8 +692,8 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                     fontSize: isActive ? 10 : 9,
                     fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
                     color: isActive
-                        ? const Color(0xFF020953)
-                        : isDark ? Colors.white60 : const Color(0xFF020953).withOpacity(0.5),
+                        ? _darkGreen
+                        : _darkGreen.withOpacity(0.5),
                     letterSpacing: 0.3,
                   ),
                   child: Text(label),
@@ -756,7 +704,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
                   height: 2,
                   width: isActive ? 16 : 0,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF020953),
+                    color: _darkGreen,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),

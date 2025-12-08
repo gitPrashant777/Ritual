@@ -1,6 +1,6 @@
 // lib/main.dart
 // ignore_for_file: avoid_print
-
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:firebase_core/firebase_core.dart' show Firebase;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,11 +26,6 @@ import 'package:shop/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // --------------------------------------------------
-  //                   AGORA CHAT INIT
-  // --------------------------------------------------
-
-  // ------------------ Load Local Session ------------------
   await UserSession.loadSession();
 
   // ------------------ Firebase Init ------------------

@@ -17,9 +17,8 @@ class CombinedPhotoUploadScreen extends StatefulWidget {
 class _CombinedPhotoUploadScreenState extends State<CombinedPhotoUploadScreen> {
   final ImagePicker _picker = ImagePicker();
 
-  // Brand colors
-  static const brandPrimary = Color(0xFF020953);
-  static const brandSecondary = Color(0xFF04076B);
+  static const brandPrimary = Color(0xFF0b3323);
+  static const brandSecondary = Color(0xFF0b3323);
 
   Future<void> _pickImage(ImageSource source, String type) async {
     final XFile? pickedFile = await _picker.pickImage(
@@ -192,6 +191,7 @@ class _CombinedPhotoUploadScreenState extends State<CombinedPhotoUploadScreen> {
           ),
 
           SizedBox(height: isTablet ? 24 : 20),
+
         ],
       ),
     );

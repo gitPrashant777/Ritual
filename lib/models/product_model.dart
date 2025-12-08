@@ -80,9 +80,11 @@ class ProductModel {
       brandName: json['brand'] ?? json['brandName'] ?? 'BAETOWN',
       description: json['description']?.toString() ?? '',
       category: json['category']?.toString() ?? '',
-      price: double.tryParse(json['price']?.toString() ?? '0') ?? 0.0,
-      priceAfetDiscount: double.tryParse(json['salePrice']?.toString() ?? '') ?? double.tryParse(json['discountPrice']?.toString() ?? ''),
-      dicountpercent: int.tryParse(json['discount']?.toString() ?? '') ?? int.tryParse(json['discountPercent']?.toString() ?? ''),
+      price: ((double.tryParse(json['price']?.toString() ?? '0') ?? 0.0) ),
+      priceAfetDiscount: json['salePrice'] != null
+          ? (double.tryParse(json['salePrice'].toString()) ?? 0.0)
+          : (double.tryParse(json['discountPrice']?.toString() ?? '0') ?? 0.0) ,
+
 
       // Handle stock mapping (backend often uses 'stock')
       stockQuantity: int.tryParse(json['stock']?.toString() ?? '') ?? int.tryParse(json['stockQuantity']?.toString() ?? '0') ?? 0,

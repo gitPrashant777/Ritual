@@ -9,57 +9,55 @@ const productDemoImg3 = "https://images.unsplash.com/photo-1601821765780-754fa98
 const productDemoImg4 = "https://images.unsplash.com/photo-1588444645841-9d4e0022cbd3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80";
 const productDemoImg5 = "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80";
 const productDemoImg6 = "https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80";
-
 // End For demo
 
-// --- NEW FONT CONSTANTS (For Target UI) ---
-// We will use a Serif font for headings and a Sans-Serif for body text.
+// --- FONT CONSTANTS ---
 // ❗️IMPORTANT: You must add these fonts to your pubspec.yaml
-const kSerifFont = "Playfair Display"; // Example: A Google Font
-const kSansSerifFont = "Montserrat"; // Example: A Google Font
-// --- END NEW FONT CONSTANTS ---
+const kSerifFont = "Playfair Display";
+const kSansSerifFont = "Montserrat";
+const grandisExtendedFont = "Grandis Extended";
 
-const grandisExtendedFont = "Grandis Extended"; // Original font
+// --- RITUAL THEME COLORS ---
+// Primary Dark Green: #0b3323
+// Background Beige: #f6efe3
+// Light Green Accent: #D6E4D9 (Soft Sage)
 
-// On color 80, 60.... those means opacity
-const Color pinkColor = primaryColor;
-// Add these to your constants.dart file if not already present
+const Color primaryColor = Color(0xFF0B3323);
+const Color kPrimaryColor = Color(0xFF0B3323);
 
+// New Ritual Backgrounds
+const Color kRitualBeige = Color(0xFFF6EFE3); // Main BG color
+const Color kLightGreen = Color(0xFFD6E4D9);  // Accent BG color
 
-// Make sure you have this color defined
-const Color kPrimaryColor = Color(0xFF020953);
+// Mapped specific UI colors
+const Color kLightBeigeColor = kRitualBeige;
+const Color kBorderColor = Color(0xFFEAEBEE);
 
-// --- UPDATED COLORS FOR NEW THEME ---
-// Original values are commented out
-
-const Color primaryColor = Color(0xFF20263E); // Original: const Color(0xFFE91E63);
-const Color kLightBeigeColor = Color(0xFFF7F5F3); // New color for card backgrounds
-const Color kBorderColor = Color(0xFFEAEBEE); // New color for inactive borders
-
+// Swatch generated based on #0b3323
 const MaterialColor primaryMaterialColor =
-MaterialColor(0xFF20263E, <int, Color>{ // Original: 0xFFE91E63
-  50: Color(0xFFEAEBEE), // Original: 0xFFFCE4EC
-  100: Color(0xFFC9CCD8), // Original: 0xFFF8BBD9
-  200: Color(0xFFA5ABC1), // Original: 0xFFF48FB1
-  300: Color(0xFF818AAB), // Original: 0xFFF06292
-  400: Color(0xFF636F9A), // Original: 0xFFEC407A
-  500: Color(0xFF20263E), // Original: 0xFFE91E63
-  600: Color(0xFF1D2338), // Original: 0xFFD81B60
-  700: Color(0xFF191F31), // Original: 0xFFC2185B
-  800: Color(0xFF161B2A), // Original: 0xFFAD1457
-  900: Color(0xFF101423), // Original: 0xFF880E4F
+MaterialColor(0xFF0B3323, <int, Color>{
+  50: Color(0xFFE2E7E4),
+  100: Color(0xFFB6C2BC),
+  200: Color(0xFF869990),
+  300: Color(0xFF567064),
+  400: Color(0xFF325243),
+  500: Color(0xFF0B3323), // Primary
+  600: Color(0xFF0A2E1F),
+  700: Color(0xFF08271A),
+  800: Color(0xFF062015),
+  900: Color(0xFF03140C),
 });
 
-// Using original names but with new theme colors
-const Color blackColor = Color(0xFF20263E); // Original: const Color(0xFF16161E);
-const Color blackColor80 = Color(0xFF6E7288); // Original: const Color(0xFF45454B);
-const Color blackColor60 = Color(0xFF9094A5); // Original: const Color(0xFF737378);
-const Color blackColor40 = Color(0xFFB3B6C2); // Original: const Color(0xFFA2A2A5);
-const Color blackColor20 = Color(0xFFD6D8DE); // Original: const Color(0xFFD0D0D2);
-const Color blackColor10 = Color(0xFFEAEBEE); // Original: const Color(0xFFE8E8E9);
-const Color blackColor5 = Color(0xFFF5F5F7); // Original: const Color(0xFFF3F3F4);
+// Text & Icon Colors (Harmonized with Dark Green)
+const Color blackColor = Color(0xFF0B3323); // Replacing pure black with Deep Green
+const Color blackColor80 = Color(0xFF3C5C4F);
+const Color blackColor60 = Color(0xFF6D857B);
+const Color blackColor40 = Color(0xFF9DAEA7);
+const Color blackColor20 = Color(0xFFCED6D3);
+const Color blackColor10 = Color(0xFFE6EAE9);
+const Color blackColor5 = Color(0xFFF2F5F4);
 
-const Color whiteColor = Color(0xFFFFFFFF); // Original: Colors.white
+const Color whiteColor = Color(0xFFFFFFFF);
 const Color whileColor80 = Color(0xFFCCCCCC);
 const Color whileColor60 = Color(0xFF999999);
 const Color whileColor40 = Color(0xFF666666);
@@ -67,26 +65,26 @@ const Color whileColor20 = Color(0xFF333333);
 const Color whileColor10 = Color(0xFF191919);
 const Color whileColor5 = Color(0xFF0D0D0D);
 
-const Color greyColor = Color(0xFF9094A5); // Original: const Color(0xFFB8B5C3);
-const Color lightGreyColor = Color(0xFFF7F5F3); // Original: const Color(0xFFF8F8F9);
-const Color darkGreyColor = Color(0xFF20263E); // Original: const Color(0xFF1C1C25);
+const Color greyColor = Color(0xFF6D857B); // Muted green-grey
+const Color lightGreyColor = kRitualBeige; // Updated to your Beige BG
+const Color darkGreyColor = Color(0xFF0B3323);
 
-const Color purpleColor = Color(0xFF20263E); // Original: const Color(0xFFE91E63);
+const Color purpleColor = Color(0xFF0B3323); // Replaced with theme color
 const Color successColor = Color(0xFF2ED573);
 const Color warningColor = Color(0xFFFFBE21);
 const Color errorColor = Color(0xFFEA5B5B);
-// --- END UPDATED COLORS ---
+// --- END COLORS ---
 
-const double defaultPadding = 20.0; // Original: 16.0
+const double defaultPadding = 20.0;
 const double defaultBorderRadious = 12.0;
 const Duration defaultDuration = Duration(milliseconds: 300);
+
+// On color 80, 60.... those means opacity
+const Color pinkColor = primaryColor; // Kept variable name for compatibility, mapped to primary
 
 final passwordValidator = MultiValidator([
   RequiredValidator(errorText: 'Password is required'),
   MinLengthValidator(8, errorText: 'password must be at least 8 digits long'),
-  // Temporarily commented out regex validation for special characters
-  // PatternValidator(r'(?=.*?[#?!@$%^&*-])',
-  //     errorText: 'passwords must have at least one special character')
 ]);
 
 final emaildValidator = MultiValidator([
@@ -96,7 +94,7 @@ final emaildValidator = MultiValidator([
 
 const pasNotMatchErrorText = "passwords do not match";
 
-// Demo products list for screens that need it
+// Demo products list
 final List<ProductModel> demoPopularProducts = [
   ProductModel(
     productId: "demo1",
@@ -113,10 +111,10 @@ final List<ProductModel> demoPopularProducts = [
   ),
   ProductModel(
     productId: "demo2",
-    title: "Gold Bracelet",
-    brandName: "BAETOWN",
+    title: "Night Cream",
+    brandName: "Ritual",
     description: "Elegant gold bracelet",
-    category: "Jewelry",
+    category: "Cream",
     price: 199.99,
     stockQuantity: 5,
     maxOrderQuantity: 1,
@@ -126,8 +124,8 @@ final List<ProductModel> demoPopularProducts = [
   ),
   ProductModel(
     productId: "demo3",
-    title: "Silver Necklace",
-    brandName: "BAETOWN",
+    title: "Face Wash",
+    brandName: "Ritual",
     description: "Classic silver necklace",
     category: "Jewelry",
     price: 149.99,

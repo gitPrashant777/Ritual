@@ -16,6 +16,11 @@ class OnboardingFlowManager extends StatefulWidget {
 }
 
 class _OnboardingFlowManagerState extends State<OnboardingFlowManager> {
+  // --- COLOR RITUAL ---
+  static const brandPrimary = Color(0xFF0b3323); // Deep Green
+  static const creamColor = Color(0xFFf6efe3);   // Cream BG
+  static const lightGreen = Color(0xFF81C784);   // Light Green Accent
+
   Future<bool> _onWillPop(BuildContext context, OnboardingData data) async {
     if (data.currentPage == 0) {
       return true; // Allow back navigation on first page
@@ -31,6 +36,15 @@ class _OnboardingFlowManagerState extends State<OnboardingFlowManager> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
 
+    // Theme Variables
+    final backgroundColor = isDark ? const Color(0xFF0A0A0A) : creamColor;
+    final iconColor = isDark ? Colors.white : brandPrimary;
+
+    // Container background for back/close buttons
+    final buttonBgColor = isDark
+        ? Colors.white.withOpacity(0.1)
+        : Colors.white.withOpacity(0.6); // White on Cream looks clean
+
     return ChangeNotifierProvider(
       create: (context) => OnboardingData(),
       child: Consumer<OnboardingData>(
@@ -43,23 +57,21 @@ class _OnboardingFlowManagerState extends State<OnboardingFlowManager> {
               }
             },
             child: Scaffold(
-              backgroundColor: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8F9FB),
+              backgroundColor: backgroundColor,
               appBar: AppBar(
-                backgroundColor: isDark ? const Color(0xFF0A0A0A) : Colors.white,
+                backgroundColor: backgroundColor,
                 elevation: 0,
                 toolbarHeight: isTablet ? 70 : 60,
                 leading: Container(
                   margin: EdgeInsets.all(isTablet ? 12 : 8),
                   decoration: BoxDecoration(
-                    color: isDark
-                        ? Colors.white.withOpacity(0.08)
-                        : const Color(0xFF020953).withOpacity(0.08),
+                    color: buttonBgColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: IconButton(
                     icon: Icon(
                       Icons.arrow_back_rounded,
-                      color: isDark ? Colors.white : const Color(0xFF020953),
+                      color: iconColor,
                       size: isTablet ? 26 : 24,
                     ),
                     onPressed: () {
@@ -79,14 +91,14 @@ class _OnboardingFlowManagerState extends State<OnboardingFlowManager> {
                   ),
                   decoration: BoxDecoration(
                     gradient: const LinearGradient(
-                      colors: [Color(0xFF020953), Color(0xFF04076B)],
+                      colors: [brandPrimary, Color(0xFF1B5E20)], // Green Gradient
                     ),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     'Step ${data.currentPage + 1}/${data.totalOnboardingPages}',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: creamColor, // Text color on the pill
                       fontSize: isTablet ? 15 : 13,
                       fontWeight: FontWeight.w600,
                       letterSpacing: 0.5,
@@ -97,15 +109,13 @@ class _OnboardingFlowManagerState extends State<OnboardingFlowManager> {
                   Container(
                     margin: EdgeInsets.all(isTablet ? 12 : 8),
                     decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.white.withOpacity(0.08)
-                          : const Color(0xFF020953).withOpacity(0.08),
+                      color: buttonBgColor,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: IconButton(
                       icon: Icon(
                         Icons.close_rounded,
-                        color: isDark ? Colors.white : const Color(0xFF020953),
+                        color: iconColor,
                         size: isTablet ? 26 : 24,
                       ),
                       onPressed: () {
@@ -129,9 +139,9 @@ class _OnboardingFlowManagerState extends State<OnboardingFlowManager> {
                             value: data.progress,
                             backgroundColor: isDark
                                 ? Colors.white.withOpacity(0.1)
-                                : Colors.grey[200],
+                                : brandPrimary.withOpacity(0.1),
                             valueColor: const AlwaysStoppedAnimation<Color>(
-                              Color(0xFF020953),
+                              brandPrimary,
                             ),
                             minHeight: isTablet ? 6 : 5,
                           ),
@@ -169,10 +179,10 @@ class _OnboardingFlowManagerState extends State<OnboardingFlowManager> {
                   }
 
                   return Container(
-                    color: isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8F9FB),
+                    color: backgroundColor,
                     child: const Center(
                       child: CircularProgressIndicator(
-                        color: Color(0xFF020953),
+                        color: brandPrimary,
                       ),
                     ),
                   );
