@@ -14,7 +14,7 @@ class GeminiService {
 
   // !! WARNING !! You must delete this key and use dotenv
   // This key is visible to everyone.
-  final apiKey = "AIzaSyBU3y9OI_8xOqavmkMT5Zd-KknsCH2eyH8";
+  final apiKey = "xyz";
 
   // --- THIS IS THE CORE FUNCTION ---
   Future<AssessmentReport> getAssessmentFromGemini(OnboardingData data) async {
