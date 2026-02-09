@@ -32,7 +32,9 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
     'System',
     'General'
   ];
-
+  final Color _bgColor = const Color(0xFFF6EFE3); // Cream/Beige
+  final Color _primaryColor = const Color(0xFF0B3323); // Dark Green
+  final Color _whiteColor = Colors.white;
   @override
   void dispose() {
     _titleController.dispose();
@@ -84,9 +86,16 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Send Notification"),
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
+        title: Text("Send Notification", style: TextStyle(color: _whiteColor)),
+        backgroundColor: _primaryColor, // ✅ #0b3323
+        foregroundColor: _whiteColor, // Makes Back Arrow White
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back,color: Colors.white,),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(defaultPadding),
@@ -191,7 +200,7 @@ class _SendNotificationScreenState extends State<SendNotificationScreen> {
               // Send Button
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 60,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _sendNotification,
                   style: ElevatedButton.styleFrom(

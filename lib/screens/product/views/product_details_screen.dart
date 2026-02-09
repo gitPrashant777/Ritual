@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/svg.dart';
+// import 'package:flutter_svg/svg.dart'; // Unused
 import 'package:provider/provider.dart';
 import 'package:shop/components/cart_button.dart';
 import 'package:shop/components/custom_modal_bottom_sheet.dart';
-import 'package:shop/components/free_delivery_banner.dart';
-import 'package:shop/components/product/product_card.dart';
+// import 'package:shop/components/free_delivery_banner.dart'; // Unused
+// import 'package:shop/components/product/product_card.dart'; // Unused
 import 'package:shop/constants.dart';
 import 'package:shop/route/route_constants.dart';
 import 'package:shop/services/cart_service.dart';
@@ -13,7 +13,7 @@ import 'package:shop/services/products_api_service.dart';
 import 'package:shop/services/cart_wishlist_api_service.dart';
 import 'package:shop/models/product_model.dart';
 
-import 'components/notify_me_card.dart';
+// import 'components/notify_me_card.dart'; // Unused
 import 'components/product_images.dart';
 import 'product_buy_now_screen.dart';
 
@@ -46,7 +46,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     _wishlistApi = Provider.of<WishlistApiService>(context, listen: false);
     _cartService = Provider.of<CartService>(context, listen: false);
     _checkWishlist();
-    _reviewsFuture = fetchReviews(); // <-- Initialize here
+    _reviewsFuture = fetchReviews();
   }
 
   @override
@@ -60,13 +60,14 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     final result = await _productsApi.deleteReview(productId, reviewId);
     if (result['success'] == true) {
       setState(() {
-        _reviewsFuture = fetchReviews(); // <-- Re-fetch the reviews
+        _reviewsFuture = fetchReviews();
       });
       _showSnackBar('Review deleted successfully', isError: false);
     } else {
       _showSnackBar('Failed to delete review', isError: true);
     }
   }
+
   Future<void> submitReview() async {
     if (_reviewController.text.trim().isEmpty) {
       _showSnackBar('Please write a review', isError: true);
@@ -85,7 +86,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     if (result['success'] == true) {
       _reviewController.clear();
       setState(() => _reviewRating = 5.0);
-      _reviewsFuture = fetchReviews(); // <-- Re-fetch the reviews
+      _reviewsFuture = fetchReviews();
       _showSnackBar('Review submitted!', isError: false);
     } else {
       _showSnackBar('Failed to submit review', isError: true);
@@ -120,13 +121,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     HapticFeedback.mediumImpact();
     await _cartService.addToCart(widget.product, quantity: 1);
     _showSnackBar('Added to cart!', isError: false);
-  }
-
-  Future<void> _buyNow() async {
-    await _cartService.addToCart(widget.product, quantity: 1);
-    if (mounted) {
-      Navigator.pushNamed(context, cartScreenRoute);
-    }
   }
 
   void _showSnackBar(String message, {required bool isError}) {
@@ -241,7 +235,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            // Enhanced AppBar
             SliverAppBar(
               backgroundColor:
               isDark ? const Color(0xFF0A0A0A) : const Color(0xFFF8F9FB),
@@ -267,12 +260,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     color: isDark ? Colors.white : const Color(0xFF020953),
                     size: isTablet ? 24 : 22,
                   ),
+                  // ✅ FIX 2: Use pop() to return to the list instead of reloading Home
                   onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(
-                      context,
-                      entryPointScreenRoute,
-                          (route) => false,
-                    );
+                    Navigator.pop(context);
                   },
                 ),
               ),
@@ -305,22 +295,17 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 const SizedBox(width: 8),
               ],
             ),
-
-            // Product Images
             ProductImages(
               images: widget.product.images.isNotEmpty
                   ? widget.product.images
                   : [productDemoImg1, productDemoImg2, productDemoImg3],
             ),
-
-            // Product Info Section
             SliverPadding(
               padding: EdgeInsets.all(isTablet ? 32.0 : 24.0),
               sliver: SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Brand name
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
@@ -328,7 +313,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        (widget.product.brandName ?? "BAETOWN").toUpperCase(),
+                        (widget.product.brandName ?? "RITUAL").toUpperCase(),
                         style: TextStyle(
                           fontSize: isTablet ? 12 : 11,
                           fontWeight: FontWeight.w600,
@@ -338,8 +323,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                     ),
                     SizedBox(height: isTablet ? 16 : 12),
-
-                    // Product Title
                     Text(
                       widget.product.title ?? "Product Title",
                       style: TextStyle(
@@ -351,8 +334,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                     ),
                     SizedBox(height: isTablet ? 20 : 16),
-
-                    // Price
                     Row(
                       children: [
                         Text(
@@ -396,10 +377,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ],
                       ],
                     ),
-
                     SizedBox(height: isTablet ? 24 : 20),
-
-                    // Stock Status
                     Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: isTablet ? 14 : 12,
@@ -440,10 +418,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         ],
                       ),
                     ),
-
                     SizedBox(height: isTablet ? 32 : 24),
-
-                    // Description
                     Text(
                       'DESCRIPTION',
                       style: TextStyle(
@@ -467,7 +442,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ),
             ),
-// Delivery Info
             SliverToBoxAdapter(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -557,10 +531,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 40)),
-
-            // You may also like section - ENHANCED
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               sliver: SliverToBoxAdapter(
@@ -575,9 +546,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
             SliverToBoxAdapter(
               child: FutureBuilder<List<ProductModel>>(
                 future: _productsApi.getAllProducts(),
@@ -589,7 +558,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         .toList();
 
                     return SizedBox(
-                      height: 300, // Increased height for better card design
+                      height: 300,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -618,7 +587,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Product Image with overlay
                                   Stack(
                                     children: [
                                       Container(
@@ -654,8 +622,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           ),
                                         ),
                                       ),
-
-                                      // Discount badge if applicable
                                       if (relatedProducts[index].priceAfetDiscount != null)
                                         Positioned(
                                           top: 12,
@@ -682,16 +648,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         ),
                                     ],
                                   ),
-
-                                  // Product Details
                                   Padding(
                                     padding: const EdgeInsets.all(8),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        // Brand name
                                         Text(
-                                          (relatedProducts[index].brandName ?? "BAETOWN").toUpperCase(),
+                                          (relatedProducts[index].brandName ?? "Rituals").toUpperCase(),
                                           style: TextStyle(
                                             fontSize: 10,
                                             fontWeight: FontWeight.w600,
@@ -700,8 +663,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           ),
                                         ),
                                         const SizedBox(height: 6),
-
-                                        // Product title
                                         Text(
                                           relatedProducts[index].title,
                                           style: TextStyle(
@@ -714,8 +675,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         const SizedBox(height: 8),
-
-                                        // Price row
                                         Row(
                                           children: [
                                             Text(
@@ -739,10 +698,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             ],
                                           ],
                                         ),
-
                                         const SizedBox(height: 8),
-
-                                        // Stock status or rating
                                         Row(
                                           children: [
                                             if (!relatedProducts[index].isOutOfStock)
@@ -800,10 +756,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 },
               ),
             ),
-
             const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-            // Reviews Section
             SliverPadding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               sliver: SliverToBoxAdapter(
@@ -821,13 +774,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     ),
                     const SizedBox(height: 20),
                     FutureBuilder<List<Map<String, dynamic>>>(
-                      future: _reviewsFuture, // <-- Use the stored future
+                      future: _reviewsFuture,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Center(child: CircularProgressIndicator());
                         }
                         final reviews = snapshot.data ?? [];
-
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -856,7 +808,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               if (ratingValue != null && ratingValue > 0 && ratingValue.isFinite) {
                                 ratingStars = ratingValue.floor();
                               }
-
                               return Container(
                                 margin: const EdgeInsets.only(bottom: 16),
                                 padding: const EdgeInsets.all(16),
@@ -929,10 +880,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 ),
                               );
                             }),
-
                             const SizedBox(height: 32),
-
-                            // Add Review Form
                             Text(
                               'ADD YOUR REVIEW',
                               style: TextStyle(
@@ -1038,8 +986,6 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 ),
               ),
             ),
-
-
             const SliverToBoxAdapter(child: SizedBox(height: 60)),
           ],
         ),

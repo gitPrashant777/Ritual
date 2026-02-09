@@ -35,7 +35,7 @@ When a user tries to login with an email that doesn't exist in the system, the a
 
 **Process**:
 1. User enters email and password
-2. **Admin Check**: If email is `baetownadmin@gmail.com`, use admin login
+2. **Admin Check**: If email is `Ritualsadmin@gmail.com`, use admin login
 3. **User Existence Check**: For regular users, check if email exists first
 4. **Auto-Redirect**: If user doesn't exist, show message and navigate to signup
 5. **Normal Login**: If user exists, proceed with regular login
@@ -129,14 +129,14 @@ If no dedicated user-check endpoint exists:
 3. Verify stays on login screen
 
 ### Test Case 4: Admin Login
-1. Enter `baetownadmin@gmail.com`
+1. Enter `Ritualsadmin@gmail.com`
 2. Verify admin login flow
 3. Verify navigation to admin panel
 
 ## Configuration
 
 ### Admin Email
-- **Email**: `baetownadmin@gmail.com`
+- **Email**: `Ritualsadmin@gmail.com`
 - **Behavior**: Bypasses user existence check
 - **Navigation**: Direct to admin panel
 

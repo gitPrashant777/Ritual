@@ -89,7 +89,7 @@ Route<dynamic> generateRoute(RouteSettings settings) {
             return ProductDetailsScreen(product: ProductModel(
               productId: "default",
               title: "Sample Product",
-              brandName: "BAETOWN",
+              brandName: "Rituals",
               description: "Sample product description",
               category: "Default",
               price: 99.99,

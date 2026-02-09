@@ -371,7 +371,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
   // Modern Material 3 Drawer with ProfileScreen data
   Widget _buildModernDrawer() {
     final userName = _userProfile?['name'] ?? 'Guest User';
-    final userEmail = _userProfile?['email'] ?? 'guest@baetown.com';
+    final userEmail = _userProfile?['email'] ?? 'guest@rituals.com';
     final userAvatar = _userProfile?['avatar'];
 
     return NavigationDrawer(
@@ -541,14 +541,7 @@ class _EntryPointState extends State<EntryPoint> with TickerProviderStateMixin {
           },
         ),
 
-        _buildDrawerTile(
-          icon: Icons.settings_rounded,
-          label: 'Settings',
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.pushNamed(context, preferencesScreenRoute);
-          },
-        ),
+
 
         if (UserSession.isAdmin) ...[
           Padding(

@@ -234,8 +234,8 @@ class _SplashScreenState extends State<SplashScreen>
                                 padding: const EdgeInsets.all(20),
                                 child: Image.asset(
                                   isDark
-                                      ? 'assets/images/ritual-logo.png'
-                                      : 'assets/images/ritual-logo-b.png',
+                                      ? 'assets/images/logom.png'
+                                      : 'assets/images/logom.png',
                                   fit: BoxFit.contain,
                                   errorBuilder: (context, error, stackTrace) {
                                     return Container(
@@ -257,7 +257,7 @@ class _SplashScreenState extends State<SplashScreen>
                                       ),
                                       child: Icon(
                                         Icons.spa_outlined,
-                                        size: 100,
+                                        size: 200,
                                         color: isDark
                                             ? Colors.white.withOpacity(0.3)
                                             : const Color(0xFF020953).withOpacity(0.3),

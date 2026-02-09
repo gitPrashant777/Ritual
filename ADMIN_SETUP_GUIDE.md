@@ -1,20 +1,20 @@
-# BAETOWN Admin Setup Guide
+# Rituals Admin Setup Guide
 
 ## Admin Credentials
 
-**Admin Email:** `baetownadmin@gmail.com`
+**Admin Email:** `Ritualsadmin@gmail.com`
 **Default Password:** `admin123@`
 
 ## Admin Access Rules
 
 ### Who Can Access Admin Panel
-- **ONLY** `baetownadmin@gmail.com` can access admin features
+- **ONLY** `Ritualsadmin@gmail.com` can access admin features
 - No other email addresses have admin privileges
 - The system automatically checks email address and sets admin status
 
 ### Login Behavior
 
-#### For Admin (baetownadmin@gmail.com):
+#### For Admin (Ritualsadmin@gmail.com):
 1. **Login Screen**: Shows "Login as Admin" button
 2. **After Login**: Navigates directly to Admin Panel
 3. **Auto-Login**: After app restart, goes directly to Admin Panel if logged in
@@ -29,7 +29,7 @@
 The system automatically handles admin account creation:
 
 1. **First Time**: If admin account doesn't exist in backend, it will be created automatically
-2. **Default Setup**: Uses `baetownadmin@gmail.com` with password `admin123@`
+2. **Default Setup**: Uses `Ritualsadmin@gmail.com` with password `admin123@`
 3. **Password Change**: Admin can change password anytime through admin panel
 
 ### Technical Implementation
@@ -42,7 +42,7 @@ The system automatically handles admin account creation:
 ### Testing Admin Login
 
 1. Open the app
-2. Enter email: `baetownadmin@gmail.com`
+2. Enter email: `Ritualsadmin@gmail.com`
 3. Enter password: `admin123@`
 4. Tap "Login as Admin"
 5. Should navigate to Admin Panel

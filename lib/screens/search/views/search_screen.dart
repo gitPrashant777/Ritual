@@ -227,7 +227,7 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             itemBuilder: (context, index) => ProductCard(
               image: _searchResults[index].image,
-              brandName: _searchResults[index].brandName ?? "BAETOWN",
+              brandName: _searchResults[index].brandName ?? "Rituals",
               title: _searchResults[index].title,
               price: _searchResults[index].price,
               priceAfetDiscount: _searchResults[index].priceAfetDiscount,

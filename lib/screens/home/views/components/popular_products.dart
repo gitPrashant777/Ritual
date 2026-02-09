@@ -186,7 +186,7 @@ class _PopularProductsState extends State<PopularProducts> {
                 width: screenWidth < 600 ? 140 : 160,
                 child: ProductCard(
                   image: _firstRowProducts[index].image,
-                  brandName: _firstRowProducts[index].brandName ?? "BAETOWN",
+                  brandName: _firstRowProducts[index].brandName ?? "Rituals",
                   title: _firstRowProducts[index].title,
                   price: _firstRowProducts[index].price,
                   priceAfetDiscount: _firstRowProducts[index].priceAfetDiscount,
@@ -221,7 +221,7 @@ class _PopularProductsState extends State<PopularProducts> {
                   width: screenWidth < 600 ? 140 : 160,
                   child: ProductCard(
                     image: _secondRowProducts[index].image,
-                    brandName: _secondRowProducts[index].brandName ?? "BAETOWN",
+                    brandName: _secondRowProducts[index].brandName ?? "Rituals",
                     title: _secondRowProducts[index].title,
                     price: _secondRowProducts[index].price,
                     priceAfetDiscount: _secondRowProducts[index].priceAfetDiscount,

@@ -132,7 +132,7 @@ class _CombinedPhotoUploadScreenState extends State<CombinedPhotoUploadScreen> {
             isTablet: isTablet,
           ),
 
-          SizedBox(height: isTablet ? 56 : 48),
+          SizedBox(height: isTablet ? 16 : 18),
 
           // Submit Button with brand gradient
           AnimatedContainer(
@@ -190,7 +190,7 @@ class _CombinedPhotoUploadScreenState extends State<CombinedPhotoUploadScreen> {
             ),
           ),
 
-          SizedBox(height: isTablet ? 24 : 20),
+          SizedBox(height: isTablet ? 64: 60),
 
         ],
       ),

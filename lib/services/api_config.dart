@@ -1,7 +1,7 @@
 // lib/services/api_config.dart
 class ApiConfig {
   // Backend base URL with /api/v1 prefix
-  static const String currentBaseUrl = 'https://mern-backend-t3h8.onrender.com/api/v1';
+  static const String currentBaseUrl = 'https://backendd-ankp.onrender.com/api/v1';
 
   // API endpoints (matching your backend structure)
   static const String productsEndpoint = '/products';

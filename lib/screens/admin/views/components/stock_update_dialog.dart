@@ -134,7 +134,7 @@ class _StockUpdateDialogState extends State<StockUpdateDialog> {
               ),
             ),
             Text(
-              widget.product.brandName ?? "BAETOWN",
+              widget.product.brandName ?? "Rituals",
               style: TextStyle(
                 color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                 fontSize: 14,

@@ -434,7 +434,7 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
                   children: [
                     // Brand name
                     Text(
-                      (product.brandName ?? "BAETOWN").toUpperCase(),
+                      (product.brandName ?? "Rituals").toUpperCase(),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,

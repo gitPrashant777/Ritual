@@ -77,7 +77,7 @@ class ProductModel {
     return ProductModel(
       productId: json['_id']?.toString() ?? json['id']?.toString() ?? '',
       title: json['name'] ?? json['title'] ?? 'Unknown Product',
-      brandName: json['brand'] ?? json['brandName'] ?? 'BAETOWN',
+      brandName: json['brand'] ?? json['brandName'] ?? 'Rituals',
       description: json['description']?.toString() ?? '',
       category: json['category']?.toString() ?? '',
       price: ((double.tryParse(json['price']?.toString() ?? '0') ?? 0.0) ),
@@ -192,7 +192,7 @@ class ProductModel {
     return ProductModel(
       productId: json['productId']?.toString() ?? json['_id']?.toString() ?? json['id']?.toString() ?? '',
       title: json['title'] ?? json['name'] ?? '', // Backend usually sends 'name'
-      brandName: json['brandName'] ?? json['brand'] ?? 'BAETOWN', // Check for 'brand' too
+      brandName: json['brandName'] ?? json['brand'] ?? 'Rituals', // Check for 'brand' too
       description: json['description'] ?? '',
       category: json['category'] ?? '',
       price: double.tryParse(json['price']?.toString() ?? '0') ?? 0.0,

@@ -258,30 +258,7 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ProductManagementScreen(
-                onProductSaved: (product) {
-                  _loadProducts(); // Reload products from API
-                  widget.onProductUpdated?.call();
-                },
-              ),
-            ),
-          );
-        },
-        backgroundColor: primaryColor,
-        label: const Text(
-          "Add Product",
-          style: TextStyle(color: Colors.white),
-        ),
-        icon: const Icon(
-          Icons.add,
-          color: Colors.white,
-        ),
-      ),
+
     );
   }
 }

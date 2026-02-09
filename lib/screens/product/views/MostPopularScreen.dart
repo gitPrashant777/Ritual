@@ -261,7 +261,7 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      (product.brandName ?? "BAETOWN").toUpperCase(),
+                      (product.brandName ?? "Rituals").toUpperCase(),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,

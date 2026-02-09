@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:shop/components/list_tile/divider_list_tile.dart';
-import 'package:shop/components/network_image_with_loader.dart';
 import 'package:shop/constants.dart';
 import 'package:shop/route/screen_export.dart';
 import 'package:shop/models/user_session.dart';
@@ -23,6 +21,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool _isLoading = true;
   String? _error;
 
+  // --- COLOR RITUAL ---
+  static const brandPrimary = Color(0xFF0b3323); // Deep Green
+  static const creamColor = Color(0xFFf6efe3);   // Cream BG
+  static const lightGreen = Color(0xFF81C784);   // Light Green Accent
+  // --------------------
+
   @override
   void initState() {
     super.initState();
@@ -37,7 +41,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       });
 
       final response = await _userApiService.getProfile();
-      
+
       if (response.success && response.data != null) {
         setState(() {
           _userProfile = response.data!['user'] ?? response.data;
@@ -50,15 +54,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     } catch (e) {
-      // Better error handling for HTML responses
       String errorMessage = 'Error loading profile';
-      
       if (e.toString().contains('FormatException') && e.toString().contains('<!DOCTYPE html>')) {
         errorMessage = 'Profile service is currently unavailable. Please try again later.';
       } else {
         errorMessage = 'Error loading profile: $e';
       }
-      
+
       setState(() {
         _error = errorMessage;
         _isLoading = false;
@@ -68,65 +70,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _handleLogout() async {
     try {
-      // Show loading indicator
       showDialog(
         context: context,
         barrierDismissible: false,
-        builder: (context) => Center(
-          child: CircularProgressIndicator(),
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(color: brandPrimary),
         ),
       );
 
-      // Call backend logout API
       final response = await _userApiService.logout();
-      
-      // Close loading dialog
-      Navigator.pop(context);
-      
-      if (response.success) {
-        // Clear local session
-        await UserSession.clearSession();
-        
-        // Navigate to login screen
+
+      if (mounted) Navigator.pop(context);
+
+      await UserSession.clearSession();
+      if (mounted) {
         Navigator.pushNamedAndRemoveUntil(
           context,
           logInScreenRoute,
-          (route) => false,
-        );
-      } else {
-        // Even if backend logout fails, clear local session
-        await UserSession.clearSession();
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          logInScreenRoute,
-          (route) => false,
+              (route) => false,
         );
       }
     } catch (e) {
-      // Close loading dialog if open
-      Navigator.pop(context);
-      
-      // Clear local session anyway
+      if (mounted) Navigator.pop(context);
       await UserSession.clearSession();
-      Navigator.pushNamedAndRemoveUntil(
-        context,
-        logInScreenRoute,
-        (route) => false,
-      );
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          logInScreenRoute,
+              (route) => false,
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Theme logic for dark mode safety
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF0F0F0F) : creamColor;
+    final textColor = isDark ? Colors.white : brandPrimary;
+
     if (_isLoading) {
       return Scaffold(
+        backgroundColor: bgColor,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              CircularProgressIndicator(),
-              SizedBox(height: 16),
-              Text('Loading profile...'),
+              const CircularProgressIndicator(color: brandPrimary),
+              const SizedBox(height: 16),
+              Text('Loading profile...', style: TextStyle(color: textColor)),
             ],
           ),
         ),
@@ -135,28 +128,30 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     if (_error != null) {
       return Scaffold(
+        backgroundColor: bgColor,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.error_outline, size: 64, color: Colors.red),
-              SizedBox(height: 16),
+              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              const SizedBox(height: 16),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 32),
+                padding: const EdgeInsets.symmetric(horizontal: 32),
                 child: Text(
                   _error!,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 16),
+                  style: TextStyle(fontSize: 16, color: textColor),
                 ),
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Wrap(
                 alignment: WrapAlignment.center,
                 spacing: 16,
                 children: [
                   ElevatedButton(
                     onPressed: _loadUserProfile,
-                    child: Text('Retry'),
+                    style: ElevatedButton.styleFrom(backgroundColor: brandPrimary),
+                    child: const Text('Retry', style: TextStyle(color: Colors.white)),
                   ),
                   if (_error!.contains('Authentication'))
                     ElevatedButton(
@@ -164,7 +159,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                       ),
-                      child: Text('Re-login'),
+                      child: const Text('Re-login', style: TextStyle(color: Colors.white)),
                     ),
                 ],
               ),
@@ -174,151 +169,119 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     }
 
-    // Extract user data with fallbacks
     final userName = _userProfile?['name'] ?? 'User';
     final userEmail = _userProfile?['email'] ?? 'user@example.com';
-    final userAvatar = _userProfile?['avatar'] ?? 'https://i.imgur.com/IXnwbLk.png';
+    final userAvatar = _userProfile?['avatar'] != null
+        ? (_userProfile!['avatar'] is Map ? _userProfile!['avatar']['url'] : _userProfile!['avatar'])
+        : 'https://i.imgur.com/IXnwbLk.png';
 
     return Scaffold(
+      backgroundColor: bgColor,
       body: RefreshIndicator(
+        color: brandPrimary,
+        backgroundColor: Colors.white,
         onRefresh: _loadUserProfile,
         child: ListView(
+          padding: EdgeInsets.zero,
           children: [
-            ProfileCard(
-              name: userName,
-              email: userEmail,
-              imageSrc: userAvatar,
-              // proLableText: "Sliver",
-              // isPro: true, if the user is pro
-              press: () {
-                Navigator.pushNamed(context, userInfoScreenRoute);
-              },
-            ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
-            child: Text(
-              "Account",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-          ),
-          const SizedBox(height: defaultPadding / 2),
-          ProfileMenuListTile(
-            text: "Orders",
-            svgSrc: "assets/icons/Order.svg",
-            press: () async {
-              // Fetch and navigate to orders screen
-              try {
-                final ordersResponse = await _userApiService.getUserOrders();
-                if (ordersResponse.success) {
-                  Navigator.pushNamed(context, ordersScreenRoute);
-                } else {
-                  // Still navigate but show error in orders screen
-                  Navigator.pushNamed(context, ordersScreenRoute);
-                }
-              } catch (e) {
-                Navigator.pushNamed(context, ordersScreenRoute);
-              }
-            },
-          ),
-
-          ProfileMenuListTile(
-            text: "Wishlist",
-            svgSrc: "assets/icons/Wishlist.svg",
-           press: () async {
-      // Fetch and navigate to orders screen
-      try {
-      final ordersResponse = await _userApiService.getUserOrders();
-      if (ordersResponse.success) {
-      Navigator.pushNamed(context, wishlistScreenRoute);
-      } else {
-      // Still navigate but show error in orders screen
-      Navigator.pushNamed(context, wishlistScreenRoute);
-      }
-      } catch (e) {
-      Navigator.pushNamed(context, wishlistScreenRoute);
-      }
-      },
-          ),
-          ProfileMenuListTile(
-            text: "Addresses",
-            svgSrc: "assets/icons/Address.svg",
-            press: () {
-              Navigator.pushNamed(context, addressesScreenRoute);
-            },
-          ),
-
-          // Only show Admin Panel for admin users
-          if (UserSession.isAdmin)
-            ProfileMenuListTile(
-              text: "Admin Panel",
-              svgSrc: "assets/icons/Category.svg",
-              press: () {
-                Navigator.pushNamed(context, adminPanelScreenRoute);
-              },
-            ),
-          const SizedBox(height: defaultPadding),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: defaultPadding, vertical: defaultPadding / 2),
-            child: Text(
-              "Personalization",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-          ),
-          DividerListTileWithTrilingText(
-            svgSrc: "assets/icons/Notification.svg",
-            title: "Notification",
-            trilingText: "Off",
-            press: () {
-              Navigator.pushNamed(context, enableNotificationScreenRoute);
-            },
-          ),
-          ProfileMenuListTile(
-            text: "Preferences",
-            svgSrc: "assets/icons/Preferences.svg",
-            press: () {
-              Navigator.pushNamed(context, preferencesScreenRoute);
-            },
-          ),
-          const SizedBox(height: defaultPadding),
-
-
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: defaultPadding, vertical: defaultPadding / 2),
-            child: Text(
-              "Help & Support",
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-          ),
-
-          ProfileMenuListTile(
-            text: "FAQ",
-            svgSrc: "assets/icons/FAQ.svg",
-            press: () {},
-            isShowDivider: false,
-          ),
-
-          // Log Out
-          ListTile(
-            onTap: _handleLogout,
-            minLeadingWidth: 24,
-            leading: SvgPicture.asset(
-              "assets/icons/Logout.svg",
-              height: 24,
-              width: 24,
-              colorFilter: const ColorFilter.mode(
-                errorColor,
-                BlendMode.srcIn,
+            // Header Section
+            Container(
+              color: bgColor,
+              child: ProfileCard(
+                name: userName,
+                email: userEmail,
+                imageSrc: userAvatar,
+                press: () {
+                  Navigator.pushNamed(context, userInfoScreenRoute);
+                },
               ),
             ),
-            title: const Text(
-              "Log Out",
-              style: TextStyle(color: errorColor, fontSize: 14, height: 1),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: defaultPadding,
+                vertical: defaultPadding,
+              ),
+              child: Text(
+                "Account",
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: textColor.withOpacity(0.7),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-          )
-        ],
-      ),
+
+            ProfileMenuListTile(
+              text: "Orders",
+              svgSrc: "assets/icons/Order.svg",
+              press: () {
+                Navigator.pushNamed(context, ordersScreenRoute);
+              },
+            ),
+
+            ProfileMenuListTile(
+              text: "Wishlist",
+              svgSrc: "assets/icons/Wishlist.svg",
+              press: () {
+                Navigator.pushNamed(context, wishlistScreenRoute);
+              },
+            ),
+
+            ProfileMenuListTile(
+              text: "Addresses",
+              svgSrc: "assets/icons/Address.svg",
+              press: () {
+                Navigator.pushNamed(context, addressesScreenRoute);
+              },
+            ),
+
+            // Only show Admin Panel for admin users
+            if (UserSession.isAdmin)
+              ProfileMenuListTile(
+                text: "Admin Panel",
+                svgSrc: "assets/icons/Category.svg",
+                press: () {
+                  Navigator.pushNamed(context, adminPanelScreenRoute);
+                },
+              ),
+
+            const SizedBox(height: defaultPadding * 2),
+
+            // Log Out Button
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: defaultPadding),
+              child: ListTile(
+                onTap: _handleLogout,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: Colors.red.withOpacity(0.1)),
+                ),
+                tileColor: Colors.red.withOpacity(0.05),
+                minLeadingWidth: 24,
+                leading: SvgPicture.asset(
+                  "assets/icons/Logout.svg",
+                  height: 24,
+                  width: 24,
+                  colorFilter: const ColorFilter.mode(
+                    errorColor,
+                    BlendMode.srcIn,
+                  ),
+                ),
+                title: const Text(
+                  "Log Out",
+                  style: TextStyle(
+                      color: errorColor,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: defaultPadding * 2),
+          ],
+        ),
       ),
     );
   }

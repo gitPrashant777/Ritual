@@ -1,11 +1,7 @@
-// lib/screens/products/product_list_screen.dart
 import 'package:flutter/material.dart';
 import '../../../models/product_model.dart';
 import '../../../route/route_constants.dart';
-import '../../../constants.dart'; // Import for defaultPadding
-
-// 1. ADDED IMPORT for your route constants
-import '../../../route/route_constants.dart';
+// import '../../../constants.dart'; // Import if needed
 
 class ProductListScreen extends StatefulWidget {
   final String title;
@@ -31,7 +27,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   void _fetchProducts() {
-    // Call the specific fetcher function passed to the widget
     _productsFuture = widget.productFetcher();
   }
 
@@ -41,91 +36,73 @@ class _ProductListScreenState extends State<ProductListScreen> {
     });
   }
 
-  // 2. ADDED THIS HELPER METHOD to navigate to your EntryPoint
-  void _navigateToEntryPoint(BuildContext context) {
-    Navigator.pushNamedAndRemoveUntil(
-      context,
-      entryPointScreenRoute, // Assumes this is in your route_constants.dart
-          (route) => false, // Removes all routes behind it
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // 3. WRAPPED the Scaffold in a PopScope
-    return PopScope(
-      canPop: false, // Prevents default system back behavior
-      onPopInvoked: (didPop) {
-        if (didPop) return;
-        _navigateToEntryPoint(context); // Go to EntryPoint on system back
-      },
-      child: Scaffold(
+    // ✅ FIX 1: Removed PopScope. Now system back button works naturally.
+    return Scaffold(
+      backgroundColor:
+      isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAF9F6),
+      appBar: AppBar(
         backgroundColor:
         isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAF9F6),
-        appBar: AppBar(
-          backgroundColor:
-          isDark ? const Color(0xFF0F0F0F) : const Color(0xFFFAF9F6),
-          elevation: 0,
-          leading: IconButton(
-            icon: Icon(
-              Icons.arrow_back_ios,
-              color: isDark ? Colors.white : Colors.black87,
-              size: 20,
-            ),
-            // 4. UPDATED onPressed to use the new helper
-            onPressed: () => Navigator.pop(context),          ),
-          title: Text(
-            widget.title, // Use the title from the widget
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w300,
-              letterSpacing: 0.5,
-              color: isDark ? Colors.white : const Color(0xFF1A1A2E),
-              fontFamily: 'Serif',
-            ),
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: isDark ? Colors.white : Colors.black87,
+            size: 20,
           ),
-          centerTitle: false,
+          // Simple pop to go back to Home
+          onPressed: () => Navigator.pop(context),
         ),
-        body: FutureBuilder<List<ProductModel>>(
-          future: _productsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  color: isDark ? Colors.white : const Color(0xFF1A1A2E),
-                ),
-              );
-            }
-
-            if (snapshot.hasError || !snapshot.hasData) {
-              return _buildErrorState(isDark);
-            }
-
-            final products = snapshot.data!;
-
-            if (products.isEmpty) {
-              return _buildEmptyState(isDark);
-            }
-
-            // Use the same grid as your AllProductsScreen
-            return _buildProductGrid(isDark, products);
-          },
+        title: Text(
+          widget.title,
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w300,
+            letterSpacing: 0.5,
+            color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+            fontFamily: 'Serif',
+          ),
         ),
+        centerTitle: false,
+      ),
+      body: FutureBuilder<List<ProductModel>>(
+        future: _productsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+              ),
+            );
+          }
+
+          if (snapshot.hasError || !snapshot.hasData) {
+            return _buildErrorState(isDark);
+          }
+
+          final products = snapshot.data!;
+
+          if (products.isEmpty) {
+            return _buildEmptyState(isDark);
+          }
+
+          return _buildProductGrid(isDark, products);
+        },
       ),
     );
   }
 
-  // --- UI Building Methods (Copied from your AllProductsScreen) ---
-  // ... (All the methods below are unchanged) ...
+  // --- UI Methods ---
 
   Widget _buildProductGrid(bool isDark, List<ProductModel> products) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Product count header
         Padding(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
           child: Text(
@@ -138,8 +115,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
             ),
           ),
         ),
-
-        // Product Grid
         Expanded(
           child: GridView.builder(
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
@@ -160,7 +135,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  // This is the exact same card builder method from your AllProductsScreen
   Widget _buildEnhancedProductCard(ProductModel product, bool isDark) {
     return GestureDetector(
       onTap: () {
@@ -181,7 +155,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Product Image
             Stack(
               children: [
                 Container(
@@ -213,8 +186,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             child: Icon(
                               Icons.image_outlined,
                               size: 40,
-                              color:
-                              isDark ? Colors.white24 : Colors.black12,
+                              color: isDark ? Colors.white24 : Colors.black12,
                             ),
                           ),
                         );
@@ -222,8 +194,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     ),
                   ),
                 ),
-
-                // Discount badge
                 if (product.priceAfetDiscount != null &&
                     product.dicountpercent != null)
                   Positioned(
@@ -249,8 +219,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                     ),
                   ),
-
-                // Out of stock overlay
                 if (product.isOutOfStock)
                   Positioned.fill(
                     child: Container(
@@ -276,17 +244,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   ),
               ],
             ),
-
-            // Product Details
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Brand name
                     Text(
-                      (product.brandName ?? "BAETOWN").toUpperCase(),
+                      (product.brandName ?? "Rituals").toUpperCase(),
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w600,
@@ -295,8 +260,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                     ),
                     const SizedBox(height: 6),
-
-                    // Product title
                     Expanded(
                       child: Text(
                         product.title,
@@ -311,8 +274,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-
-                    // Price
                     Row(
                       children: [
                         Text(
@@ -343,10 +304,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                         ],
                       ],
                     ),
-
                     const SizedBox(height: 8),
-
-                    // Rating or Stock indicator
                     if (!product.isOutOfStock)
                       Row(
                         children: [
@@ -359,12 +317,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '4.5', // Note: This is hardcoded
+                            '4.5',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
-                              color:
-                              isDark ? Colors.white70 : Colors.black87,
+                              color: isDark ? Colors.white70 : Colors.black87,
                             ),
                           ),
                           const Spacer(),
@@ -390,7 +347,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  // Copied from your AllProductsScreen
   Widget _buildErrorState(bool isDark) {
     return Center(
       child: Padding(
@@ -444,7 +400,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
-  // Copied from your AllProductsScreen
   Widget _buildEmptyState(bool isDark) {
     return Center(
       child: Column(

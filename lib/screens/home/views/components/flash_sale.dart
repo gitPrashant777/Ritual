@@ -199,7 +199,7 @@ class _FlashSaleState extends State<FlashSale> {
           width: 160,
           child: ProductCard(
             image: _flashSaleProducts[index].image,
-            brandName: _flashSaleProducts[index].brandName ?? "BAETOWN",
+            brandName: _flashSaleProducts[index].brandName ?? "Rituals",
             title: _flashSaleProducts[index].title,
             price: _flashSaleProducts[index].price,
             priceAfetDiscount: _flashSaleProducts[index].priceAfetDiscount,

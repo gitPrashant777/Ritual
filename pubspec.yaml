@@ -39,6 +39,12 @@ dependencies:
 #    git:
 #      url: https://github.com/hiennguyen92/flutter_callkit_incoming.git
 #      ref: master
+  flutter_launcher_icons: ^0.13.1
+# This must be at the root level (no indentation)
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logom.png"
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +58,8 @@ flutter:
   assets:
     - assets/images/
     - assets/images/title.png
+    - assets/images/logom.png
+
     - assets/icons/
     - assets/Illustration/
     - assets/flags/

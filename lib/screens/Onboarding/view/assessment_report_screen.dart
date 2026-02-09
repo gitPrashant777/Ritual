@@ -10,7 +10,8 @@ import '../../../services/firebase_kit_service.dart';
 import '../../../services/products_api_service.dart';
 import '../../../models/product_model.dart';
 import '../../../route/screen_export.dart'; // For navigation
-
+// ... existing imports ...
+import 'package:shop/services/cart_service.dart'; // Import CartService
 class AssessmentReportScreen extends StatefulWidget {
   final String userName;
   final String userAge;
@@ -71,6 +72,28 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
   }
 
   // --- LOGIC METHODS ---
+  // --- NEW HELPER METHOD ---
+  Future<void> _addSelectedItemsToCart() async {
+    final cartService = Provider.of<CartService>(context, listen: false);
+
+    // Show a small loading indicator or snackbar if desired
+    // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Adding items to cart...")));
+
+    for (var entry in _selectedProductQuantities.entries) {
+      final productId = entry.key;
+      final quantity = entry.value;
+
+      if (quantity > 0) {
+        // Find the full product object from the loaded list
+        final product = _allProducts.firstWhereOrNull((p) => p.productId == productId);
+
+        if (product != null) {
+          // Add to cart using the service
+          await cartService.addToCart(product, quantity: quantity);
+        }
+      }
+    }
+  }
 
   Future<void> _loadAndInitialize() async {
     final allApiProducts = await _productsFuture;
@@ -1012,20 +1035,27 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
     );
   }
 
-  // --- WIDGET 8 (Unchanged) ---
   Widget _buildResultsTimelineSection() {
+    // 1. Get dynamic data
+    final timelineStages = _getDynamicTimelineData();
+
     return Container(
       width: double.infinity,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "See best results in ${widget.assessmentReport.hairTimeline}",
-            style: const TextStyle(
+          const Text(
+            "Your Personalised Roadmap",
+            style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Color(0xFF2D2D2D),
             ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            "Based on your score of ${widget.assessmentReport.regrowthPossibility}%, here is what to expect:",
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
           ),
           const SizedBox(height: 24),
           SingleChildScrollView(
@@ -1040,40 +1070,23 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                   Positioned(
                     top: 25,
                     left: 0,
-                    width: 600,
+                    right: 0, // Extend line across full width
                     child: Container(
                       height: 2,
-                      color: brandPrimary,
+                      color: brandPrimary.withOpacity(0.3),
                     ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildTimelineNode(
-                        Icons.opacity,
-                        "Month 1-3",
-                        "Focus on controlling hairfall and improving scalp health.",
-                      ),
-                      const SizedBox(width: 30),
-                      _buildTimelineNode(
-                        Icons.local_fire_department,
-                        "Month 4-6",
-                        "Start seeing visible hair growth and thickness.",
-                      ),
-                      const SizedBox(width: 30),
-                      _buildTimelineNode(
-                        Icons.shield,
-                        "Month 6-9",
-                        "Maintain new growth and strengthen follicles.",
-                      ),
-                      const SizedBox(width: 30),
-                      _buildTimelineNode(
-                        Icons.celebration,
-                        "Month 12",
-                        "Achieve full results and continue maintenance.",
-                      ),
-                    ],
+                    children: timelineStages.map((stage) {
+                      return Container(
+                        width: 90, // Fixed width to prevent wrapping
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        child: _buildTimelineNode(
+                            stage.icon, stage.time, stage.description),
+                      );
+                    }).toList(),
                   ),
                 ],
               ),
@@ -1083,7 +1096,6 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
       ),
     );
   }
-
   // --- Bottom Actions Widget (Unchanged) ---
   Widget _buildBottomActions() {
     return Column(
@@ -1208,7 +1220,10 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
             ),
           ],
         ),
+        SizedBox(height: 60,)
+
       ],
+
     );
   }
 
@@ -1554,7 +1569,35 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
       ],
     );
   }
+  List<_TimelineStage> _getDynamicTimelineData() {
+    int score = widget.assessmentReport.regrowthPossibility;
 
+    if (score >= 80) {
+      // Scenario A: Mild Issues (Fast Recovery)
+      return [
+        _TimelineStage(Icons.cleaning_services, "Month 1", "Detox scalp & stop hairfall."),
+        _TimelineStage(Icons.grass, "Month 2", "Visible baby hair growth."),
+        _TimelineStage(Icons.waves, "Month 3", "Improved density & volume."),
+        _TimelineStage(Icons.check_circle, "Month 6", "Full health maintenance."),
+      ];
+    } else if (score >= 50) {
+      // Scenario B: Moderate Issues (Standard Plan)
+      return [
+        _TimelineStage(Icons.shield, "Month 1-2", "Stop active hairfall & strengthen roots."),
+        _TimelineStage(Icons.trending_up, "Month 3-4", "Reactivate dormant follicles."),
+        _TimelineStage(Icons.opacity, "Month 5-6", "Thickening of existing strands."),
+        _TimelineStage(Icons.celebration, "Month 9", "Significant visible coverage."),
+      ];
+    } else {
+      // Scenario C: Severe Issues (Slow, Intensive Plan)
+      return [
+        _TimelineStage(Icons.healing, "Month 1-3", "Stabilize loss & scalp inflammation."),
+        _TimelineStage(Icons.spa, "Month 4-6", "Nourish miniaturized follicles."),
+        _TimelineStage(Icons.local_florist, "Month 7-9", "First signs of new fuzz."),
+        _TimelineStage(Icons.verified, "Year 1+", "Long-term density improvement."),
+      ];
+    }
+  }
   IconData _getAddOnIcon(String addonName) {
     if (addonName.toLowerCase().contains('coach')) return Icons.support_agent;
     if (addonName.toLowerCase().contains('diet')) return Icons.restaurant_menu;
@@ -1632,12 +1675,23 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      // 1. Add all selected items to the cart
+                      await _addSelectedItemsToCart();
+
+                      if (!mounted) return;
+
+                      // 2. Close the dialog
                       Navigator.of(context).pop();
+
+                      // 3. Navigate to the Cart Screen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const CartScreen()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF2D2D2D),
@@ -1676,4 +1730,10 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
       },
     );
   }
+}
+class _TimelineStage {
+  final IconData icon;
+  final String time;
+  final String description;
+  _TimelineStage(this.icon, this.time, this.description);
 }

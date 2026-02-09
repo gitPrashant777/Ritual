@@ -161,7 +161,7 @@ class _BestSellersState extends State<BestSellers> {
                     child: ProductCard(
                       image: _bestSellerProducts[index].image,
                       brandName:
-                      _bestSellerProducts[index].brandName ?? "BAETOWN",
+                      _bestSellerProducts[index].brandName ?? "Rituals",
                       title: _bestSellerProducts[index].title,
                       price: _bestSellerProducts[index].price,
                       priceAfetDiscount:

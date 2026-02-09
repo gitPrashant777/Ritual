@@ -16,7 +16,7 @@ void main() {
     await tester.pumpWidget(const MyApp());
 
     // Verify that the splash screen is displayed
-    expect(find.text('BAETOWN'), findsOneWidget);
+    expect(find.text('Rituals'), findsOneWidget);
     expect(find.text('Exquisite Jewelry Collection'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });

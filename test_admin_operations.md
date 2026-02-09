@@ -72,7 +72,7 @@ I have successfully implemented the complete CRUD (Create, Read, Update, Delete)
 
 ### 🚀 How to Test
 
-1. **Login as Admin**: Use credentials `baetownadmin@gmail.com` / `admin123@`
+1. **Login as Admin**: Use credentials `Ritualsadmin@gmail.com` / `admin123@`
 2. **Navigate to Admin Panel**: From entry point screen
 3. **Add Product**: Tap floating action button, fill form, save
 4. **Edit Product**: Tap on any product in list, modify fields, save

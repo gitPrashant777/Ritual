@@ -37,13 +37,13 @@ class TermsOfServicesScreen extends StatelessWidget {
             _buildSection(
               context,
               "1. Acceptance of Terms",
-              "By accessing and using BAETOWN, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.",
+              "By accessing and using Rituals, you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.",
             ),
             
             _buildSection(
               context,
               "2. Use License",
-              "Permission is granted to temporarily download one copy of BAETOWN app per device for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:\n\n• modify or copy the materials\n• use the materials for any commercial purpose\n• attempt to decompile or reverse engineer any software\n• remove any copyright or other proprietary notations",
+              "Permission is granted to temporarily download one copy of Rituals app per device for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:\n\n• modify or copy the materials\n• use the materials for any commercial purpose\n• attempt to decompile or reverse engineer any software\n• remove any copyright or other proprietary notations",
             ),
             
             _buildSection(
@@ -85,32 +85,32 @@ class TermsOfServicesScreen extends StatelessWidget {
             _buildSection(
               context,
               "9. Limitation of Liability",
-              "In no event shall BAETOWN or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on BAETOWN's website or app.",
+              "In no event shall Rituals or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Rituals's website or app.",
             ),
             
             _buildSection(
               context,
               "10. Governing Law",
-              "These terms and conditions are governed by and construed in accordance with the laws of the jurisdiction in which BAETOWN operates and you irrevocably submit to the exclusive jurisdiction of the courts in that state or location.",
+              "These terms and conditions are governed by and construed in accordance with the laws of the jurisdiction in which Rituals operates and you irrevocably submit to the exclusive jurisdiction of the courts in that state or location.",
             ),
             
             _buildSection(
               context,
               "11. Changes to Terms",
-              "BAETOWN reserves the right, at its sole discretion, to modify or replace these Terms at any time. If a revision is material, we will try to provide at least 30 days notice prior to any new terms taking effect.",
+              "Rituals reserves the right, at its sole discretion, to modify or replace these Terms at any time. If a revision is material, we will try to provide at least 30 days notice prior to any new terms taking effect.",
             ),
             
             _buildSection(
               context,
               "12. Contact Information",
-              "If you have any questions about these Terms of Service, please contact us at:\n\nEmail: support@baetown.com\nPhone: +1 (555) 123-4567\nAddress: 123 Commerce Street, Business City, BC 12345",
+              "If you have any questions about these Terms of Service, please contact us at:\n\nEmail: support@Rituals.com\nPhone: +1 (555) 123-4567\nAddress: 123 Commerce Street, Business City, BC 12345",
             ),
             
             const SizedBox(height: defaultPadding * 3),
             
             Center(
               child: Text(
-                "Thank you for using BAETOWN!",
+                "Thank you for using Rituals!",
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: primaryColor,
                   fontWeight: FontWeight.w600,

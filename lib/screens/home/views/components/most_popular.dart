@@ -190,7 +190,7 @@ class _MostPopularState extends State<MostPopular> {
                 width: screenWidth < 600 ? 140 : 160,
                 child: ProductCard(
                   image: _firstRowProducts[index].image,
-                  brandName: _firstRowProducts[index].brandName ?? "BAETOWN",
+                  brandName: _firstRowProducts[index].brandName ?? "Rituals",
                   title: _firstRowProducts[index].title,
                   price: _firstRowProducts[index].price,
                   priceAfetDiscount: _firstRowProducts[index].priceAfetDiscount,
@@ -227,7 +227,7 @@ class _MostPopularState extends State<MostPopular> {
                   child: ProductCard(
                     image: _secondRowProducts[index].image,
                     brandName:
-                    _secondRowProducts[index].brandName ?? "BAETOWN",
+                    _secondRowProducts[index].brandName ?? "Rituals",
                     title: _secondRowProducts[index].title,
                     price: _secondRowProducts[index].price,
                     priceAfetDiscount: _secondRowProducts[index].priceAfetDiscount,

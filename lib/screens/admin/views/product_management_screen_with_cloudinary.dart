@@ -77,7 +77,7 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
   void _loadProductData() {
     final product = widget.product!;
     _titleController.text = product.title;
-    _brandController.text = product.brandName ?? "BAETOWN";
+    _brandController.text = product.brandName ?? "Rituals";
     _descriptionController.text = product.description ?? '';
     _selectedCategory = product.category ?? 'Electronics';
     _priceController.text = product.price.toString();

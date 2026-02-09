@@ -126,16 +126,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ApiTestScreen()),
-              );
-            },
-            icon: const Icon(Icons.bug_report, color: Colors.white),
-            tooltip: 'API Test',
-          ),
+
           IconButton(
             onPressed: _isLoading ? null : _checkAuthAndLoadStats,
             icon: const Icon(Icons.refresh, color: Colors.white),
@@ -326,24 +317,6 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
             const SizedBox(height: defaultPadding),
 
             // Management Options
-            _buildManagementOption(
-              context,
-              title: "Inventory Management",
-              subtitle: "Manage product stock, quantities & availability",
-              icon: "assets/icons/Category.svg",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => InventoryManagementScreen(
-                      onProductUpdated: () {
-                        _checkAuthAndLoadStats();
-                      },
-                    ),
-                  ),
-                );
-              },
-            ),
 
             _buildManagementOption(
               context,
@@ -386,17 +359,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
               ),
             ),
 
-            _buildManagementOption(
-              context,
-              title: "Order Management",
-              subtitle: "View and manage customer orders",
-              icon: "assets/icons/Order.svg",
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Order Management - Coming Soon")),
-                );
-              },
-            ),
+
 // Add this inside the Column, along with other _buildManagementOption widgets
             _buildManagementOption(
               context,
@@ -412,17 +375,7 @@ class _AdminPanelScreenState extends State<AdminPanelScreen> {
                 );
               },
             ),
-            _buildManagementOption(
-              context,
-              title: "Product Analytics",
-              subtitle: "View sales analytics and product performance",
-              icon: "assets/icons/Setting.svg",
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Analytics - Coming Soon")),
-                );
-              },
-            ),
+
           ],
         ),
       ),

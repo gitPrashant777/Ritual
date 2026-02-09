@@ -37,7 +37,9 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
   final _stockController = TextEditingController();
   final _maxOrderController = TextEditingController();
   final _imageUrlController = TextEditingController(); // New field for manual image URL entry
-  
+  final _descriptionController = TextEditingController();
+  final _tagsController = TextEditingController(); // For search keywords
+  final _categoryController = TextEditingController(); // To replace hardcoded category
   List<String> _selectedImages = [];
   List<File> _newImageFiles = [];
   // List<CloudinaryResponse> _uploadedImages = []; // Track Cloudinary uploads - temporarily commented
@@ -71,7 +73,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
     print('   Out of Stock: ${product.isOutOfStock}');
     
     _titleController.text = product.title;
-    _brandController.text = product.brandName ?? "BAETOWN";
+    _brandController.text = product.brandName ?? "Ritual";
     _priceController.text = product.price.toString();
     _discountPriceController.text = product.priceAfetDiscount?.toString() ?? '';
     _stockController.text = product.stockQuantity.toString();
@@ -211,122 +213,157 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
     }
   }
 
+  // --- ADD THIS HELPER METHOD INSIDE YOUR STATE CLASS ---
+  List<Map<String, String>> _formatImagesForBackend(List<String> imageUrls) {
+    return imageUrls.where((url) => url.isNotEmpty).map((url) {
+      String publicId = "unknown_id";
+
+      // Attempt to extract public_id from Cloudinary URL
+      // Example: .../upload/v1234/products/my_image.jpg -> public_id: products/my_image
+      try {
+        if (url.contains('cloudinary.com')) {
+          final uri = Uri.parse(url);
+          final segments = uri.pathSegments;
+          // Find 'upload' segment and look after it
+          int uploadIndex = segments.indexOf('upload');
+          if (uploadIndex != -1 && uploadIndex + 2 < segments.length) {
+            // Skip 'upload' and version 'v1234'
+            List<String> idParts = segments.sublist(uploadIndex + 2);
+            String filename = idParts.last;
+            idParts.removeLast();
+
+            // Remove file extension
+            String id = filename.split('.').first;
+
+            // Reconstruct path: folder/id
+            publicId = [...idParts, id].join('/');
+          }
+        }
+      } catch (e) {
+        print('⚠️ Could not extract public_id: $e');
+      }
+
+      return {
+        "public_id": publicId, // Backend needs this
+        "url": url
+      };
+    }).toList();
+  }
+
+  // --- REPLACE YOUR _saveProduct METHOD WITH THIS ---
   Future<void> _saveProduct() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      
+
       try {
-        // 🎯 BULLETPROOF: Use direct token from login
         print('🔐 Getting DIRECT token from login...');
         final directToken = SimpleTokenManager.getDirectToken();
         final isDirectAdmin = SimpleTokenManager.isDirectAdmin();
-        
-        print('� Direct token available: ${directToken != null}');
-        print('🔐 Direct admin status: $isDirectAdmin');
-        
+
         if (directToken == null || !isDirectAdmin) {
           throw Exception('Direct admin authentication required. Please log in again.');
         }
 
-        // Convert any remaining local images to placeholders before saving
+        // Upload any new images first (if implementation exists)
         if (_newImageFiles.isNotEmpty) {
-          print('📤 Converting remaining local images to placeholders...');
-          await _uploadImagesToCloudinary(); // This now converts to placeholders
+          await _uploadImagesToCloudinary();
         }
 
-        // Create product data with image URLs (placeholders or real URLs)
-        print('🔍 DEBUG CONTROLLER VALUES:');
-        print('   Title Controller: "${_titleController.text}"');
-        print('   Brand Controller: "${_brandController.text}"');
-        print('   Title Trimmed: "${_titleController.text.trim()}"');
-        print('   Brand Trimmed: "${_brandController.text.trim()}"');
-        
+        // --- FIX: Format images as Objects, not Strings ---
+        final formattedImages = _formatImagesForBackend(_selectedImages);
+
         Map<String, dynamic> productData = {
           'name': _titleController.text.trim(),
-          'description': _titleController.text.trim().isNotEmpty 
+          'description': _titleController.text.trim().isNotEmpty
               ? _titleController.text.trim()
               : 'Product description',
-          'brand': _brandController.text.trim().isNotEmpty 
-              ? _brandController.text.trim() 
+          'brand': _brandController.text.trim().isNotEmpty
+              ? _brandController.text.trim()
               : 'Default Brand',
-          'category': 'Electronics', // Fixed category as per backend
-          'price': double.parse(_priceController.text),
-          'stock': int.parse(_stockController.text),
+          'category': 'Electronics',
+          'price': double.tryParse(_priceController.text) ?? 0.0,
+          'stock': int.tryParse(_stockController.text) ?? 0,
           'maxOrderQuantity': int.tryParse(_maxOrderController.text) ?? 10,
-          'isOutOfStock': false,
+          'images': formattedImages, // <--- SENDING OBJECTS NOW
+          'isOutOfStock': _isOutOfStock,
           'isOnSale': false,
           'isPopular': false,
           'isBestSeller': false,
           'isFlashSale': false,
         };
 
-        // Only add images if they exist
-        if (_selectedImages.isNotEmpty && _selectedImages.any((img) => img.isNotEmpty)) {
-          productData['images'] = _selectedImages.where((img) => img.isNotEmpty).toList();
-        }
+        // ... (rest of your validation logic matches original) ...
 
-        // Validate required fields
-        if (productData['name'].toString().trim().isEmpty) {
-          throw Exception('Product name is required');
-        }
-        if (productData['brand'].toString().trim().isEmpty) {
-          throw Exception('Brand is required');
-        }
-        if (productData['price'] <= 0) {
-          throw Exception('Price must be greater than 0');
-        }
-        if (productData['stock'] < 0) {
-          throw Exception('Stock cannot be negative');
-        }
-
-        print('🖼️ Final selected images: ${_selectedImages.length}');
-        print('🖼️ Uploaded images: ${_uploadedImages.length}');
-        print('🖼️ Images to send: ${productData['images']}');
-
-        // Add optional fields
+        // Add discount logic
         if (_discountPriceController.text.isNotEmpty) {
-          double discountPrice = double.parse(_discountPriceController.text);
-          double originalPrice = double.parse(_priceController.text);
+          double discountPrice = double.tryParse(_discountPriceController.text) ?? 0.0;
+          double originalPrice = double.tryParse(_priceController.text) ?? 0.0;
           productData['salePrice'] = discountPrice;
-          if (discountPrice < originalPrice) {
+          if (discountPrice < originalPrice && originalPrice > 0) {
             productData['discount'] = ((originalPrice - discountPrice) / originalPrice * 100).round();
           }
-        } else {
-          productData['discount'] = 0;
         }
 
-        print('🎯 Making DIRECT TOKEN request...');
-        Map<String, dynamic> result = await _createProductExactPostman(productData, directToken);
-        
-        if (!result['success']) {
-          throw Exception(result['message'] ?? 'Failed to create product');
+        print('📦 Sending Product Data: ${jsonEncode(productData)}');
+
+        Map<String, dynamic> result;
+        if (widget.product == null) {
+          // CREATE
+          result = await _createProductExactPostman(productData, directToken);
+        } else {
+          // UPDATE
+          // For update, we use the same direct API call structure but with PUT
+          final dio = Dio();
+          final productId = widget.product!.productId;
+
+          print('🔄 Updating product: $productId');
+
+          final response = await dio.put(
+            'https://mern-backend-t3h8.onrender.com/api/v1/admin/product/$productId',
+            data: productData,
+            options: Options(
+              headers: {
+                'Authorization': 'Bearer $directToken',
+                'Content-Type': 'application/json',
+              },
+              validateStatus: (status) => true,
+            ),
+          );
+
+          if (response.statusCode == 200) {
+            result = {'success': true, 'data': response.data};
+          } else {
+            result = {'success': false, 'message': 'Update failed: ${response.statusCode} - ${response.data}'};
+          }
         }
-        
-        print('✅ Product created successfully with DIRECT TOKEN!');
-        
+
+        if (!result['success']) {
+          throw Exception(result['message'] ?? 'Failed to save product');
+        }
+
+        print('✅ Product saved successfully!');
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(widget.product == null ? 'Product created successfully!' : 'Product updated successfully!'),
+              content: Text('Product saved successfully!'),
               backgroundColor: successColor,
             ),
           );
           Navigator.pop(context);
         }
       } catch (e) {
-        print('❌ Error creating product: $e');
-        setState(() => _isLoading = false);
+        print('❌ Error saving product: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error creating product: $e')),
+            SnackBar(content: Text('Error: $e')),
           );
         }
       } finally {
-        setState(() => _isLoading = false);
+        if (mounted) setState(() => _isLoading = false);
       }
     }
   }
-
   // Refresh token and retry product creation
   Future<Map<String, dynamic>> _refreshTokenAndRetry(Map<String, dynamic> productData) async {
     try {

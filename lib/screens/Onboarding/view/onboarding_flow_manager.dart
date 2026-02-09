@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/constants.dart';
+import 'package:shop/screens/home/views/home_screen.dart';
 
 import '../../../models/onboarding_data.dart';
+import '../../../route/route_constants.dart';
 import 'PersonalDetailsScreen.dart';
 import 'combined_photo_upload_screen.dart';
 import 'onboarding_question_screen.dart';
@@ -20,10 +22,11 @@ class _OnboardingFlowManagerState extends State<OnboardingFlowManager> {
   static const brandPrimary = Color(0xFF0b3323); // Deep Green
   static const creamColor = Color(0xFFf6efe3);   // Cream BG
   static const lightGreen = Color(0xFF81C784);   // Light Green Accent
-
   Future<bool> _onWillPop(BuildContext context, OnboardingData data) async {
     if (data.currentPage == 0) {
-      return true; // Allow back navigation on first page
+
+      Navigator.pushNamedAndRemoveUntil(context, entryPointScreenRoute, (route) => false);
+      return false;
     } else {
       data.previousPage();
       return false;
@@ -119,7 +122,11 @@ class _OnboardingFlowManagerState extends State<OnboardingFlowManager> {
                         size: isTablet ? 26 : 24,
                       ),
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          entryPointScreenRoute, // Replace with your actual Home/Dashboard route constant
+                              (route) => false,
+                        );
                       },
                     ),
                   ),

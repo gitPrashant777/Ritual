@@ -99,32 +99,7 @@ class _ConsultantsListScreenState extends State<ConsultantsListScreen> {
             ),
           ],
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 8, top: 8, bottom: 8),
-            decoration: BoxDecoration(
-              color: isDark
-                  ? Colors.white.withOpacity(0.1)
-                  : Colors.white.withOpacity(0.6),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: IconButton(
-              icon: Icon(
-                Icons.calendar_today_rounded,
-                color: textColor,
-              ),
-              tooltip: 'My Bookings',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MyBookingsScreen(),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
+
       ),
       body: Column(
         children: [

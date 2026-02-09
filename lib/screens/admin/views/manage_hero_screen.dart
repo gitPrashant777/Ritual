@@ -27,7 +27,9 @@ class _ManageHeroScreenState extends State<ManageHeroScreen> {
     'Home Bottom Banner',
     'Sale Page Header'
   ];
-
+  final Color _bgColor = const Color(0xFFF6EFE3); // Cream/Beige
+  final Color _primaryColor = const Color(0xFF0B3323); // Dark Green
+  final Color _whiteColor = Colors.white;
   bool _isLoading = false;
 
   Future<void> _pickImage() async {
@@ -98,9 +100,16 @@ class _ManageHeroScreenState extends State<ManageHeroScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Manage Banners"),
-        backgroundColor: primaryColor,
-        foregroundColor: Colors.white,
+        title: Text("Manage Banners", style: TextStyle(color: _whiteColor)),
+        backgroundColor: _primaryColor, // ✅ #0b3323
+        foregroundColor: _whiteColor, // Makes Back Arrow White
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back,color: Colors.white,),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(defaultPadding),
@@ -194,7 +203,7 @@ class _ManageHeroScreenState extends State<ManageHeroScreen> {
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 60,
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _saveHeroSection,
                 style: ElevatedButton.styleFrom(backgroundColor: primaryColor, foregroundColor: Colors.white),

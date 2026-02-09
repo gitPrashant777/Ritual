@@ -66,11 +66,11 @@ class _ProductListManagementScreenState extends State<ProductListManagementScree
     }
   }
 
+  // Find this part in your code and REPLACE it
   List<ProductModel> get filteredProducts {
-    // 4. Apply Search Logic + Category Logic
     List<ProductModel> result;
 
-    // Step A: Filter by Status
+    // 1. Filter by Status (Tabs)
     switch (selectedFilter) {
       case 'In Stock':
         result = products.where((p) => !p.isOutOfStock && p.stockQuantity > 5).toList();
@@ -85,19 +85,22 @@ class _ProductListManagementScreenState extends State<ProductListManagementScree
         result = List.from(products);
     }
 
-    // Step B: Filter by Search Query (Title or Brand)
-    if (_searchController.text.isNotEmpty) {
-      final query = _searchController.text.toLowerCase();
+    // 2. Filter by Search Text
+    // Change: Added .trim() to ignore spaces at start/end
+    String query = _searchController.text.toLowerCase().trim();
+
+    if (query.isNotEmpty) {
       result = result.where((p) {
         final title = p.title.toLowerCase();
-        final brand = p.brandName?.toLowerCase() ?? '';
+        // Change: Handle null brand names safely
+        final brand = (p.brandName ?? '').toLowerCase();
+
         return title.contains(query) || brand.contains(query);
       }).toList();
     }
 
     return result;
   }
-
   void _addNewProduct() {
     Navigator.push(
       context,
@@ -191,6 +194,9 @@ class _ProductListManagementScreenState extends State<ProductListManagementScree
             color: Theme.of(context).scaffoldBackgroundColor,
             child: TextField(
               controller: _searchController,
+              onChanged: (value) {
+                setState(() {}); // This forces the screen to redraw every time you type a letter
+              },
               decoration: InputDecoration(
                 hintText: "Search by name or brand...",
                 prefixIcon: const Icon(Icons.search),
@@ -475,7 +481,7 @@ class ProductManagementCard extends StatelessWidget {
 
                       // Brand Name
                       Text(
-                        product.brandName ?? "BAETOWN",
+                        product.brandName ?? "Rituals",
                         style: TextStyle(
                           color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6),
                           fontSize: 14,

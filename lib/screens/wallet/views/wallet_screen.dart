@@ -49,7 +49,7 @@ class WalletScreen extends StatelessWidget {
                         ProductModel(
                           image: productDemoImg1,
                           title: "Diamond Engagement Ring",
-                          brandName: "BAETOWN",
+                          brandName: "Rituals",
                           description: "Beautiful diamond engagement ring",
                           category: "Jewelry",
                           price: 44820, // 540 * 83
@@ -63,7 +63,7 @@ class WalletScreen extends StatelessWidget {
                         ProductModel(
                           image: productDemoImg4,
                           title: "Gold Tennis Bracelet",
-                          brandName: "BAETOWN",
+                          brandName: "Rituals",
                           description: "Elegant gold tennis bracelet",
                           category: "Jewelry",
                           price: 66400, // 800 * 83

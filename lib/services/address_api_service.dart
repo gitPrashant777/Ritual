@@ -10,6 +10,7 @@ class AddressApiService {
   Future<List<AddressModel>> getAddresses() async {
     try {
       final response = await _apiService.get<Map<String, dynamic>>(
+        // Ensure this endpoint in ApiConfig is just '/account/addresses'
         ApiConfig.addressEndpoint,
         requiresAuth: true,
       );
@@ -35,6 +36,7 @@ class AddressApiService {
       );
       return response.success;
     } catch (e) {
+      print('Error adding address: $e');
       return false;
     }
   }
@@ -42,7 +44,10 @@ class AddressApiService {
   // Update an address
   Future<bool> updateAddress(String id, AddressModel address) async {
     try {
-      final endpoint = ApiConfig.updateAddressEndpoint.replaceAll('{id}', id);
+      // Manually construct string to avoid ApiConfig errors
+      // Swagger expects: /account/addresses/{id}
+      final endpoint = '/account/addresses/$id';
+
       final response = await _apiService.put<Map<String, dynamic>>(
         endpoint,
         body: address.toJson(),
@@ -50,20 +55,27 @@ class AddressApiService {
       );
       return response.success;
     } catch (e) {
+      print('Error updating address: $e');
       return false;
     }
   }
 
-  // Delete an address
+  // ✅ FIXED: Delete an address
   Future<bool> deleteAddress(String id) async {
     try {
-      final endpoint = ApiConfig.deleteAddressEndpoint.replaceAll('{id}', id);
+      // ✅ FIX: Manually construct the path.
+      // This bypasses potential "ApiConfig" placeholder issues.
+      // Based on your Swagger: DELETE /account/addresses/{id}
+      final endpoint = '/account/addresses/$id';
+
       final response = await _apiService.delete<Map<String, dynamic>>(
         endpoint,
         requiresAuth: true,
       );
+
       return response.success;
     } catch (e) {
+      print('Error deleting address: $e');
       return false;
     }
   }

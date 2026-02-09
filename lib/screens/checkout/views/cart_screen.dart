@@ -505,7 +505,7 @@ class _CartScreenState extends State<CartScreen> {
                               children: [
                                 Text(
                                   (cartItem.product.brandName ??
-                                      "BAETOWN")
+                                      "Rituals")
                                       .toUpperCase(),
                                   style: TextStyle(
                                     fontSize: 10,

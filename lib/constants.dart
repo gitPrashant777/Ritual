@@ -99,7 +99,7 @@ final List<ProductModel> demoPopularProducts = [
   ProductModel(
     productId: "demo1",
     title: "Diamond Ring",
-    brandName: "BAETOWN",
+    brandName: "Rituals",
     description: "Beautiful diamond ring",
     category: "Jewelry",
     price: 299.99,

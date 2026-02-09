@@ -143,7 +143,7 @@ class _OnSaleScreenState extends State<OnSaleScreen> {
                       (context, index) {
                     return ProductCard(
                       image: _saleProducts[index].image,
-                      brandName: _saleProducts[index].brandName ?? "BAETOWN",
+                      brandName: _saleProducts[index].brandName ?? "Rituals",
                       title: _saleProducts[index].title,
                       price: _saleProducts[index].price,
                       priceAfetDiscount: _saleProducts[index].priceAfetDiscount,

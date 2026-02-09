@@ -34,7 +34,7 @@ class OrdersApiService {
       // This endpoint creates the Razorpay order and returns its details
       final response = await _apiService.post<Map<String, dynamic>>(
         ApiConfig.processPaymentsEndpoint,
-        body: {'amount': (amount * 100).toInt()}, // Send amount in paise
+        body: {'amount': (amount).toInt()}, // Send amount in paise
         requiresAuth: true,
       );
 
