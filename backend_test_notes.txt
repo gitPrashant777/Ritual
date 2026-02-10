@@ -4,8 +4,8 @@
 // Authentication service is testing these patterns:
 // Base URLs:
 // - https://mern-backend-t3h8.onrender.com
-// - https://mern-backend-t3h8.onrender.com/api  
-// - https://mern-backend-t3h8.onrender.com/api/v1
+// - https://backendd-ankp.onrender.com/api
+// - https://backendd-ankp.onrender.com/api/v1
 
 // Login endpoints being tested:
 // - /auth/login
@@ -25,9 +25,9 @@
 // - /users
 
 // Most likely working combinations:
-// 1. https://mern-backend-t3h8.onrender.com/api/v1/auth/login
-// 2. https://mern-backend-t3h8.onrender.com/api/v1/auth/register
-// 3. https://mern-backend-t3h8.onrender.com/auth/login
-// 4. https://mern-backend-t3h8.onrender.com/auth/register
+// 1. https://backendd-ankp.onrender.com/api/v1/auth/login
+// 2. https://backendd-ankp.onrender.com/api/v1/auth/register
+// 3. https://backendd-ankp.onrender.com/auth/login
+// 4. https://backendd-ankp.onrender.com/auth/register
 
 // Your auth service is comprehensive and should automatically find the working endpoint!

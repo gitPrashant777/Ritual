@@ -22,7 +22,7 @@ void main() async {
     final dio = Dio();
     
     // Configure Dio options
-    dio.options.baseUrl = 'https://mern-backend-t3h8.onrender.com/api/v1';
+    dio.options.baseUrl = 'https://backendd-ankp.onrender.com/api/v1';
     dio.options.connectTimeout = const Duration(seconds: 30);
     dio.options.receiveTimeout = const Duration(seconds: 30);
     dio.options.headers = {

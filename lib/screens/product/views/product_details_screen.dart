@@ -167,7 +167,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   height: isTablet ? 60 : 56,
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF020953),
+                      backgroundColor: const Color(0xFF0b3323),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -201,9 +201,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   height: isTablet ? 60 : 56,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: const Color(0xFF020953),
+                      foregroundColor: const Color(0xFF0b3323),
                       side: const BorderSide(
-                        color: Color(0xFF020953),
+                        color: Color(0xFF0b3323),
                         width: 2,
                       ),
                       shape: RoundedRectangleBorder(

@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ImageUploadTester {
-  static const String baseUrl = 'https://mern-backend-t3h8.onrender.com/api/v1';
+  static const String baseUrl = 'https://backendd-ankp.onrender.com/api/v1';
   
   static Future<void> testImageUpload() async {
     try {

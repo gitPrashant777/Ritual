@@ -207,7 +207,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
       // Make a fresh login call to get a new token
       final dio = Dio();
       final loginResponse = await dio.post(
-        'https://mern-backend-t3h8.onrender.com/api/v1/login',
+        'https://backendd-ankp.onrender.com/api/v1/login',
         data: {
           'email': currentEmail,
           'password': 'admin1234', // You might need to store this securely
@@ -257,7 +257,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
       print('🧪 Testing token with /admin/dashboard endpoint...');
       
       final response = await dio.get(
-        'https://mern-backend-t3h8.onrender.com/api/v1/admin/dashboard',
+        'https://backendd-ankp.onrender.com/api/v1/admin/dashboard',
         options: Options(
           headers: headers,
           validateStatus: (status) => true, // Allow all status codes
@@ -284,7 +284,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
       final dio = Dio();
       
       print('🎯 EXACT POSTMAN REQUEST COMPARISON:');
-      print('URL: https://mern-backend-t3h8.onrender.com/api/v1/admin/product');
+      print('URL: https://backendd-ankp.onrender.com/api/v1/admin/product');
       print('WORKING POSTMAN TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4YmIyNmJlNjhlMzhhZTY3ZWY3ZWQwYyIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc1NzE0NDk5MSwiZXhwIjoxNzU3NDA0MTkxfQ.vJCFVxSABlddjrCEuposcoANGjhFMW6_E5cON7r-1X4');
       print('OUR CURRENT TOKEN: $token');
       print('TOKEN MATCHES POSTMAN: ${token.startsWith('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')}');
@@ -297,7 +297,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
       // TEST 1: Exact Postman headers
       print('🔬 TEST 1: Exact Postman headers...');
       var response = await dio.post(
-        'https://mern-backend-t3h8.onrender.com/api/v1/admin/product',
+        'https://backendd-ankp.onrender.com/api/v1/admin/product',
         data: productData,
         options: Options(
           headers: {
@@ -320,7 +320,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
       // TEST 2: Try with x-access-token instead of Authorization
       print('🔬 TEST 2: Using x-access-token header...');
       response = await dio.post(
-        'https://mern-backend-t3h8.onrender.com/api/v1/admin/product',
+        'https://backendd-ankp.onrender.com/api/v1/admin/product',
         data: productData,
         options: Options(
           headers: {
@@ -344,7 +344,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
       bodyWithToken['token'] = workingToken;
       
       response = await dio.post(
-        'https://mern-backend-t3h8.onrender.com/api/v1/admin/product',
+        'https://backendd-ankp.onrender.com/api/v1/admin/product',
         data: bodyWithToken,
         options: Options(
           headers: {
@@ -364,7 +364,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
       // TEST 4: Try without charset in Content-Type
       print('🔬 TEST 4: Simple Content-Type...');
       response = await dio.post(
-        'https://mern-backend-t3h8.onrender.com/api/v1/admin/product',
+        'https://backendd-ankp.onrender.com/api/v1/admin/product',
         data: productData,
         options: Options(
           headers: {
@@ -381,7 +381,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
       
       // Test with raw HTTP request to see what backend expects
       response = await dio.post(
-        'https://mern-backend-t3h8.onrender.com/api/v1/admin/product',
+        'https://backendd-ankp.onrender.com/api/v1/admin/product',
         data: productData,
         options: Options(
           headers: {
@@ -407,7 +407,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
       // If all else fails, let's check if login endpoint works with same method
       print('🔬 TESTING LOGIN ENDPOINT for comparison...');
       final loginResponse = await dio.post(
-        'https://mern-backend-t3h8.onrender.com/api/v1/login',
+        'https://backendd-ankp.onrender.com/api/v1/login',
         data: {
           'email': 'rishiarora2705@gmail.com',
           'password': 'Rishi599@'
@@ -427,7 +427,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
         print('🔑 Got fresh token, testing product creation...');
         
         final freshResponse = await dio.post(
-          'https://mern-backend-t3h8.onrender.com/api/v1/admin/product',
+          'https://backendd-ankp.onrender.com/api/v1/admin/product',
           data: productData,
           options: Options(
             headers: {
@@ -449,7 +449,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
       print('🔄 All Postman token tests failed, trying our current token with TEST 4 format...');
       
       response = await dio.post(
-        'https://mern-backend-t3h8.onrender.com/api/v1/admin/product',
+        'https://backendd-ankp.onrender.com/api/v1/admin/product',
         data: productData,
         options: Options(
           headers: {

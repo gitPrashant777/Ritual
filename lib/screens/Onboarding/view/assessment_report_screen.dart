@@ -55,7 +55,7 @@ class _AssessmentReportScreenState extends State<AssessmentReportScreen> {
   static const brandPrimary = Color(0xFF0b3323);
 
   // URL
-  final String _imageBaseUrl = "https://mern-backend-t3h8.onrender.com/api/v1";
+  final String _imageBaseUrl = "https://backendd-ankp.onrender.com/api/v1";
 
   @override
   void initState() {

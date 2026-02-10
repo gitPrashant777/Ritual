@@ -185,7 +185,7 @@ class _ProductManagementScreenSimpleState extends State<ProductManagementScreenS
       };
       
       final response = await dio.post(
-        'https://mern-backend-t3h8.onrender.com/api/v1/admin/product',
+        'https://backendd-ankp.onrender.com/api/v1/admin/product',
         data: productData,
         options: Options(
           headers: headers,

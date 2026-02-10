@@ -22,8 +22,8 @@ class _DebugApiTestScreenState extends State<DebugApiTestScreen> {
 
     final baseUrls = [
       'https://mern-backend-t3h8.onrender.com',
-      'https://mern-backend-t3h8.onrender.com/api',
-      'https://mern-backend-t3h8.onrender.com/api/v1',
+      'https://backendd-ankp.onrender.com/api',
+      'https://backendd-ankp.onrender.com/api/v1',
     ];
 
     final endpoints = [

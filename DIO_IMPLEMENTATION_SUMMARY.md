@@ -79,7 +79,7 @@
 ```
 🎯 Using DIO for better HTTP handling...
 🚀 DIO REQUEST:
-   URL: https://mern-backend-t3h8.onrender.com/api/v1/admin/product
+   URL: https://backendd-ankp.onrender.com/api/v1/admin/product
    Method: POST
    Headers: {Authorization: Bearer [token], Content-Type: application/json}
    Data: {name: Test Dio Product, description: Testing...}

@@ -55,7 +55,7 @@ flutter run --debug
 🔄 Standard HTTP failed with 401, trying Dio as fallback...
 🎯 Using DIO for better HTTP handling...
 🚀 DIO REQUEST:
-   URL: https://mern-backend-t3h8.onrender.com/api/v1/admin/product
+   URL: https://backendd-ankp.onrender.com/api/v1/admin/product
    Method: POST
    Headers: {Authorization: Bearer [token], Content-Type: application/json}
 📡 DIO RESPONSE:

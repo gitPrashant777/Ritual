@@ -56,7 +56,7 @@ Fill out all the required fields:
 ## API Integration Details
 
 ### Backend Endpoint
-- **URL**: `https://mern-backend-t3h8.onrender.com/api/v1/admin/product`
+- **URL**: `https://backendd-ankp.onrender.com/api/v1/admin/product`
 - **Method**: POST
 - **Auth**: Bearer token (automatically handled)
 

@@ -399,7 +399,7 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
       };
 
       final response = await dio.post(
-        'https://mern-backend-t3h8.onrender.com/api/v1/admin/product',
+        'https://backendd-ankp.onrender.com/api/v1/admin/product',
         data: productData,
         options: Options(
           headers: headers,
@@ -440,7 +440,7 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
       };
 
       final response = await dio.put(
-        'https://mern-backend-t3h8.onrender.com/api/v1/admin/product/$productId',
+        'https://backendd-ankp.onrender.com/api/v1/admin/product/$productId',
         data: productData,
         options: Options(
           headers: headers,

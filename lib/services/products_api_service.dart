@@ -25,10 +25,15 @@ class ProductsApiService {
   }
 
   // Helper to get standard auth headers
+  // lib/services/products_api_service.dart
+
   Map<String, String> _getAuthHeaders(String token) {
+    final cleanToken = token.replaceFirst('Bearer ', '').trim();
+
     return {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $cleanToken',
     };
   }
 

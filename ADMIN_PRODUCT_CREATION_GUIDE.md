@@ -87,7 +87,7 @@ The app sends data in this format:
 ## API Configuration
 
 All endpoints are configured in `lib/services/api_config.dart`:
-- Base URL: `https://mern-backend-t3h8.onrender.com/api/v1`
+- Base URL: `https://backendd-ankp.onrender.com/api/v1`
 - Admin product creation: `/admin/product`
 - Admin authentication uses Bearer tokens
 

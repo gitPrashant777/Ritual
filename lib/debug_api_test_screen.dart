@@ -14,7 +14,7 @@ class _ApiTestScreenState extends State<ApiTestScreen> {
 
   Future<void> _testGetProducts() async {
     try {
-      final url = Uri.parse('https://mern-backend-t3h8.onrender.com/api/v1/products');
+      final url = Uri.parse('https://backendd-ankp.onrender.com/api/v1/products');
       print('🌐 Testing GET $url');
       
       final response = await http.get(url);

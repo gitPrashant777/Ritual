@@ -2,7 +2,7 @@
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2ZjdkMGU0NWJiYjEzZTA0OGI5MmRjNyIsInJvbGUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW40QGV4YW1wbGUuY29tIiwiaWF0IjoxNzI1NzAwMTU0LCJleHAiOjE3MjY5MDk3NTR9.g8qL6TwrjuTpKU3f-dtyntGRHX2c2s';
 
 // Test 1: Check token with GET endpoint
-fetch('https://mern-backend-t3h8.onrender.com/api/v1/admin/users', {
+fetch('https://backendd-ankp.onrender.com/api/v1/admin/users', {
   method: 'GET',
   headers: {
     'Authorization': `Bearer ${token}`,
@@ -30,7 +30,7 @@ const productData = {
   images: []
 };
 
-fetch('https://mern-backend-t3h8.onrender.com/api/v1/admin/product', {
+fetch('https://backendd-ankp.onrender.com/api/v1/admin/product', {
   method: 'POST',
   headers: {
     'Authorization': `Bearer ${token}`,

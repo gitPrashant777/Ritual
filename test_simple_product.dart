@@ -27,12 +27,12 @@ void main() async {
       'discount': 10
     };
     
-    print('🎯 Making request to: https://mern-backend-t3h8.onrender.com/api/v1/admin/product');
+    print('🎯 Making request to: https://backendd-ankp.onrender.com/api/v1/admin/product');
     print('📋 Headers: ${headers.keys.join(', ')}');
     print('📦 Body: ${jsonEncode(body)}');
     
     final response = await dio.post(
-      'https://mern-backend-t3h8.onrender.com/api/v1/admin/product',
+      'https://backendd-ankp.onrender.com/api/v1/admin/product',
       data: body,
       options: Options(
         headers: headers,

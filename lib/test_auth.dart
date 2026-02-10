@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class AuthTest {
   static Future<void> testAuth() async {
     const String token = 'YOUR_JWT_TOKEN_HERE'; // Replace with actual token from logs
-    const String baseUrl = 'https://mern-backend-t3h8.onrender.com/api/v1';
+    const String baseUrl = 'https://backendd-ankp.onrender.com/api/v1';
     
     // Test different profile endpoints
     final endpoints = [

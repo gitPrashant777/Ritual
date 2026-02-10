@@ -296,7 +296,7 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
   // Direct API call method
   Future<Map<String, dynamic>> _createProductDirectAPI(Map<String, dynamic> productData, String token) async {
     try {
-      final url = Uri.parse('https://mern-backend-t3h8.onrender.com/api/v1/admin/product');
+      final url = Uri.parse('https://backendd-ankp.onrender.com/api/v1/admin/product');
       
       final headers = {
         'Content-Type': 'application/json',
