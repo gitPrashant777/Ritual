@@ -27,7 +27,7 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   final FocusNode _focusNode = FocusNode();
 
-  static const brandPrimary = Color(0xFF020953);
+  static const brandPrimary = Color(0xFF0b3323);
   static const brandSecondary = Color(0xFF0A1E78);
   int _lastMessageCount = 0;
   bool _isTyping = false;

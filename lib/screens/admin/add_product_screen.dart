@@ -22,23 +22,22 @@ class _AddProductScreenState extends State<AddProductScreen> {
   final _quantityController = TextEditingController();
 
   bool _isLoading = false;
-  String _selectedCategory = 'Electronics';
+  String _selectedCategory = 'Hair Care';
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
 
   final List<String> _categories = [
-    'Electronics',
-    'Clothing',
-    'Home & Garden',
-    'Sports',
-    'Books',
-    'Toys',
-    'Beauty',
-    'Health',
-    'Automotive',
-    'Other',
+    'Face Care',
+    'Hair Care',
+    'Body Care',
+    'Anti-Aging',
+    'Acne Treatment',
+    'Sun Protection',
+    'Sensitive Skin',
+    'Scalp Health',
+    'Dermatology',
+    'Other Treatments',
   ];
-
   @override
   void dispose() {
     _titleController.dispose();

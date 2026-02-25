@@ -11,6 +11,8 @@ import 'package:shop/services/address_api_service.dart';
 import 'package:shop/models/AddressModel.dart';
 import 'package:shop/services/payment_service.dart';
 
+import '../../../route/route_constants.dart';
+
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
 
@@ -158,8 +160,7 @@ class _CartScreenState extends State<CartScreen> {
                 child: OutlinedButton.icon(
                   onPressed: () {
                     Navigator.pop(context);
-                    Navigator.pushNamed(context, '/add_address');
-                  },
+                    Navigator.pushNamed(context, addressesScreenRoute);                  },
                   icon: const Icon(Icons.add),
                   label: const Text("Add New Address"),
                   style: OutlinedButton.styleFrom(
@@ -190,8 +191,7 @@ class _CartScreenState extends State<CartScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              Navigator.pushNamed(context, '/add_address');
-            },
+              Navigator.pushNamed(context, addressesScreenRoute);            },
             style: ElevatedButton.styleFrom(backgroundColor: brandPrimary),
             child: const Text("Add Address",
                 style: TextStyle(color: Colors.white)),

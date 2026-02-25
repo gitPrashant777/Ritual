@@ -24,7 +24,7 @@ class _FlashSaleState extends State<FlashSale> {
   bool _isLoading = true;
   bool _hasError = false;
   final titleStyle = TextStyle(
-      color: Color(0xFF06055c), fontWeight: FontWeight.bold, fontSize: 16);
+      color: Color(0xFF0b3323), fontWeight: FontWeight.bold, fontSize: 16);
   @override
   void initState() {
     super.initState();
@@ -68,7 +68,7 @@ class _FlashSaleState extends State<FlashSale> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF020953).withOpacity(0.03),
+            const Color(0xFF0b3323).withOpacity(0.03),
             Colors.white,
           ],
         ),
@@ -94,7 +94,7 @@ class _FlashSaleState extends State<FlashSale> {
                     Text(
                       "Sale is Live",
                       style: TextStyle(
-                        color: const Color(0xFF020953).withOpacity(0.6),
+                        color: const Color(0xFF0b3323).withOpacity(0.6),
                         fontWeight: FontWeight.w500,
                         fontSize: 10,
                         letterSpacing: 0.8,
@@ -120,7 +120,7 @@ class _FlashSaleState extends State<FlashSale> {
                       vertical: defaultPadding / 2,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF020953),
+                      color: const Color(0xFF0b3323),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -152,7 +152,7 @@ class _FlashSaleState extends State<FlashSale> {
   Widget _buildProductList() {
     if (_isLoading) {
       return const Center(
-        child: CircularProgressIndicator(color: Color(0xFF020953)),
+        child: CircularProgressIndicator(color: Color(0xFF0b3323)),
       );
     }
 
@@ -170,7 +170,7 @@ class _FlashSaleState extends State<FlashSale> {
             const SizedBox(height: 8),
             ElevatedButton(
               onPressed: _fetchFlashSaleProducts,
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF020953)),
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0b3323)),
               child: const Text("Retry"),
             ),
           ],

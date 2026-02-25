@@ -177,7 +177,7 @@ class _KitDetailScreenState extends State<KitDetailScreen> {
                 Text(product.title, maxLines: 1, overflow: TextOverflow.ellipsis,
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 Text("₹${price.toStringAsFixed(0)}",
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF020953))),
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF0b3323))),
               ],
             ),
           ),
@@ -185,7 +185,7 @@ class _KitDetailScreenState extends State<KitDetailScreen> {
           ElevatedButton(
             onPressed: isLoading ? null : () => _addToCart(context, product),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF020953),
+              backgroundColor: const Color(0xFF0b3323),
               minimumSize: const Size(60, 36),
               padding: const EdgeInsets.symmetric(horizontal: 10),
             ),

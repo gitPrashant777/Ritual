@@ -127,7 +127,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.red[700] : const Color(0xFF020953),
+        backgroundColor: isError ? Colors.red[700] : const Color(0xFF0b3323),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         margin: const EdgeInsets.all(16),
@@ -257,7 +257,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 child: IconButton(
                   icon: Icon(
                     Icons.arrow_back_rounded,
-                    color: isDark ? Colors.white : const Color(0xFF020953),
+                    color: isDark ? Colors.white : const Color(0xFF0b3323),
                     size: isTablet ? 24 : 22,
                   ),
                   // ✅ FIX 2: Use pop() to return to the list instead of reloading Home
@@ -287,7 +287,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       _isInWishlist ? Icons.favorite : Icons.favorite_border,
                       color: _isInWishlist
                           ? Colors.red
-                          : (isDark ? Colors.white : const Color(0xFF020953)),
+                          : (isDark ? Colors.white : const Color(0xFF0b3323)),
                       size: isTablet ? 24 : 22,
                     ),
                   ),
@@ -309,7 +309,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF020953).withOpacity(0.1),
+                        color: const Color(0xFF0b3323).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -318,7 +318,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           fontSize: isTablet ? 12 : 11,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 1.5,
-                          color: const Color(0xFF020953),
+                          color: const Color(0xFF0b3323),
                         ),
                       ),
                     ),
@@ -330,7 +330,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.5,
                         height: 1.2,
-                        color: isDark ? Colors.white : const Color(0xFF020953),
+                        color: isDark ? Colors.white : const Color(0xFF0b3323),
                       ),
                     ),
                     SizedBox(height: isTablet ? 20 : 16),
@@ -341,7 +341,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                           style: TextStyle(
                             fontSize: isTablet ? 28 : 24,
                             fontWeight: FontWeight.bold,
-                            color: isDark ? Colors.white : const Color(0xFF020953),
+                            color: isDark ? Colors.white : const Color(0xFF0b3323),
                           ),
                         ),
                         if (widget.product.priceAfetDiscount != null) ...[
@@ -682,7 +682,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                               style: TextStyle(
                                                 fontSize: 16,
                                                 fontWeight: FontWeight.w600,
-                                                color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                                                color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                                               ),
                                             ),
                                             if (relatedProducts[index].priceAfetDiscount != null) ...[
@@ -707,7 +709,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                                   Icon(
                                                     Icons.star,
                                                     size: 14,
-                                                    color: isDark ? Colors.amber : const Color(0xFF1A1A2E),
+                                                    color: isDark ? Colors.amber : const Color(0xFF0F2E1A
+
+),
                                                   ),
                                                   const SizedBox(width: 4),
                                                   Text(
@@ -749,7 +753,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       padding: const EdgeInsets.all(40),
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                        color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                       ),
                     ),
                   );
@@ -828,7 +834,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                             ratingStars,
                                                 (i) => Icon(
                                               Icons.star,
-                                              color: isDark ? Colors.amber : const Color(0xFF1A1A2E),
+                                              color: isDark ? Colors.amber : const Color(0xFF0F2E1A
+
+),
                                               size: 16,
                                             ),
                                           ),
@@ -901,7 +909,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                     child: Icon(
                                       Icons.star,
                                       color: i < _reviewRating
-                                          ? (isDark ? Colors.amber : const Color(0xFF1A1A2E))
+                                          ? (isDark ? Colors.amber : const Color(0xFF0F2E1A
+
+))
                                           : (isDark ? Colors.white24 : Colors.black12),
                                       size: 28,
                                     ),
@@ -939,7 +949,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(4),
                                   borderSide: BorderSide(
-                                    color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                                    color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                                     width: 1.5,
                                   ),
                                 ),
@@ -951,8 +963,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               height: 56,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: isDark ? Colors.white : const Color(0xFF1A1A2E),
-                                  foregroundColor: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                                  backgroundColor: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
+                                  foregroundColor: isDark ? const Color(0xFF0F2E1A
+
+) : Colors.white,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(4),
                                   ),
@@ -965,7 +981,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                                    color: isDark ? const Color(0xFF0F2E1A
+
+) : Colors.white,
                                   ),
                                 )
                                     : const Text(

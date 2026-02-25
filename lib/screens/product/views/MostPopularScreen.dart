@@ -63,7 +63,9 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
             fontSize: 20,
             fontWeight: FontWeight.w300,
             letterSpacing: 0.5,
-            color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+            color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
             fontFamily: 'Serif',
           ),
         ),
@@ -88,7 +90,9 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
             return Center(
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
               ),
             );
           }
@@ -293,7 +297,9 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                             fontWeight: FontWeight.w600,
                             color: isDark
                                 ? Colors.white
-                                : const Color(0xFF1A1A2E),
+                                : const Color(0xFF0F2E1A
+
+),
                           ),
                         ),
                         if (product.priceAfetDiscount != null) ...[
@@ -321,7 +327,9 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
                             size: 14,
                             color: isDark
                                 ? Colors.amber
-                                : const Color(0xFF1A1A2E),
+                                : const Color(0xFF0F2E1A
+
+),
                           ),
                           const SizedBox(width: 4),
                           Text(
@@ -382,9 +390,13 @@ class _MostPopularScreenState extends State<MostPopularScreen> {
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor:
-                  isDark ? Colors.white : const Color(0xFF1A1A2E),
+                  isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                   foregroundColor:
-                  isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                  isDark ? const Color(0xFF0F2E1A
+
+) : Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),

@@ -24,7 +24,7 @@ class _ConsultantDashboardScreenState extends State<ConsultantDashboardScreen> {
   final CallService _callService = CallService();
   StreamSubscription? _callSubscription;
 
-  static const brandPrimary = Color(0xFF020953);
+  static const brandPrimary = Color(0xFF0b3323);
   static const brandSecondary = Color(0xFF04076B);
 
   Map<String, dynamic>? consultantData;

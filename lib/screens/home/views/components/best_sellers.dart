@@ -71,7 +71,7 @@ class _BestSellersState extends State<BestSellers> {
 
     // Define the style for the title
     final titleStyle = TextStyle(
-        color: Color(0xFF06055c), fontWeight: FontWeight.bold, fontSize: 16);
+        color: Color(0xFF0b3323), fontWeight: FontWeight.bold, fontSize: 16);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

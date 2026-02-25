@@ -121,7 +121,7 @@ class _SplashScreenState extends State<SplashScreen>
             colors: isDark
                 ? [
               const Color(0xFF0A0A0A),
-              const Color(0xFF020953).withOpacity(0.3),
+              const Color(0xFF0b3323).withOpacity(0.3),
               const Color(0xFF0A0A0A),
             ]
                 : [
@@ -149,8 +149,8 @@ class _SplashScreenState extends State<SplashScreen>
                         shape: BoxShape.circle,
                         gradient: RadialGradient(
                           colors: [
-                            const Color(0xFF020953),
-                            const Color(0xFF020953).withOpacity(0),
+                            const Color(0xFF0b3323),
+                            const Color(0xFF0b3323).withOpacity(0),
                           ],
                         ),
                       ),
@@ -208,14 +208,14 @@ class _SplashScreenState extends State<SplashScreen>
                                 BoxShadow(
                                   color: (isDark
                                       ? Colors.white
-                                      : const Color(0xFF020953))
+                                      : const Color(0xFF0b3323))
                                       .withOpacity(0.15 * _logoAnimation.value),
                                   blurRadius: 50 * _pulseAnimation.value,
                                   spreadRadius: 15 * _pulseAnimation.value,
                                 ),
                                 BoxShadow(
                                   color: (isDark
-                                      ? const Color(0xFF020953)
+                                      ? const Color(0xFF0b3323)
                                       : const Color(0xFF04076B))
                                       .withOpacity(0.1 * _logoAnimation.value),
                                   blurRadius: 80 * _pulseAnimation.value,
@@ -250,7 +250,7 @@ class _SplashScreenState extends State<SplashScreen>
                                             Colors.white.withOpacity(0.05),
                                           ]
                                               : [
-                                            const Color(0xFF020953).withOpacity(0.1),
+                                            const Color(0xFF0b3323).withOpacity(0.1),
                                             const Color(0xFF04076B).withOpacity(0.05),
                                           ],
                                         ),
@@ -260,7 +260,7 @@ class _SplashScreenState extends State<SplashScreen>
                                         size: 200,
                                         color: isDark
                                             ? Colors.white.withOpacity(0.3)
-                                            : const Color(0xFF020953).withOpacity(0.3),
+                                            : const Color(0xFF0b3323).withOpacity(0.3),
                                       ),
                                     );
                                   },
@@ -285,7 +285,7 @@ class _SplashScreenState extends State<SplashScreen>
                               border: Border.all(
                                 color: (isDark
                                     ? Colors.white
-                                    : const Color(0xFF020953))
+                                    : const Color(0xFF0b3323))
                                     .withOpacity(0.1),
                               ),
                             ),
@@ -297,7 +297,7 @@ class _SplashScreenState extends State<SplashScreen>
                                 letterSpacing: 2.5,
                                 color: isDark
                                     ? Colors.white.withOpacity(0.6)
-                                    : const Color(0xFF020953).withOpacity(0.7),
+                                    : const Color(0xFF0b3323).withOpacity(0.7),
                               ),
                               textAlign: TextAlign.center,
                             ),
@@ -326,7 +326,7 @@ class _SplashScreenState extends State<SplashScreen>
                                         valueColor: AlwaysStoppedAnimation<Color>(
                                           isDark
                                               ? Colors.white.withOpacity(0.3)
-                                              : const Color(0xFF020953).withOpacity(0.3),
+                                              : const Color(0xFF0b3323).withOpacity(0.3),
                                         ),
                                       ),
                                     ),
@@ -342,7 +342,7 @@ class _SplashScreenState extends State<SplashScreen>
                                             colors: isDark
                                                 ? [Colors.white, Colors.white70]
                                                 : [
-                                              const Color(0xFF020953),
+                                              const Color(0xFF0b3323),
                                               const Color(0xFF04076B)
                                             ],
                                           ),
@@ -361,7 +361,7 @@ class _SplashScreenState extends State<SplashScreen>
                                   letterSpacing: 1.5,
                                   color: isDark
                                       ? Colors.white.withOpacity(0.4)
-                                      : const Color(0xFF020953).withOpacity(0.5),
+                                      : const Color(0xFF0b3323).withOpacity(0.5),
                                 ),
                               ),
                             ],

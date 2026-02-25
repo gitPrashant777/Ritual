@@ -83,7 +83,9 @@ class _LogInFormState extends State<LogInForm> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4),
                 borderSide: BorderSide(
-                  color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                  color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                   width: 1.5,
                 ),
               ),
@@ -180,7 +182,9 @@ class _LogInFormState extends State<LogInForm> {
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(4),
                 borderSide: BorderSide(
-                  color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                  color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                   width: 1.5,
                 ),
               ),

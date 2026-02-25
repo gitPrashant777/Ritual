@@ -152,7 +152,6 @@ class ProductModel {
       'flashSaleEnd': flashSaleEnd?.toIso8601String(),
     };
   }
-// Location: lib/models/product_model.dart (or wherever ProductModel is defined)
 
   static List<String> _parseImages(dynamic input) {
     List<String> result = [];
@@ -169,7 +168,6 @@ class ProductModel {
         else if (item is Map) {
           // --- ADDED FIX: Check common MERN keys 'image' and 'imageUrl' ---
           var url = item['url'] ?? item['secure_url'] ?? item['downloadUrl'] ?? item['image'] ?? item['imageUrl'];
-          // --- END OF ADDED FIX ---
 
           if (url != null) {
             result.add(url.toString());
@@ -192,7 +190,7 @@ class ProductModel {
     return ProductModel(
       productId: json['productId']?.toString() ?? json['_id']?.toString() ?? json['id']?.toString() ?? '',
       title: json['title'] ?? json['name'] ?? '', // Backend usually sends 'name'
-      brandName: json['brandName'] ?? json['brand'] ?? 'BAETOWN', // Check for 'brand' too
+      brandName: json['brandName'] ?? json['brand'] ?? 'Rituals', // Check for 'brand' too
       description: json['description'] ?? '',
       category: json['category'] ?? '',
       price: double.tryParse(json['price']?.toString() ?? '0') ?? 0.0,

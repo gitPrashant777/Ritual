@@ -23,7 +23,7 @@ class _MostPopularState extends State<MostPopular> {
   bool _isLoading = true;
   bool _hasError = false;
   final titleStyle = const TextStyle(
-      color: Color(0xFF06055c), fontWeight: FontWeight.bold, fontSize: 18);
+      color: Color(0xFF0b3323), fontWeight: FontWeight.bold, fontSize: 18);
   List<ProductModel> _firstRowProducts = [];
   List<ProductModel> _secondRowProducts = [];
 
@@ -113,7 +113,7 @@ class _MostPopularState extends State<MostPopular> {
                   child: const Text(
                     "SEE ALL",
                     style: TextStyle(
-                      color: Color(0xFF020953),
+                      color: Color(0xFF0b3323),
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                       letterSpacing: 0.8,
@@ -137,7 +137,7 @@ class _MostPopularState extends State<MostPopular> {
   Widget _buildContent(double screenWidth) {
     if (_isLoading) {
       return const Center(
-          child: CircularProgressIndicator(color: Color(0xFF020953)));
+          child: CircularProgressIndicator(color: Color(0xFF0b3323)));
     }
 
     if (_hasError) {
@@ -155,7 +155,7 @@ class _MostPopularState extends State<MostPopular> {
             const SizedBox(height: 10),
             ElevatedButton(
               onPressed: _fetchMostPopularProducts,
-              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF020953)),
+              style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF0b3323)),
               child: const Text("Retry"),
             ),
           ],

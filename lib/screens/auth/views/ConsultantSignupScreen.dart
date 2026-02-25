@@ -31,7 +31,7 @@ class _ConsultantSignupScreenState extends State<ConsultantSignupScreen> {
   bool _isPasswordVisible = false;
   bool _isTermsAccepted = false;
 
-  static const brandPrimary = Color(0xFF020953);
+  static const brandPrimary = Color(0xFF0b3323);
 
   @override
   void dispose() {

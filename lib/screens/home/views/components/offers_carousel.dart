@@ -96,13 +96,13 @@ class _OffersCarouselState extends State<OffersCarousel> {
                       if (banners[_currentPage]['title'] != null)
                         Text(
                           (banners[_currentPage]['title'] as String).replaceAll('\\n', '\n'),
-                          style: const TextStyle(color: Color(0xFF06055c), fontWeight: FontWeight.bold, fontSize: 24, height: 1.1),
+                          style: const TextStyle(color: Color(0xFF0b3323), fontWeight: FontWeight.bold, fontSize: 24, height: 1.1),
                         ),
                       const SizedBox(height: 8),
                       if (banners[_currentPage]['subtitle'] != null)
                         Text(
                           banners[_currentPage]['subtitle'],
-                          style: const TextStyle(color: Color(0xFF06055c), fontWeight: FontWeight.w600, fontSize: 16),
+                          style: const TextStyle(color: Color(0xFF0b3323), fontWeight: FontWeight.w600, fontSize: 16),
                         ),
                       const SizedBox(height: 16),
                       Row(children: List.generate(banners.length, (index) => _buildDot(isActive: index == _currentPage))),
@@ -124,7 +124,7 @@ class _OffersCarouselState extends State<OffersCarousel> {
       height: 5,
       width: isActive ? 24 : 10,
       decoration: BoxDecoration(
-        color: isActive ? const Color(0xFF06055c) : Colors.white.withOpacity(0.8),
+        color: isActive ? const Color(0xFF0b3323) : Colors.white.withOpacity(0.8),
         borderRadius: BorderRadius.circular(12),
       ),
     );

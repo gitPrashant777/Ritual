@@ -127,8 +127,8 @@ class _AddressesScreenState extends State<AddressesScreen> {
             child: ListTile(
               contentPadding: const EdgeInsets.all(16),
               leading: CircleAvatar(
-                backgroundColor: const Color(0xFF020953).withOpacity(0.1),
-                child: const Icon(Icons.location_on, color: Color(0xFF020953)),
+                backgroundColor: const Color(0xFF0b3323).withOpacity(0.1),
+                child: const Icon(Icons.location_on, color: Color(0xFF0b3323)),
               ),
               title: Row(
                 children: [

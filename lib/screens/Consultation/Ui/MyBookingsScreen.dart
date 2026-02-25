@@ -17,7 +17,7 @@ class MyBookingsScreen extends StatefulWidget {
 }
 
 class _MyBookingsScreenState extends State<MyBookingsScreen> {
-  static const brandPrimary = Color(0xFF020953);
+  static const brandPrimary = Color(0xFF0b3323);
   final CallService _callService = CallService();
   StreamSubscription? _callSubscription;
   bool _isCalling = false;

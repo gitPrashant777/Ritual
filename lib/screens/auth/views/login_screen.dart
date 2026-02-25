@@ -61,7 +61,9 @@ class _LoginScreenState extends State<LoginScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text("Admin login successful!"),
-                backgroundColor: Color(0xFF1A1A2E),
+                backgroundColor: Color(0xFF0F2E1A
+
+),
               ),
             );
 
@@ -108,7 +110,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(isAdmin ? 'Admin login successful!' : 'Welcome back!'),
-                  backgroundColor: const Color(0xFF1A1A2E),
+                  backgroundColor: const Color(0xFF0F2E1A
+
+),
                 ),
               );
 
@@ -241,7 +245,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontWeight: FontWeight.w300,
                         letterSpacing: 1.2,
                         height: 1.1,
-                        color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                        color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                         fontFamily: 'Serif',
                       ),
                     ),
@@ -308,7 +314,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(4),
                                 borderSide: BorderSide(
-                                  color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                                  color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                                   width: 1.5,
                                 ),
                               ),
@@ -383,7 +391,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(4),
                                 borderSide: BorderSide(
-                                  color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                                  color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                                   width: 1.5,
                                 ),
                               ),
@@ -438,8 +448,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isDark ? Colors.white : const Color(0xFF1A1A2E),
-                          foregroundColor: isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                          backgroundColor: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
+                          foregroundColor: isDark ? const Color(0xFF0F2E1A
+
+) : Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
                           ),
@@ -452,7 +466,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                              isDark ? const Color(0xFF0F2E1A
+
+) : Colors.white,
                             ),
                           ),
                         )
@@ -496,7 +512,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                                color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                                 letterSpacing: 0.3,
                                 decoration: TextDecoration.underline,
                               ),
@@ -561,9 +579,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF020953),
+                          foregroundColor: const Color(0xFF0b3323),
                           side: const BorderSide(
-                            color: Color(0xFF020953),
+                            color: Color(0xFF0b3323),
                             width: 1.5,
                           ),
                           shape: RoundedRectangleBorder(

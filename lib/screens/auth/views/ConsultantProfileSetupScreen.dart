@@ -35,7 +35,7 @@ class _ConsultantProfileSetupScreenState extends State<ConsultantProfileSetupScr
   bool _isLoading = false;
   String _selectedExperienceLevel = 'Junior (0-5 years)';
 
-  static const brandPrimary = Color(0xFF020953);
+  static const brandPrimary = Color(0xFF0b3323);
 
   final List<String> _experienceLevels = [
     'Junior (0-5 years)',

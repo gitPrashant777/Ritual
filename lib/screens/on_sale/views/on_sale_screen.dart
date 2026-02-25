@@ -72,7 +72,7 @@ class _OnSaleScreenState extends State<OnSaleScreen> {
                     return Container(
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [Color(0xFF020953), Color(0xFF04076B)],
+                          colors: [Color(0xFF0b3323), Color(0xFF04076B)],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),

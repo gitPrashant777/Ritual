@@ -1,8 +1,8 @@
 class CloudinaryConfig {
   // Your actual Cloudinary credentials
-  static const String cloudName = 'abc';
-  static const String apiKey = 'pqr';
-  static const String apiSecret = 'stu';
+  static const String cloudName = 'dqzvr8ele';
+  static const String apiKey = '563432973578174';
+  static const String apiSecret = '12YXpYhh5kaySPjgHPvZcdZtFWk';
   static const String uploadPreset = 'ml_default'; // Default preset, you can create a custom one
   
   // For unsigned uploads (recommended for mobile apps)

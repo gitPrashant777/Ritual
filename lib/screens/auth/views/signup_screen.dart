@@ -51,7 +51,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ],
               ),
-              backgroundColor: const Color(0xFF1A1A2E),
+              backgroundColor: const Color(0xFF0F2E1A
+
+),
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -130,7 +132,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('Welcome to RITUAL! 🎉'),
-              backgroundColor: const Color(0xFF1A1A2E),
+              backgroundColor: const Color(0xFF0F2E1A
+
+),
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -259,7 +263,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         fontWeight: FontWeight.w300,
                         letterSpacing: 1.2,
                         height: 1.1,
-                        color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                        color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                         fontFamily: 'Serif',
                       ),
                     ),
@@ -324,7 +330,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 borderSide: BorderSide(
                                   color: isDark
                                       ? Colors.white
-                                      : const Color(0xFF1A1A2E),
+                                      : const Color(0xFF0F2E1A
+
+),
                                   width: 1.5,
                                 ),
                               ),
@@ -384,7 +392,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 borderSide: BorderSide(
                                   color: isDark
                                       ? Colors.white
-                                      : const Color(0xFF1A1A2E),
+                                      : const Color(0xFF0F2E1A
+
+),
                                   width: 1.5,
                                 ),
                               ),
@@ -457,7 +467,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 borderSide: BorderSide(
                                   color: isDark
                                       ? Colors.white
-                                      : const Color(0xFF1A1A2E),
+                                      : const Color(0xFF0F2E1A
+
+),
                                   width: 1.5,
                                 ),
                               ),
@@ -520,7 +532,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       style: TextStyle(
                                         color: isDark
                                             ? Colors.white
-                                            : const Color(0xFF1A1A2E),
+                                            : const Color(0xFF0F2E1A
+
+),
                                         fontWeight: FontWeight.w600,
                                         decoration: TextDecoration.underline,
                                       ),
@@ -538,7 +552,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       style: TextStyle(
                                         color: isDark
                                             ? Colors.white
-                                            : const Color(0xFF1A1A2E),
+                                            : const Color(0xFF0F2E1A
+
+),
                                         fontWeight: FontWeight.w600,
                                         decoration: TextDecoration.underline,
                                       ),
@@ -571,9 +587,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             : null,
                         style: ElevatedButton.styleFrom(
                           backgroundColor:
-                          isDark ? Colors.white : const Color(0xFF1A1A2E),
+                          isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                           foregroundColor:
-                          isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                          isDark ? const Color(0xFF0F2E1A
+
+) : Colors.white,
                           disabledBackgroundColor: isDark
                               ? Colors.white.withOpacity(0.3)
                               : Colors.black26,
@@ -590,7 +610,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
                               isDark
-                                  ? const Color(0xFF1A1A2E)
+                                  ? const Color(0xFF0F2E1A
+
+)
                                   : Colors.white,
                             ),
                           ),
@@ -638,7 +660,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 fontWeight: FontWeight.w600,
                                 color: isDark
                                     ? Colors.white
-                                    : const Color(0xFF1A1A2E),
+                                    : const Color(0xFF0F2E1A
+
+),
                                 letterSpacing: 0.3,
                                 decoration: TextDecoration.underline,
                               ),
@@ -705,9 +729,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF020953),
+                          foregroundColor: const Color(0xFF0b3323),
                           side: const BorderSide(
-                            color: Color(0xFF020953),
+                            color: Color(0xFF0b3323),
                             width: 1.5,
                           ),
                           shape: RoundedRectangleBorder(

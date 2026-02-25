@@ -9,7 +9,7 @@ import 'call_screen.dart';
 class AllConsultationsScreen extends StatelessWidget {
   const AllConsultationsScreen({super.key});
 
-  static const brandPrimary = Color(0xFF020953);
+  static const brandPrimary = Color(0xFF0b3323);
 
   // --- This is the new function to handle navigation ---
   void _goToDashboard(BuildContext context) {

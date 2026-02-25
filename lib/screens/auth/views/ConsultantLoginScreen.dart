@@ -25,7 +25,7 @@ class _ConsultantLoginScreenState extends State<ConsultantLoginScreen> {
   bool _isLoading = false;
   bool _isPasswordVisible = false;
 
-  static const brandPrimary = Color(0xFF020953);
+  static const brandPrimary = Color(0xFF0b3323);
 
   @override
   void dispose() {

@@ -213,43 +213,33 @@ class _ProductManagementScreenState extends State<ProductManagementScreen> {
     }
   }
 
-  // --- ADD THIS HELPER METHOD INSIDE YOUR STATE CLASS ---
   List<Map<String, String>> _formatImagesForBackend(List<String> imageUrls) {
     return imageUrls.where((url) => url.isNotEmpty).map((url) {
-      String publicId = "unknown_id";
+      String publicId = "products/${DateTime.now().millisecondsSinceEpoch}";
 
-      // Attempt to extract public_id from Cloudinary URL
-      // Example: .../upload/v1234/products/my_image.jpg -> public_id: products/my_image
-      try {
-        if (url.contains('cloudinary.com')) {
+      if (url.contains('cloudinary.com')) {
+        try {
           final uri = Uri.parse(url);
           final segments = uri.pathSegments;
-          // Find 'upload' segment and look after it
           int uploadIndex = segments.indexOf('upload');
           if (uploadIndex != -1 && uploadIndex + 2 < segments.length) {
-            // Skip 'upload' and version 'v1234'
             List<String> idParts = segments.sublist(uploadIndex + 2);
             String filename = idParts.last;
             idParts.removeLast();
-
-            // Remove file extension
             String id = filename.split('.').first;
-
-            // Reconstruct path: folder/id
             publicId = [...idParts, id].join('/');
           }
+        } catch (e) {
+          print('⚠️ Error parsing public_id: $e');
         }
-      } catch (e) {
-        print('⚠️ Could not extract public_id: $e');
       }
 
       return {
-        "public_id": publicId, // Backend needs this
+        "public_id": publicId,
         "url": url
       };
     }).toList();
   }
-
   // --- REPLACE YOUR _saveProduct METHOD WITH THIS ---
   Future<void> _saveProduct() async {
     if (_formKey.currentState!.validate()) {

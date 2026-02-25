@@ -38,19 +38,18 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
   bool _isLoading = false;
 
   // Category selection
-  String _selectedCategory = 'Electronics';
+  String _selectedCategory = 'Hair Care';
   final List<String> _categories = [
-    'Electronics',
-    'Clothing',
-    'Shoes',
-    'Accessories',
-    'Books',
-    'Sports',
-    'Home & Garden',
-    'Health & Beauty',
-    'Toys',
-    'Food & Beverages',
-    'Other',
+    'Face Care',
+    'Hair Care',
+    'Body Care',
+    'Anti-Aging',
+    'Acne Treatment',
+    'Sun Protection',
+    'Sensitive Skin',
+    'Scalp Health',
+    'Dermatology',
+    'Other Treatments',
   ];
 
   // New product flags
@@ -152,26 +151,17 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
     });
   }
 
-  Future<List<String>> _uploadImagesToCloudinary() async {
-    List<String> uploadedUrls = [];
+  // Update return type to List<Map<String, String>>
+  Future<List<Map<String, String>>> _uploadImagesToCloudinary() async {
+    List<Map<String, String>> uploadedImages = [];
 
     if (_newImageFiles.isEmpty) {
       print('📷 No new images to upload');
-      return uploadedUrls;
+      return uploadedImages;
     }
 
     try {
       print('☁️ Starting Cloudinary upload for ${_newImageFiles.length} images...');
-
-      // Show upload progress
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Uploading ${_newImageFiles.length} images to Cloudinary...'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
 
       // Upload images to Cloudinary
       final uploadResults = await CloudinaryService.uploadMultipleImages(
@@ -183,211 +173,118 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
         },
       );
 
-      // Extract URLs from successful uploads
+      // Extract BOTH public_id and secure_url for each image
       for (var result in uploadResults) {
-        uploadedUrls.add(result.secureUrl);
+        uploadedImages.add({
+          'public_id': result.publicId,
+          'url': result.secureUrl,
+        });
         print('✅ Uploaded: ${result.secureUrl}');
       }
 
-      print('🎉 Successfully uploaded ${uploadedUrls.length} images to Cloudinary');
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Successfully uploaded ${uploadedUrls.length} images!'),
-            backgroundColor: successColor,
-          ),
-        );
-      }
+      print('🎉 Successfully uploaded ${uploadedImages.length} images to Cloudinary');
 
     } catch (e) {
       print('❌ Error uploading images to Cloudinary: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error uploading images: $e'),
-            backgroundColor: errorColor,
-          ),
+          SnackBar(content: Text('Error uploading images: $e'), backgroundColor: Colors.red),
         );
       }
     }
 
-    return uploadedUrls;
+    return uploadedImages;
   }
 
   Future<void> _saveProduct() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+    if (!_formKey.currentState!.validate()) return;
 
-      try {
-        // 1. First upload images to Cloudinary
-        print('🚀 Step 1: Uploading images to Cloudinary...');
-        final cloudinaryUrls = await _uploadImagesToCloudinary();
+    setState(() => _isLoading = true);
 
-        // Replace local file paths with Cloudinary URLs for UI display
-        for (int i = 0; i < _selectedImages.length; i++) {
-          if (!_selectedImages[i].startsWith('http')) {
-            if (cloudinaryUrls.isNotEmpty) {
-              _selectedImages[i] = cloudinaryUrls.removeAt(0);
-            }
-          }
+    try {
+      // 1. Upload new files to Cloudinary ONLY ONCE
+      final List<Map<String, String>> newCloudinaryImages = await _uploadImagesToCloudinary();
+
+      // 2. Prepare the final list for the backend
+      List<Map<String, dynamic>> finalImagesList = [];
+
+      // Add existing remote images (if editing)
+      for (String imagePath in _selectedImages) {
+        if (imagePath.startsWith('http')) {
+          finalImagesList.add({
+            'public_id': 'existing_image',
+            'url': imagePath,
+          });
         }
-        setState(() {});
+      }
 
+      // Add newly uploaded images from Cloudinary
+      finalImagesList.addAll(newCloudinaryImages);
 
-        // 2. Combine existing images with newly uploaded ones
-        List<String> allImageUrls = [];
+      // Ensure we don't send an empty list if uploads failed or were empty
+      if (finalImagesList.isEmpty) {
+        finalImagesList.add({
+          'public_id': 'placeholder',
+          'url': 'https://placehold.co/600x400?text=No+Image',
+        });
+      }
 
-        // Add existing images (URLs that start with http)
-        for (String imagePath in _selectedImages) {
-          if (imagePath.startsWith('http')) {
-            allImageUrls.add(imagePath);
-          }
-        }
+      // 3. Get Auth Token
+      final directToken = SimpleTokenManager.getDirectToken();
+      if (directToken == null) throw Exception('Admin authentication required.');
 
-        // Add newly uploaded Cloudinary URLs
-        allImageUrls.addAll(cloudinaryUrls);
+      // 4. Construct Payload
+      Map<String, dynamic> productData = {
+        'name': _titleController.text.trim(),
+        'description': _descriptionController.text.trim(),
+        'brand': _brandController.text.trim(),
+        'category': _selectedCategory,
+        'price': double.parse(_priceController.text),
+        'stock': int.parse(_stockController.text),
+        'maxOrderQuantity': int.tryParse(_maxOrderController.text) ?? 5,
+        'images': finalImagesList, // List of Objects
+        'isOutOfStock': _isOutOfStock,
+        'isOnSale': _isOnSale,
+        'isPopular': _isPopular,
+        'isBestSeller': _isBestSeller,
+        'isFlashSale': _isFlashSale,
+      };
 
-        // If no images, add a placeholder
-        if (allImageUrls.isEmpty) {
-          allImageUrls.add('https://via.placeholder.com/400x400/CCCCCC/FFFFFF?text=No+Image');
-        }
+      // Add discount calculation
+      if (_discountPriceController.text.isNotEmpty) {
+        double salePrice = double.parse(_discountPriceController.text);
+        productData['salePrice'] = salePrice;
+        double originalPrice = double.parse(_priceController.text);
+        productData['discount'] = ((originalPrice - salePrice) / originalPrice * 100).round();
+      }
 
-        // --- FIX: Convert Image URLs to Objects for Backend Schema ---
-        // Most MERN backends fail with 500 if 'images' is just an array of strings.
-        // We map them to { public_id, url } objects.
-        final formattedImages = allImageUrls;
+      // 5. Final API call to your Render backend
+      Map<String, dynamic> result;
+      if (widget.product == null) {
+        result = await _createProductDirectAPI(productData, directToken);
+      } else {
+        result = await _updateProductDirectAPI(widget.product!.productId!, productData, directToken);
+      }
 
-
-        print('📷 Formatted images for backend: $formattedImages');
-
-        // 3. Get authentication token
-        print('🔐 Step 2: Getting authentication token...');
-        final directToken = SimpleTokenManager.getDirectToken();
-        final isDirectAdmin = SimpleTokenManager.isDirectAdmin();
-
-        if (directToken == null || !isDirectAdmin) {
-          throw Exception('Admin authentication required. Please log in again.');
-        }
-
-        // 4. Create product data
-        print('📦 Step 3: Creating product data...');
-        Map<String, dynamic> productData = {
-          'name': _titleController.text.trim(),
-          'description': _descriptionController.text.trim(),
-          'brand': _brandController.text.trim(),
-          'category': _selectedCategory,
-          'price': double.parse(_priceController.text),
-          'stock': int.parse(_stockController.text),
-          'maxOrderQuantity': int.parse(_maxOrderController.text),
-          'images': allImageUrls, // Using the Object structure
-          'isOutOfStock': _isOutOfStock,
-
-          // New product flags
-          'isOnSale': _isOnSale,
-          'isPopular': _isPopular,
-          'isBestSeller': _isBestSeller,
-          'isFlashSale': _isFlashSale,
-        };
-
-        // Add flash sale end date if flash sale is enabled
-        if (_isFlashSale && _flashSaleEnd != null) {
-          if (_flashSaleEnd is DateTime) {
-            final flashSaleEndString = _flashSaleEnd!.toIso8601String();
-            productData['flashSaleEnd'] = flashSaleEndString;
-          } else {
-            setState(() {
-              _flashSaleEnd = null;
-            });
-            throw Exception('Invalid flash sale end date. Please select a valid date and time.');
-          }
-        }
-
-        // Add optional fields for CREATE only
-        if (widget.product == null) {
-          if (_discountPriceController.text.isNotEmpty) {
-            double discountPrice = double.parse(_discountPriceController.text);
-            double originalPrice = double.parse(_priceController.text);
-            productData['salePrice'] = discountPrice;
-            if (discountPrice < originalPrice) {
-              productData['discount'] = ((originalPrice - discountPrice) / originalPrice * 100).round();
-            }
-          } else {
-            productData['salePrice'] = double.parse(_priceController.text) * 0.9;
-            productData['discount'] = 10;
-          }
-        } else {
-          // Update Logic: Only send relevant fields
-          if (_discountPriceController.text.isNotEmpty) {
-            double discountPrice = double.parse(_discountPriceController.text);
-            productData['salePrice'] = discountPrice;
-          }
-        }
-
-        print('🎯 Step 4: ${widget.product == null ? 'Creating' : 'Updating'} product...');
-
-        Map<String, dynamic> result;
-        if (widget.product == null) {
-          // Creating new product
-          result = await _createProductDirectAPI(productData, directToken);
-        } else {
-          // Updating existing product
-          // Ensure we only send necessary fields for update to prevent backend validation errors
-          Map<String, dynamic> updateData = {
-            'name': productData['name'],
-            'description': productData['description'],
-            'brand': productData['brand'],
-            'category': productData['category'],
-            'price': productData['price'],
-            'stock': productData['stock'],
-            'maxOrderQuantity': productData['maxOrderQuantity'],
-            'images': productData['images'],
-            'isOutOfStock': productData['isOutOfStock'],
-            'isOnSale': productData['isOnSale'],
-            'isPopular': productData['isPopular'],
-            'isBestSeller': productData['isBestSeller'],
-            'isFlashSale': productData['isFlashSale'],
-          };
-
-          if (productData.containsKey('flashSaleEnd')) {
-            updateData['flashSaleEnd'] = productData['flashSaleEnd'];
-          }
-          if (productData.containsKey('salePrice')) {
-            updateData['salePrice'] = productData['salePrice'];
-          }
-
-          result = await _updateProductDirectAPI(widget.product!.productId!, updateData, directToken);
-        }
-
-        if (!result['success']) {
-          throw Exception(result['message'] ?? 'Failed to ${widget.product == null ? 'create' : 'update'} product');
-        }
-
-        print('✅ Product ${widget.product == null ? 'created' : 'updated'} successfully!');
-
+      if (result['success']) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Product ${widget.product == null ? 'created' : 'updated'} successfully!'),
-              backgroundColor: successColor,
-            ),
+            const SnackBar(content: Text('Product saved successfully!'), backgroundColor: Colors.green),
           );
           Navigator.pop(context);
+          widget.onProductSaved?.call(widget.product ?? ProductModel.fromApi(result['product']));
         }
-      } catch (e) {
-        print('❌ Error ${widget.product == null ? 'creating' : 'updating'} product: $e');
-        setState(() => _isLoading = false);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
-          );
-        }
-      } finally {
-        if (mounted) setState(() => _isLoading = false);
+      } else {
+        throw Exception(result['message'] ?? 'Failed to save to backend');
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
-
   Future<Map<String, dynamic>> _createProductDirectAPI(Map<String, dynamic> productData, String token) async {
     try {
       final dio = Dio();
@@ -829,76 +726,99 @@ class _ProductManagementScreenWithCloudinaryState extends State<ProductManagemen
   }
 
   Widget _buildPricingSection() {
+    const Color primaryDark = Color(0xFF0B3323); // Your ritual color
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
-            Icon(Icons.currency_rupee, color: primaryColor),
+            const Icon(Icons.currency_rupee, color: primaryDark),
             const SizedBox(width: 8),
             Text(
-              "Pricing",
+              "Pricing Details",
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: primaryDark,
               ),
             ),
           ],
         ),
-        const SizedBox(height: defaultPadding),
+        const SizedBox(height: 16),
 
-        Row(
-          children: [
-            Expanded(
-              child: TextFormField(
-                controller: _priceController,
-                decoration: const InputDecoration(
-                  labelText: 'Original Price (₹)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.attach_money),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter price';
-                  }
-                  if (double.tryParse(value) == null) {
-                    return 'Please enter valid price';
-                  }
-                  return null;
-                },
-              ),
+        // Original Price Field
+        TextFormField(
+          controller: _priceController,
+          style: const TextStyle(color: primaryDark),
+          decoration: InputDecoration(
+            labelText: 'Original Price (₹)',
+            labelStyle: TextStyle(color: primaryDark.withOpacity(0.6)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryDark),
             ),
-            const SizedBox(width: defaultPadding),
-            Expanded(
-              child: TextFormField(
-                controller: _discountPriceController,
-                decoration: const InputDecoration(
-                  labelText: 'Discount Price (₹)',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.local_offer),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value != null && value.isNotEmpty) {
-                    double? discountPrice = double.tryParse(value);
-                    double? originalPrice = double.tryParse(_priceController.text);
-                    if (discountPrice == null) {
-                      return 'Please enter valid price';
-                    }
-                    if (originalPrice != null && discountPrice >= originalPrice) {
-                      return 'Discount price must be less than original price';
-                    }
-                  }
-                  return null;
-                },
-              ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: primaryDark.withOpacity(0.3)),
             ),
-          ],
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryDark, width: 2),
+            ),
+            prefixIcon: const Icon(Icons.payments_outlined, color: primaryDark),
+            filled: true,
+            fillColor: Colors.white,
+          ),
+          keyboardType: TextInputType.number,
+          validator: (value) {
+            if (value == null || value.isEmpty) return 'Please enter price';
+            if (double.tryParse(value) == null) return 'Enter a valid number';
+            return null;
+          },
+        ),
+
+        const SizedBox(height: 16), // Gap between fields
+
+        // Discount Price Field (Now on the next line)
+        TextFormField(
+          controller: _discountPriceController,
+          style: const TextStyle(color: primaryDark),
+          decoration: InputDecoration(
+            labelText: 'Discount Price (₹)',
+            labelStyle: TextStyle(color: primaryDark.withOpacity(0.6)),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: primaryDark.withOpacity(0.3)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: primaryDark, width: 2),
+            ),
+            prefixIcon: const Icon(Icons.local_offer_outlined, color: primaryDark),
+            filled: true,
+            fillColor: Colors.white,
+            helperText: "Customers see this as the final price",
+            helperStyle: TextStyle(color: primaryDark.withOpacity(0.5)),
+          ),
+          keyboardType: TextInputType.number,
+          validator: (value) {
+            if (value != null && value.isNotEmpty) {
+              double? discountPrice = double.tryParse(value);
+              double? originalPrice = double.tryParse(_priceController.text);
+              if (discountPrice == null) return 'Enter a valid number';
+              if (originalPrice != null && discountPrice >= originalPrice) {
+                return 'Discount must be lower than original price';
+              }
+            }
+            return null;
+          },
         ),
       ],
     );
   }
-
   Widget _buildInventorySection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

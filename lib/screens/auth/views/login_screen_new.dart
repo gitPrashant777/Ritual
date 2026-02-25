@@ -66,7 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(isAdmin ? 'Admin login successful!' : 'Welcome back!'),
-                  backgroundColor: const Color(0xFF1A1A2E),
+                  backgroundColor: const Color(0xFF0F2E1A
+
+),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
@@ -185,7 +187,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         fontWeight: FontWeight.w300,
                         letterSpacing: 1.2,
                         height: 1.1,
-                        color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                        color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                         fontFamily: 'Serif',
                       ),
                     ),
@@ -260,7 +264,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderSide: BorderSide(
                                   color: isDark
                                       ? Colors.white
-                                      : const Color(0xFF1A1A2E),
+                                      : const Color(0xFF0F2E1A
+
+),
                                   width: 1.5,
                                 ),
                               ),
@@ -339,7 +345,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderSide: BorderSide(
                                   color: isDark
                                       ? Colors.white
-                                      : const Color(0xFF1A1A2E),
+                                      : const Color(0xFF0F2E1A
+
+),
                                   width: 1.5,
                                 ),
                               ),
@@ -396,9 +404,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: isDark
                               ? Colors.white
-                              : const Color(0xFF1A1A2E),
+                              : const Color(0xFF0F2E1A
+
+),
                           foregroundColor: isDark
-                              ? const Color(0xFF1A1A2E)
+                              ? const Color(0xFF0F2E1A
+
+)
                               : Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(4),
@@ -412,7 +424,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor: AlwaysStoppedAnimation<Color>(
-                              isDark ? const Color(0xFF1A1A2E) : Colors.white,
+                              isDark ? const Color(0xFF0F2E1A
+
+) : Colors.white,
                             ),
                           ),
                         )
@@ -456,7 +470,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? Colors.white : const Color(0xFF1A1A2E),
+                                color: isDark ? Colors.white : const Color(0xFF0F2E1A
+
+),
                                 letterSpacing: 0.3,
                                 decoration: TextDecoration.underline,
                               ),
